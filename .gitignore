@@ -1,0 +1,59 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.cache/
+.eslintcache
+
+# Build/output (if you add any)
+dist/
+build/
+coverage/
+.tmp/
+.temp/
+
+# Python (optional validator)
+__pycache__/
+*.py[cod]
+*.pyc
+.python-version
+.venv/
+venv/
+.env
+.env.*.local
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+.pytype/
+
+# OS junk
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+Icon?
+*.stackdump
+
+# Editors/IDEs
+.vscode/
+.idea/
+*.iml
+.vscode-test/
+
+# Logs
+*.log
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# Misc
+*.swp
+*.swo
+*.orig
+*.rej
+
+# Generated docs/artifacts (add if you generate any)
+docs/.cache/

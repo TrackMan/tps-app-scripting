@@ -1,0 +1,242 @@
+{
+  "$schema": "../schema/1.0.0/app-scripting.schema.json",
+  "activities": [
+    {
+      "nodeType": "RangeAnalysisScriptedActivity",
+      "id": "ra-1",
+      "introMessage": {
+        "header": "Welcome to Driving Range",
+        "description": "Some description",
+        "seconds": 3
+      },
+      "endMessage": {
+        "header": "Driving Range Activity ended",
+        "description": "Some description",
+        "seconds": 3
+      },
+      "steps": [
+        {
+          "nodeType": "RangeAnalysisScriptedStep",
+          "id": "ra-step-1",
+          "introMessage": {
+            "header": "Hit 5 long shots",
+            "description": "Use your driver to hit some long straight shots. Get at least 3 over 200 meters",
+            "seconds": 10
+          },
+          "successMessage": {
+            "header": "Great!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Try again",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "RangeAnalysisScriptedLogic",
+            "setup": {
+              "nodeType": "RangeAnalysisScriptedSetup",
+              "club": "Drv",
+              "distance": 200
+            },
+            "successCondition": {
+              "nodeType": "RangeAnalysisScriptedConditions",
+              "shots": 3,
+              "conditionType": "And",
+              "conditions": [
+                {
+                  "parameter": "Total",
+                  "min": 200
+                },
+                {
+                  "parameter": "Curve",
+                  "min": -3,
+                  "max": 3
+                }
+              ]
+            },
+            "failCondition": {
+              "nodeType": "RangeAnalysisScriptedConditions",
+              "shots": 5
+            },
+            "canRetry": true,
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "RangeAnalysisScriptedUI"
+          }
+        },
+        {
+          "nodeType": "RangeAnalysisScriptedStep",
+          "id": "ra-step-2",
+          "introMessage": {
+            "header": "Use your driver to hit 3 long curved shots.",
+            "description": "If your ball curve is less than 10 meters or shorter than 200 meters on any of your shots you fail.",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Great!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Try again",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "RangeAnalysisScriptedLogic",
+            "setup": {
+              "nodeType": "RangeAnalysisScriptedSetup",
+              "club": "Drv",
+              "distance": 200
+            },
+            "successCondition": {
+              "nodeType": "RangeAnalysisScriptedConditions",
+              "shots": 3
+            },
+            "failCondition": {
+              "nodeType": "RangeAnalysisScriptedConditions",
+              "shots": 1,
+              "conditionType": "Or",
+              "conditions": [
+                {
+                  "parameter": "Curve",
+                  "min": 10,
+                  "max": 10
+                },
+                {
+                  "parameter": "Total",
+                  "max": 200
+                }
+              ]
+            },
+            "canRetry": false,
+            "skipOnSuccess": false
+          },
+          "ui": {
+            "nodeType": "RangeAnalysisScriptedUI"
+          }
+        }
+      ]
+    },
+    {
+      "nodeType": "PerformanceCenterScriptedActivity",
+      "id": "pc-1",
+      "introMessage": {
+        "header": "Welcome to Performance center",
+        "description": "Some description",
+        "seconds": 3
+      },
+      "endMessage": {
+        "header": "Performance center Activity ended",
+        "description": "Some description",
+        "seconds": 3
+      },
+      "steps": [
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "pc-ap-step-1",
+          "introMessage": {
+            "header": "Get 3 shots within 3 meters of the pin without exitting the strokes gained contour",
+            "description": "You will complete this challenge when 3 of your shots are within 3 meters of the pin. You will fail if any of your shots is outside the contour",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 1,
+              "pin": 3,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "minDistance": 80,
+              "maxDistance": 80
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 3,
+              "conditions": [
+                {
+                  "parameter": "FromPin",
+                  "max": 3
+                }
+              ]
+            },
+            "failCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1,
+              "conditions": [
+                {
+                  "parameter": "StrokesGained",
+                  "max": 0
+                }
+              ]
+            },
+            "canRetry": true,
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI"
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "pc-ts-step-1",
+          "introMessage": {
+            "header": "Hit 5 shots. No goal",
+            "description": "",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterTeeShotsScriptedSetup",
+              "hole": 2,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "courseDistance": 7200
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 5
+            },
+            "failCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 5
+            },
+            "canRetry": true,
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI"
+
+          }
+        }
+      ]
+    }
+  ]
+}
