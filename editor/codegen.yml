@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://graphql-code-generator.com/config.schema.json
+# Note: VS Code may show a transient internal schema warning referencing FlutterFreezedPluginConfig; it's a known upstream schema quirk and does not affect generation.
 schema: https://dr-cloud-api-dev.trackmangolfdev.com/graphql
 documents: 
   - "src/**/*.tsx"
@@ -18,9 +20,6 @@ generates:
         JSON: any
         Upload: File
 watch: true
-watchConfig:
-  usePolling: true
-  interval: 1000
 hooks:
   afterAllFileWrite:
     - prettier --write
