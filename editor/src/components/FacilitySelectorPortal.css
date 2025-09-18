@@ -1,0 +1,232 @@
+/* TrackMan Portal-style Facility Selector */
+.facility-selector-portal {
+  position: relative;
+  display: inline-block;
+}
+
+.facility-selector-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #5a5a5a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-width: 140px;
+  justify-content: space-between;
+}
+
+.facility-selector-button:hover:not(:disabled) {
+  background: #6a6a6a;
+}
+
+.facility-selector-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.facility-selector-text {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.facility-selector-arrow {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.facility-selector-arrow.open {
+  transform: rotate(180deg);
+}
+
+.facility-selector-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  width: 400px;
+  max-width: 400px;
+  overflow: hidden;
+  overflow-x: hidden !important;
+}
+
+/* Tab Navigation */
+.facility-tabs {
+  display: flex;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.facility-tab {
+  flex: 1;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.facility-tab:hover {
+  color: #333;
+  background: #f0f0f0;
+}
+
+.facility-tab.active {
+  color: #EC691A;
+  border-bottom-color: #EC691A;
+  background: white;
+}
+
+.facility-tab-count {
+  font-size: 12px;
+  color: #999;
+}
+
+.facility-tab.active .facility-tab-count {
+  color: #EC691A;
+}
+
+/* Facility List Container */
+.facility-list-container {
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Hide all horizontal scrollbars completely */
+.facility-selector-dropdown {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.facility-selector-dropdown::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.facility-list-container {
+  scrollbar-width: thin; /* Firefox - only vertical */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.facility-list-container::-webkit-scrollbar-horizontal {
+  display: none !important;
+}
+
+.facility-list {
+  padding: 8px 0;
+}
+
+.facility-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  max-width: 100%;
+  text-align: left;
+  transition: background-color 0.2s ease;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.facility-item:hover {
+  background: #f8f9fa;
+}
+
+.facility-item.selected {
+  background: #fff3e6;
+}
+
+.facility-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.facility-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.facility-kind {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.facility-checkmark {
+  color: #EC691A;
+  flex-shrink: 0;
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+}
+
+/* Error and Loading States */
+.facility-error {
+  padding: 16px;
+  color: #d32f2f;
+  text-align: center;
+  font-size: 14px;
+}
+
+.facility-loading {
+  padding: 16px;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}
+
+.no-facilities {
+  padding: 16px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* Scrollbar styling for webkit browsers */
+.facility-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.facility-list-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.facility-list-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.facility-list-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
