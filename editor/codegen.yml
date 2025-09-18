@@ -1,0 +1,26 @@
+schema: https://dr-cloud-api-dev.trackmangolfdev.com/graphql
+documents: 
+  - "src/**/*.tsx"
+  - "src/**/*.ts"
+  - "!src/generated/**/*"
+generates:
+  src/generated/graphql.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-urql
+    config:
+      withHooks: true
+      withComponent: false
+      scalars:
+        Date: string
+        DateTime: string
+        JSON: any
+        Upload: File
+watch: true
+watchConfig:
+  usePolling: true
+  interval: 1000
+hooks:
+  afterAllFileWrite:
+    - prettier --write

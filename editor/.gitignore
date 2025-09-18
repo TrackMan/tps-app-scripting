@@ -1,0 +1,9 @@
+# Environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Generated GraphQL files
+src/generated/
+src/graphql/generated/
