@@ -233,7 +233,6 @@
           },
           "ui": {
             "nodeType": "PerformanceCenterScriptedUI"
-
           }
         }
       ]

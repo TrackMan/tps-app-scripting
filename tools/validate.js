@@ -8,7 +8,12 @@ import { glob } from "glob";
 
 const here = path.dirname(url.fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
-const latestSchemaPath = path.join(root, "schema", "latest", "app-scripting.schema.json");
+const latestSchemaPath = path.join(
+  root,
+  "schema",
+  "latest",
+  "app-scripting.schema.json",
+);
 
 function loadSchema(p) {
   const raw = JSON.parse(readFileSync(p, "utf8"));
@@ -22,7 +27,7 @@ function loadSchema(p) {
 // 👇 turn off strict, or use { strictRequired: false } if you prefer
 const ajv = new Ajv2020({
   allErrors: true,
-  strict: false,            // <- change
+  strict: false, // <- change
   allowUnionTypes: true,
 });
 addFormats(ajv);

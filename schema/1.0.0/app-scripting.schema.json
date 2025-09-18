@@ -40,9 +40,22 @@
       "description": "Timed banner/message shown by the host app (intro/success/fail/end).",
       "additionalProperties": false,
       "properties": {
-        "header": { "type": "string", "minLength": 1, "description": "Short title/headline for the banner." },
-        "description": { "type": "string", "default": "", "description": "Optional supporting copy. Keep concise; plain text only." },
-        "seconds": { "type": "integer", "minimum": 0, "default": 3, "description": "Display duration in seconds. 0 hides instantly after render." }
+        "header": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Short title/headline for the banner."
+        },
+        "description": {
+          "type": "string",
+          "default": "",
+          "description": "Optional supporting copy. Keep concise; plain text only."
+        },
+        "seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 3,
+          "description": "Display duration in seconds. 0 hides instantly after render."
+        }
       },
       "required": ["header", "seconds"]
     },
@@ -66,15 +79,21 @@
       "description": "Single per-shot check. Bounds are inclusive. If both min and max are set and equal → exact match.",
       "additionalProperties": false,
       "properties": {
-        "parameter": { "$ref": "#/$defs/ParameterName", "description": "Metric to evaluate for this shot." },
-        "min": { "type": "number", "description": "Inclusive lower bound. Omit if not needed." },
-        "max": { "type": "number", "description": "Inclusive upper bound. Omit if not needed." }
+        "parameter": {
+          "$ref": "#/$defs/ParameterName",
+          "description": "Metric to evaluate for this shot."
+        },
+        "min": {
+          "type": "number",
+          "description": "Inclusive lower bound. Omit if not needed."
+        },
+        "max": {
+          "type": "number",
+          "description": "Inclusive upper bound. Omit if not needed."
+        }
       },
       "required": ["parameter"],
-      "anyOf": [
-        { "required": ["min"] },
-        { "required": ["max"] }
-      ],
+      "anyOf": [{ "required": ["min"] }, { "required": ["max"] }],
       "examples": [
         { "parameter": "Total", "min": 200 },
         { "parameter": "Curve", "min": -3, "max": 3 },
@@ -87,8 +106,15 @@
       "description": "Success/fail condition for Range Analysis steps. Counts shots that pass the per-shot clauses (if provided).",
       "additionalProperties": false,
       "properties": {
-        "nodeType": { "const": "RangeAnalysisScriptedConditions", "description": "Discriminator. Must be exactly this value." },
-        "shots": { "type": "integer", "minimum": 1, "description": "Threshold count.\n- For success: number of qualifying shots needed to pass.\n- For fail: number of violating shots that triggers failure." },
+        "nodeType": {
+          "const": "RangeAnalysisScriptedConditions",
+          "description": "Discriminator. Must be exactly this value."
+        },
+        "shots": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Threshold count.\n- For success: number of qualifying shots needed to pass.\n- For fail: number of violating shots that triggers failure."
+        },
         "conditionType": { "$ref": "#/$defs/ConditionType" },
         "conditions": {
           "type": "array",
@@ -105,8 +131,15 @@
       "description": "Success/fail condition for Performance Center steps. Same semantics as Range Analysis conditions.",
       "additionalProperties": false,
       "properties": {
-        "nodeType": { "const": "PerformanceCenterScriptedConditions", "description": "Discriminator. Must be exactly this value." },
-        "shots": { "type": "integer", "minimum": 1, "description": "Threshold count (see RangeAnalysisScriptedConditions.shots)." },
+        "nodeType": {
+          "const": "PerformanceCenterScriptedConditions",
+          "description": "Discriminator. Must be exactly this value."
+        },
+        "shots": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Threshold count (see RangeAnalysisScriptedConditions.shots)."
+        },
         "conditionType": { "$ref": "#/$defs/ConditionType" },
         "conditions": {
           "type": "array",
@@ -123,9 +156,20 @@
       "description": "Environment for a Range Analysis step.",
       "additionalProperties": false,
       "properties": {
-        "nodeType": { "const": "RangeAnalysisScriptedSetup", "description": "Discriminator. Must be exactly this value." },
-        "club": { "type": "string", "minLength": 1, "description": "Club code (e.g., Drv, 7i, Wdg)." },
-        "distance": { "type": "number", "minimum": 0, "description": "Target/reference distance in meters." }
+        "nodeType": {
+          "const": "RangeAnalysisScriptedSetup",
+          "description": "Discriminator. Must be exactly this value."
+        },
+        "club": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Club code (e.g., Drv, 7i, Wdg)."
+        },
+        "distance": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Target/reference distance in meters."
+        }
       },
       "required": ["nodeType", "club", "distance"]
     },
@@ -135,16 +179,59 @@
       "description": "Approach-shot scenario configuration in Performance Center.",
       "additionalProperties": false,
       "properties": {
-        "nodeType": { "const": "PerformanceCenterApproachScriptedSetup", "description": "Discriminator. Must be exactly this value." },
-        "hole": { "type": "integer", "minimum": 1, "description": "Hole number (1-based)." },
-        "pin": { "type": "integer", "minimum": 1, "description": "Pin index on the selected hole (1-based)." },
-        "playerCategory": { "type": "string", "enum": ["Handicap", "PGA", "LPGA"], "default": "Handicap", "description": "Baseline cohort for strokes-gained and contours." },
-        "hcp": { "type": "integer", "minimum": -10, "maximum": 54, "description": "Player handicap used for baselines." },
-        "gender": { "type": "string", "enum": ["Male", "Female", "Unspecified"], "default": "Unspecified", "description": "Baseline cohort dimension." },
-        "minDistance": { "type": "number", "minimum": 0, "description": "Min approach distance in meters." },
-        "maxDistance": { "type": "number", "minimum": 0, "description": "Max approach distance in meters." }
+        "nodeType": {
+          "const": "PerformanceCenterApproachScriptedSetup",
+          "description": "Discriminator. Must be exactly this value."
+        },
+        "hole": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Hole number (1-based)."
+        },
+        "pin": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Pin index on the selected hole (1-based)."
+        },
+        "playerCategory": {
+          "type": "string",
+          "enum": ["Handicap", "PGA", "LPGA"],
+          "default": "Handicap",
+          "description": "Baseline cohort for strokes-gained and contours."
+        },
+        "hcp": {
+          "type": "integer",
+          "minimum": -10,
+          "maximum": 54,
+          "description": "Player handicap used for baselines."
+        },
+        "gender": {
+          "type": "string",
+          "enum": ["Male", "Female", "Unspecified"],
+          "default": "Unspecified",
+          "description": "Baseline cohort dimension."
+        },
+        "minDistance": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Min approach distance in meters."
+        },
+        "maxDistance": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Max approach distance in meters."
+        }
       },
-      "required": ["nodeType", "hole", "pin", "playerCategory", "hcp", "gender", "minDistance", "maxDistance"]
+      "required": [
+        "nodeType",
+        "hole",
+        "pin",
+        "playerCategory",
+        "hcp",
+        "gender",
+        "minDistance",
+        "maxDistance"
+      ]
     },
 
     "PerformanceCenterTeeShotsScriptedSetup": {
@@ -152,14 +239,48 @@
       "description": "Tee-shot scenario configuration in Performance Center.",
       "additionalProperties": false,
       "properties": {
-        "nodeType": { "const": "PerformanceCenterTeeShotsScriptedSetup", "description": "Discriminator. Must be exactly this value." },
-        "hole": { "type": "integer", "minimum": 1, "description": "Hole number (1-based)." },
-        "playerCategory": { "type": "string", "enum": ["Handicap", "PGA", "LPGA"], "default": "Handicap", "description": "Baseline cohort for strokes-gained and contours." },
-        "hcp": { "type": "integer", "minimum": -10, "maximum": 54, "description": "Player handicap used for baselines." },
-        "gender": { "type": "string", "enum": ["Male", "Female", "Unspecified"], "default": "Unspecified", "description": "Baseline cohort dimension." },
-        "courseDistance": { "type": "integer", "minimum": 1000, "maximum": 9000, "description": "Total course distance in meters (context for tee-shot modeling)." }
+        "nodeType": {
+          "const": "PerformanceCenterTeeShotsScriptedSetup",
+          "description": "Discriminator. Must be exactly this value."
+        },
+        "hole": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Hole number (1-based)."
+        },
+        "playerCategory": {
+          "type": "string",
+          "enum": ["Handicap", "PGA", "LPGA"],
+          "default": "Handicap",
+          "description": "Baseline cohort for strokes-gained and contours."
+        },
+        "hcp": {
+          "type": "integer",
+          "minimum": -10,
+          "maximum": 54,
+          "description": "Player handicap used for baselines."
+        },
+        "gender": {
+          "type": "string",
+          "enum": ["Male", "Female", "Unspecified"],
+          "default": "Unspecified",
+          "description": "Baseline cohort dimension."
+        },
+        "courseDistance": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 9000,
+          "description": "Total course distance in meters (context for tee-shot modeling)."
+        }
       },
-      "required": ["nodeType", "hole", "playerCategory", "hcp", "gender", "courseDistance"]
+      "required": [
+        "nodeType",
+        "hole",
+        "playerCategory",
+        "hcp",
+        "gender",
+        "courseDistance"
+      ]
     },
 
     "RangeAnalysisScriptedLogic": {
@@ -167,14 +288,41 @@
       "description": "Evaluation logic for a Range Analysis step: setup + success/fail conditions + flow flags.",
       "additionalProperties": false,
       "properties": {
-        "nodeType": { "const": "RangeAnalysisScriptedLogic", "description": "Discriminator. Must be exactly this value." },
-        "setup": { "$ref": "#/$defs/RangeAnalysisScriptedSetup", "description": "Per-step environment." },
-        "successCondition": { "$ref": "#/$defs/RangeAnalysisScriptedConditions", "description": "Threshold/clauses to mark the step as succeeded." },
-        "failCondition": { "$ref": "#/$defs/RangeAnalysisScriptedConditions", "description": "Threshold/clauses to mark the step as failed." },
-        "canRetry": { "type": "boolean", "default": false, "description": "If true, user can immediately retry the step upon failure (counters reset)." },
-        "skipOnSuccess": { "type": "boolean", "default": false, "description": "If true, step ends as soon as success is reached and flow proceeds." }
+        "nodeType": {
+          "const": "RangeAnalysisScriptedLogic",
+          "description": "Discriminator. Must be exactly this value."
+        },
+        "setup": {
+          "$ref": "#/$defs/RangeAnalysisScriptedSetup",
+          "description": "Per-step environment."
+        },
+        "successCondition": {
+          "$ref": "#/$defs/RangeAnalysisScriptedConditions",
+          "description": "Threshold/clauses to mark the step as succeeded."
+        },
+        "failCondition": {
+          "$ref": "#/$defs/RangeAnalysisScriptedConditions",
+          "description": "Threshold/clauses to mark the step as failed."
+        },
+        "canRetry": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, user can immediately retry the step upon failure (counters reset)."
+        },
+        "skipOnSuccess": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, step ends as soon as success is reached and flow proceeds."
+        }
       },
-      "required": ["nodeType", "setup", "successCondition", "failCondition", "canRetry", "skipOnSuccess"]
+      "required": [
+        "nodeType",
+        "setup",
+        "successCondition",
+        "failCondition",
+        "canRetry",
+        "skipOnSuccess"
+      ]
     },
 
     "PerformanceCenterScriptedLogic": {
@@ -182,7 +330,10 @@
       "description": "Evaluation logic for a Performance Center step: setup + success/fail conditions + flow flags.",
       "additionalProperties": false,
       "properties": {
-        "nodeType": { "const": "PerformanceCenterScriptedLogic", "description": "Discriminator. Must be exactly this value." },
+        "nodeType": {
+          "const": "PerformanceCenterScriptedLogic",
+          "description": "Discriminator. Must be exactly this value."
+        },
         "setup": {
           "oneOf": [
             { "$ref": "#/$defs/PerformanceCenterApproachScriptedSetup" },
@@ -190,19 +341,45 @@
           ],
           "description": "Pick exactly one setup variant matching the step scenario."
         },
-        "successCondition": { "$ref": "#/$defs/PerformanceCenterScriptedConditions", "description": "Threshold/clauses to mark the step as succeeded." },
-        "failCondition": { "$ref": "#/$defs/PerformanceCenterScriptedConditions", "description": "Threshold/clauses to mark the step as failed." },
-        "canRetry": { "type": "boolean", "default": false, "description": "If true, user can immediately retry the step upon failure (counters reset)." },
-        "skipOnSuccess": { "type": "boolean", "default": false, "description": "If true, step ends as soon as success is reached and flow proceeds." }
+        "successCondition": {
+          "$ref": "#/$defs/PerformanceCenterScriptedConditions",
+          "description": "Threshold/clauses to mark the step as succeeded."
+        },
+        "failCondition": {
+          "$ref": "#/$defs/PerformanceCenterScriptedConditions",
+          "description": "Threshold/clauses to mark the step as failed."
+        },
+        "canRetry": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, user can immediately retry the step upon failure (counters reset)."
+        },
+        "skipOnSuccess": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, step ends as soon as success is reached and flow proceeds."
+        }
       },
-      "required": ["nodeType", "setup", "successCondition", "failCondition", "canRetry", "skipOnSuccess"]
+      "required": [
+        "nodeType",
+        "setup",
+        "successCondition",
+        "failCondition",
+        "canRetry",
+        "skipOnSuccess"
+      ]
     },
 
     "RangeAnalysisScriptedUI": {
       "type": "object",
       "description": "UI hints/overrides for Range Analysis. Empty object means defaults.",
       "additionalProperties": false,
-      "properties": { "nodeType": { "const": "RangeAnalysisScriptedUI", "description": "Discriminator. Must be exactly this value." } },
+      "properties": {
+        "nodeType": {
+          "const": "RangeAnalysisScriptedUI",
+          "description": "Discriminator. Must be exactly this value."
+        }
+      },
       "required": ["nodeType"]
     },
 
@@ -210,7 +387,12 @@
       "type": "object",
       "description": "UI hints/overrides for Performance Center. Empty object means defaults.",
       "additionalProperties": false,
-      "properties": { "nodeType": { "const": "PerformanceCenterScriptedUI", "description": "Discriminator. Must be exactly this value." } },
+      "properties": {
+        "nodeType": {
+          "const": "PerformanceCenterScriptedUI",
+          "description": "Discriminator. Must be exactly this value."
+        }
+      },
       "required": ["nodeType"]
     },
 
@@ -219,15 +401,44 @@
       "description": "One step in a Range Analysis activity.",
       "additionalProperties": false,
       "properties": {
-        "nodeType": { "const": "RangeAnalysisScriptedStep", "description": "Discriminator. Must be exactly this value." },
-        "id": { "$ref": "#/$defs/IdString", "description": "Step identifier unique within the activity." },
-        "introMessage": { "$ref": "#/$defs/Message", "description": "Shown before the step starts collecting shots." },
-        "successMessage": { "$ref": "#/$defs/Message", "description": "Shown when the step succeeds." },
-        "failMessage": { "$ref": "#/$defs/Message", "description": "Shown when the step fails." },
-        "logic": { "$ref": "#/$defs/RangeAnalysisScriptedLogic", "description": "Evaluation configuration." },
-        "ui": { "$ref": "#/$defs/RangeAnalysisScriptedUI", "description": "Optional UI hints (empty for defaults)." }
+        "nodeType": {
+          "const": "RangeAnalysisScriptedStep",
+          "description": "Discriminator. Must be exactly this value."
+        },
+        "id": {
+          "$ref": "#/$defs/IdString",
+          "description": "Step identifier unique within the activity."
+        },
+        "introMessage": {
+          "$ref": "#/$defs/Message",
+          "description": "Shown before the step starts collecting shots."
+        },
+        "successMessage": {
+          "$ref": "#/$defs/Message",
+          "description": "Shown when the step succeeds."
+        },
+        "failMessage": {
+          "$ref": "#/$defs/Message",
+          "description": "Shown when the step fails."
+        },
+        "logic": {
+          "$ref": "#/$defs/RangeAnalysisScriptedLogic",
+          "description": "Evaluation configuration."
+        },
+        "ui": {
+          "$ref": "#/$defs/RangeAnalysisScriptedUI",
+          "description": "Optional UI hints (empty for defaults)."
+        }
       },
-      "required": ["nodeType", "id", "introMessage", "successMessage", "failMessage", "logic", "ui"]
+      "required": [
+        "nodeType",
+        "id",
+        "introMessage",
+        "successMessage",
+        "failMessage",
+        "logic",
+        "ui"
+      ]
     },
 
     "PerformanceCenterScriptedStep": {
@@ -235,15 +446,44 @@
       "description": "One step in a Performance Center activity.",
       "additionalProperties": false,
       "properties": {
-        "nodeType": { "const": "PerformanceCenterScriptedStep", "description": "Discriminator. Must be exactly this value." },
-        "id": { "$ref": "#/$defs/IdString", "description": "Step identifier unique within the activity." },
-        "introMessage": { "$ref": "#/$defs/Message", "description": "Shown before the step starts collecting shots." },
-        "successMessage": { "$ref": "#/$defs/Message", "description": "Shown when the step succeeds." },
-        "failMessage": { "$ref": "#/$defs/Message", "description": "Shown when the step fails." },
-        "logic": { "$ref": "#/$defs/PerformanceCenterScriptedLogic", "description": "Evaluation configuration." },
-        "ui": { "$ref": "#/$defs/PerformanceCenterScriptedUI", "description": "Optional UI hints (empty for defaults)." }
+        "nodeType": {
+          "const": "PerformanceCenterScriptedStep",
+          "description": "Discriminator. Must be exactly this value."
+        },
+        "id": {
+          "$ref": "#/$defs/IdString",
+          "description": "Step identifier unique within the activity."
+        },
+        "introMessage": {
+          "$ref": "#/$defs/Message",
+          "description": "Shown before the step starts collecting shots."
+        },
+        "successMessage": {
+          "$ref": "#/$defs/Message",
+          "description": "Shown when the step succeeds."
+        },
+        "failMessage": {
+          "$ref": "#/$defs/Message",
+          "description": "Shown when the step fails."
+        },
+        "logic": {
+          "$ref": "#/$defs/PerformanceCenterScriptedLogic",
+          "description": "Evaluation configuration."
+        },
+        "ui": {
+          "$ref": "#/$defs/PerformanceCenterScriptedUI",
+          "description": "Optional UI hints (empty for defaults)."
+        }
       },
-      "required": ["nodeType", "id", "introMessage", "successMessage", "failMessage", "logic", "ui"]
+      "required": [
+        "nodeType",
+        "id",
+        "introMessage",
+        "successMessage",
+        "failMessage",
+        "logic",
+        "ui"
+      ]
     },
 
     "RangeAnalysisScriptedActivity": {
@@ -251,10 +491,22 @@
       "description": "Activity targeting the Range Analysis app. Steps run in order.",
       "additionalProperties": false,
       "properties": {
-        "nodeType": { "const": "RangeAnalysisScriptedActivity", "description": "Discriminator. Must be exactly this value." },
-        "id": { "$ref": "#/$defs/IdString", "description": "Activity identifier unique within the script." },
-        "introMessage": { "$ref": "#/$defs/Message", "description": "Shown at activity start." },
-        "endMessage": { "$ref": "#/$defs/Message", "description": "Shown when the activity finishes." },
+        "nodeType": {
+          "const": "RangeAnalysisScriptedActivity",
+          "description": "Discriminator. Must be exactly this value."
+        },
+        "id": {
+          "$ref": "#/$defs/IdString",
+          "description": "Activity identifier unique within the script."
+        },
+        "introMessage": {
+          "$ref": "#/$defs/Message",
+          "description": "Shown at activity start."
+        },
+        "endMessage": {
+          "$ref": "#/$defs/Message",
+          "description": "Shown when the activity finishes."
+        },
         "steps": {
           "type": "array",
           "description": "Ordered Range Analysis steps.",
@@ -270,10 +522,22 @@
       "description": "Activity targeting the Performance Center app. Steps run in order.",
       "additionalProperties": false,
       "properties": {
-        "nodeType": { "const": "PerformanceCenterScriptedActivity", "description": "Discriminator. Must be exactly this value." },
-        "id": { "$ref": "#/$defs/IdString", "description": "Activity identifier unique within the script." },
-        "introMessage": { "$ref": "#/$defs/Message", "description": "Shown at activity start." },
-        "endMessage": { "$ref": "#/$defs/Message", "description": "Shown when the activity finishes." },
+        "nodeType": {
+          "const": "PerformanceCenterScriptedActivity",
+          "description": "Discriminator. Must be exactly this value."
+        },
+        "id": {
+          "$ref": "#/$defs/IdString",
+          "description": "Activity identifier unique within the script."
+        },
+        "introMessage": {
+          "$ref": "#/$defs/Message",
+          "description": "Shown at activity start."
+        },
+        "endMessage": {
+          "$ref": "#/$defs/Message",
+          "description": "Shown when the activity finishes."
+        },
         "steps": {
           "type": "array",
           "description": "Ordered Performance Center steps.",

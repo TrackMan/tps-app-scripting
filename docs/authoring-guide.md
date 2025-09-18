@@ -11,9 +11,12 @@ This guide explains how to write **App Scripting** JSON files that orchestrate m
 ## TL;DR (Quick Start)
 
 1. Put the canonical schema at:
+- **Node.js/AJV**:
 
-```
-schema/1.0.0/app-scripting.schema.json
+  ```bash
+  npm ci
+  npm run validate
+  ```0.0/app-scripting.schema.json
 ```
 
 2. Point `latest` to it (recommended: pointer file):
@@ -37,30 +40,28 @@ schema/1.0.0/app-scripting.schema.json
 
 ```bash
 npm run validate
-# or
-python tools/validate.py
 ```
 
 ---
 
 ## Concepts
 
-* **Script** — The top-level JSON file with an ordered list of `activities`.
-* **Activity** — Targets a single host app. Types:
+- **Script** — The top-level JSON file with an ordered list of `activities`.
+- **Activity** — Targets a single host app. Types:
+  - `RangeAnalysisScriptedActivity`
+  - `PerformanceCenterScriptedActivity`
 
-  * `RangeAnalysisScriptedActivity`
-  * `PerformanceCenterScriptedActivity`
-* **Step** — Smallest unit of work inside an activity. Types:
+- **Step** — Smallest unit of work inside an activity. Types:
+  - `RangeAnalysisScriptedStep`
+  - `PerformanceCenterScriptedStep`
 
-  * `RangeAnalysisScriptedStep`
-  * `PerformanceCenterScriptedStep`
-* **Messages** — Timed UI banners: `introMessage`, `successMessage`, `failMessage`, plus activity-level `introMessage`/`endMessage`.
-* **Logic** — Step evaluation config:
+- **Messages** — Timed UI banners: `introMessage`, `successMessage`, `failMessage`, plus activity-level `introMessage`/`endMessage`.
+- **Logic** — Step evaluation config:
+  - `setup` — Context/environment for the host app
+  - `successCondition` / `failCondition` — Shot thresholds with per-shot clauses
+  - `canRetry`, `skipOnSuccess` — Flow behavior flags
 
-  * `setup` — Context/environment for the host app
-  * `successCondition` / `failCondition` — Shot thresholds with per-shot clauses
-  * `canRetry`, `skipOnSuccess` — Flow behavior flags
-* **Conditions** — Count shots that **meet** (success) or **violate** (fail) criteria. Inclusive bounds.
+- **Conditions** — Count shots that **meet** (success) or **violate** (fail) criteria. Inclusive bounds.
 
 ---
 
@@ -72,13 +73,15 @@ Top-level shape:
 {
   "$schema": "../schema/latest/app-scripting.schema.json",
   "version": "1.0.0",
-  "activities": [ /* Activity[] */ ]
+  "activities": [
+    /* Activity[] */
+  ]
 }
 ```
 
-* `"$schema"` (optional) helps editors/CI validate.
-* `version` is an authoring label (does not change validator behavior).
-* `activities` is an ordered list; activities run sequentially.
+- `"$schema"` (optional) helps editors/CI validate.
+- `version` is an authoring label (does not change validator behavior).
+- `activities` is an ordered list; activities run sequentially.
 
 ---
 
@@ -90,9 +93,19 @@ Top-level shape:
 {
   "nodeType": "RangeAnalysisScriptedActivity",
   "id": "ra-1",
-  "introMessage": { "header": "Welcome to Driving Range", "description": "", "seconds": 3 },
-  "endMessage":   { "header": "Driving Range Activity ended", "description": "", "seconds": 3 },
-  "steps": [ /* RangeAnalysisScriptedStep[] */ ]
+  "introMessage": {
+    "header": "Welcome to Driving Range",
+    "description": "",
+    "seconds": 3
+  },
+  "endMessage": {
+    "header": "Driving Range Activity ended",
+    "description": "",
+    "seconds": 3
+  },
+  "steps": [
+    /* RangeAnalysisScriptedStep[] */
+  ]
 }
 ```
 
@@ -102,9 +115,19 @@ Top-level shape:
 {
   "nodeType": "PerformanceCenterScriptedActivity",
   "id": "pc-1",
-  "introMessage": { "header": "Welcome to Performance Center", "description": "", "seconds": 3 },
-  "endMessage":   { "header": "Performance Center Activity ended", "description": "", "seconds": 3 },
-  "steps": [ /* PerformanceCenterScriptedStep[] */ ]
+  "introMessage": {
+    "header": "Welcome to Performance Center",
+    "description": "",
+    "seconds": 3
+  },
+  "endMessage": {
+    "header": "Performance Center Activity ended",
+    "description": "",
+    "seconds": 3
+  },
+  "steps": [
+    /* PerformanceCenterScriptedStep[] */
+  ]
 }
 ```
 
@@ -118,9 +141,13 @@ Top-level shape:
 {
   "nodeType": "RangeAnalysisScriptedStep",
   "id": "ra-step-1",
-  "introMessage":   { "header": "Hit 5 long shots", "description": "3 over 200m, straight", "seconds": 10 },
+  "introMessage": {
+    "header": "Hit 5 long shots",
+    "description": "3 over 200m, straight",
+    "seconds": 10
+  },
   "successMessage": { "header": "Great!", "description": "", "seconds": 3 },
-  "failMessage":    { "header": "Try again", "description": "", "seconds": 3 },
+  "failMessage": { "header": "Try again", "description": "", "seconds": 3 },
 
   "logic": {
     "nodeType": "RangeAnalysisScriptedLogic",
@@ -156,9 +183,13 @@ Top-level shape:
 {
   "nodeType": "PerformanceCenterScriptedStep",
   "id": "pc-ap-step-1",
-  "introMessage":   { "header": "Get 3 within 3m", "description": "", "seconds": 5 },
+  "introMessage": {
+    "header": "Get 3 within 3m",
+    "description": "",
+    "seconds": 5
+  },
   "successMessage": { "header": "Success!", "description": "", "seconds": 3 },
-  "failMessage":    { "header": "Failed", "description": "", "seconds": 3 },
+  "failMessage": { "header": "Failed", "description": "", "seconds": 3 },
 
   "logic": {
     "nodeType": "PerformanceCenterScriptedLogic",
@@ -196,9 +227,13 @@ Top-level shape:
 {
   "nodeType": "PerformanceCenterScriptedStep",
   "id": "pc-ts-step-1",
-  "introMessage":   { "header": "Hit 5 shots. No goal", "description": "", "seconds": 5 },
+  "introMessage": {
+    "header": "Hit 5 shots. No goal",
+    "description": "",
+    "seconds": 5
+  },
   "successMessage": { "header": "Success!", "description": "", "seconds": 3 },
-  "failMessage":    { "header": "Failed", "description": "", "seconds": 3 },
+  "failMessage": { "header": "Failed", "description": "", "seconds": 3 },
 
   "logic": {
     "nodeType": "PerformanceCenterScriptedLogic",
@@ -210,8 +245,14 @@ Top-level shape:
       "gender": "Male",
       "courseDistance": 7200
     },
-    "successCondition": { "nodeType": "PerformanceCenterScriptedConditions", "shots": 5 },
-    "failCondition":    { "nodeType": "PerformanceCenterScriptedConditions", "shots": 5 },
+    "successCondition": {
+      "nodeType": "PerformanceCenterScriptedConditions",
+      "shots": 5
+    },
+    "failCondition": {
+      "nodeType": "PerformanceCenterScriptedConditions",
+      "shots": 5
+    },
     "canRetry": true,
     "skipOnSuccess": true
   },
@@ -228,31 +269,30 @@ Per step:
 
 1. Show `introMessage` for `seconds`.
 2. For each shot:
+   - Evaluate **success** and **fail** **per-shot** clauses (if present).
+   - If a shot meets the success clauses, increment `successCount`.
+   - If a shot meets the fail clauses, increment `failCount`.
 
-   * Evaluate **success** and **fail** **per-shot** clauses (if present).
-   * If a shot meets the success clauses, increment `successCount`.
-   * If a shot meets the fail clauses, increment `failCount`.
 3. After each shot:
+   - If `successCount >= successCondition.shots` → **success**:
+     - Show `successMessage`
+     - If `skipOnSuccess: true`, **end step immediately** and continue the activity.
 
-   * If `successCount >= successCondition.shots` → **success**:
+   - Else if `failCount >= failCondition.shots` → **failure**:
+     - Show `failMessage`
+     - If `canRetry: true`, allow immediate retry (counters reset); otherwise continue the activity as failed.
 
-     * Show `successMessage`
-     * If `skipOnSuccess: true`, **end step immediately** and continue the activity.
-   * Else if `failCount >= failCondition.shots` → **failure**:
-
-     * Show `failMessage`
-     * If `canRetry: true`, allow immediate retry (counters reset); otherwise continue the activity as failed.
 4. If neither threshold is reached, keep collecting shots until one is.
 
 **Notes**
 
-* `conditions` use **inclusive** bounds (`min`/`max`).
-* If `conditions` is omitted, **every shot counts** toward that threshold.
-* `conditionType` controls how multiple clauses combine **for a single shot**:
+- `conditions` use **inclusive** bounds (`min`/`max`).
+- If `conditions` is omitted, **every shot counts** toward that threshold.
+- `conditionType` controls how multiple clauses combine **for a single shot**:
+  - `"And"` → shot must satisfy **all** clauses
+  - `"Or"` → shot must satisfy **any** clause
 
-  * `"And"` → shot must satisfy **all** clauses
-  * `"Or"` → shot must satisfy **any** clause
-* You can model **instant fail** with `failCondition.shots: 1` and an appropriate clause.
+- You can model **instant fail** with `failCondition.shots: 1` and an appropriate clause.
 
 ---
 
@@ -309,33 +349,34 @@ Per step:
 
 ## Messaging Guidelines
 
-* Keep `header` concise and action-oriented.
-* Put units and pass/fail hints in `description` when helpful.
-* Use short durations (`seconds` ≤ 10) to avoid blocking flow.
+- Keep `header` concise and action-oriented.
+- Put units and pass/fail hints in `description` when helpful.
+- Use short durations (`seconds` ≤ 10) to avoid blocking flow.
 
 ---
 
 ## IDs & Naming
 
-* Pattern: `^[a-z][a-z0-9-]*$`
-* Suggested prefixes:
+- Pattern: `^[a-z][a-z0-9-]*$`
+- Suggested prefixes:
+  - Activities: `ra-1`, `pc-1`
+  - Steps: `ra-step-1`, `pc-ap-step-1`, `pc-ts-step-1`
 
-  * Activities: `ra-1`, `pc-1`
-  * Steps: `ra-step-1`, `pc-ap-step-1`, `pc-ts-step-1`
-* Keep IDs stable for analytics/logging.
+- Keep IDs stable for analytics/logging.
 
 ---
 
 ## Validation Workflow
 
-* **Node/AJV**:
+- **Node/AJV**:
 
   ```bash
   npm install           # first time (creates lockfile)
   npm run validate      # validates examples/**/*.json
   npm run format        # prettier on schema/examples/docs
   ```
-* **Python/jsonschema**:
+
+- **Python/jsonschema**:
 
   ```bash
   pip install -r requirements.txt
@@ -348,35 +389,34 @@ CI runs the same validation on PRs and pushes to `main`.
 
 ## Troubleshooting
 
-* **“data must NOT have additional properties”**
+- **“data must NOT have additional properties”**
   Likely a stray field or `$schema` at the root while `additionalProperties:false`.
   → Either remove `$schema` from the instance or keep it and ensure the schema lists `$schema` in `properties` (this repo already does).
 
-* **“must match exactly one schema in oneOf” on PC `setup`**
+- **“must match exactly one schema in oneOf” on PC `setup`**
   Ensure `nodeType` matches the chosen setup object exactly:
+  - `PerformanceCenterApproachScriptedSetup` **or**
+  - `PerformanceCenterTeeShotsScriptedSetup`
 
-  * `PerformanceCenterApproachScriptedSetup` **or**
-  * `PerformanceCenterTeeShotsScriptedSetup`
-
-* **Draft 2020-12 error in AJV**
+- **Draft 2020-12 error in AJV**
   Use the 2020 build in `tools/validate.js` (`import Ajv2020 from "ajv/dist/2020.js"`).
 
-* **Strict mode `required` warnings**
+- **Strict mode `required` warnings**
   Our validator disables strict (`strict:false`). If you enable strict, mirror property declarations inside `anyOf` branches.
 
 ---
 
 ## Versioning & `latest`
 
-* Versioned schemas live under `schema/<semver>/…` (e.g., `1.0.0`).
-* `schema/latest/app-scripting.schema.json` should either:
-
-  * be a **pointer file**:
+- Versioned schemas live under `schema/<semver>/…` (e.g., `1.0.0`).
+- `schema/latest/app-scripting.schema.json` should either:
+  - be a **pointer file**:
 
     ```json
     { "$ref": "../1.0.0/app-scripting.schema.json" }
     ```
-  * or a **copy** of the chosen version.
+
+  - or a **copy** of the chosen version.
 
 When you introduce **breaking changes**, bump **MAJOR**, keep older versions for backward compatibility, and update docs.
 
@@ -384,11 +424,11 @@ When you introduce **breaking changes**, bump **MAJOR**, keep older versions for
 
 ## Example Library
 
-* `examples/range-analysis/long-straight-driver.json`
-* `examples/range-analysis/curved-driver-challenge.json`
-* `examples/performance-center/approach-three-within-3m.json`
-* `examples/performance-center/tee-five-shots-no-goal.json`
-* `examples/composite-flows/range-to-pc-sequence.json`
+- `examples/range-analysis/long-straight-driver.json`
+- `examples/range-analysis/curved-driver-challenge.json`
+- `examples/performance-center/approach-three-within-3m.json`
+- `examples/performance-center/tee-five-shots-no-goal.json`
+- `examples/composite-flows/range-to-pc-sequence.json`
 
 Each example begins with:
 
@@ -402,13 +442,13 @@ Adjust relative depth as needed.
 
 ## Best Practices Checklist
 
-* [ ] Use clear, stable IDs (`ra-step-1`, etc.)
-* [ ] Keep messages short; include units in `description`
-* [ ] Prefer **inclusive** bounds and explicit `conditionType`
-* [ ] Use `failCondition.shots: 1` for instant-fail rules
-* [ ] Set `skipOnSuccess: true` to end steps as soon as goals are met
-* [ ] Keep setups minimal but complete (required fields only)
-* [ ] Validate locally before committing; let CI guard the repo
+- [ ] Use clear, stable IDs (`ra-step-1`, etc.)
+- [ ] Keep messages short; include units in `description`
+- [ ] Prefer **inclusive** bounds and explicit `conditionType`
+- [ ] Use `failCondition.shots: 1` for instant-fail rules
+- [ ] Set `skipOnSuccess: true` to end steps as soon as goals are met
+- [ ] Keep setups minimal but complete (required fields only)
+- [ ] Validate locally before committing; let CI guard the repo
 
 ---
 
@@ -425,4 +465,3 @@ Yes—bounds are inclusive. Equal `min==max` is an exact match.
 
 **Q: Can I omit `conditions`?**
 Yes—then **every shot counts** toward that threshold.
-

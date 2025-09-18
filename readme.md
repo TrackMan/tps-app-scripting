@@ -8,7 +8,7 @@ Define and validate JSON scripts that orchestrate multi-app training flows acros
 
 * **Schema:** JSON Schema (Draft 2020-12) at `schema/latest/app-scripting.schema.json`
 * **Docs:** Authoring guide, schema reference, and example scripts
-* **Tooling:** Node (AJV) or Python validators + CI workflow
+* **Tooling:** Node (AJV) validators + CI workflow
 
 ---
 
@@ -34,13 +34,11 @@ app-scripting/
 │  └─ composite-flows/
 ├─ tools/
 │  ├─ validate.js
-│  ├─ validate.py
 │  └─ format.js
 ├─ scripts/
 │  ├─ validate-all.sh
 │  └─ new-example.sh
 ├─ package.json
-├─ requirements.txt
 └─ .github/workflows/validate.yml
 ```
 
@@ -92,9 +90,7 @@ In any `examples/**.json`:
 
 ## Validate scripts
 
-You can use **Node (AJV)** or **Python**. Both scan `examples/**/*.json` and validate against `schema/latest/app-scripting.schema.json`.
-
-### Option A — Node (AJV)
+Use **Node (AJV)** to scan `examples/**/*.json` and validate against `schema/latest/app-scripting.schema.json`.
 
 1. Install:
 
@@ -112,20 +108,6 @@ npm run validate
 
 ```bash
 npm run format
-```
-
-### Option B — Python
-
-1. Install:
-
-```bash
-pip install -r requirements.txt
-```
-
-2. Validate:
-
-```bash
-python tools/validate.py
 ```
 
 ---
@@ -221,7 +203,7 @@ See `docs/authoring-guide.md` and `docs/schema-reference.md` for the full spec a
 ## Contributing
 
 1. Add or update examples in `examples/**`.
-2. Run validation locally (`npm run validate` or `python tools/validate.py`).
+2. Run validation locally (`npm run validate`).
 3. Open a PR. CI must pass.
 
 Coding style:

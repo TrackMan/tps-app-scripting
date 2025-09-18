@@ -14,13 +14,7 @@ coverage/
 .tmp/
 .temp/
 
-# Python (optional validator)
-__pycache__/
-*.py[cod]
-*.pyc
-.python-version
-.venv/
-venv/
+# Environment files
 .env
 .env.*.local
 .pytest_cache/

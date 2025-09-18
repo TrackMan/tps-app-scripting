@@ -18,3 +18,4 @@
   `schema/latest/app-scripting.schema.json`
   ```json
   { "$ref": "../1.0.0/app-scripting.schema.json" }
+  ```
