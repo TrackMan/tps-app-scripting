@@ -15,7 +15,19 @@
       "description": "Author-supplied semantic version of the script payload format used by this file (does not change validator behavior).",
       "pattern": "^\\d+\\.\\d+\\.\\d+$",
       "default": "1.0.0",
-      "examples": ["1.0.0"]
+      "examples": [
+        "1.0.0"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the script."
+    },
+    "startMode": {
+      "$ref": "#/$defs/StartMode"
+    },
+    "endMode": {
+      "$ref": "#/$defs/EndMode"
     },
     "activities": {
       "type": "array",
@@ -26,15 +38,38 @@
       }
     }
   },
-  "required": ["activities"],
+  "required": [
+    "activities"
+  ],
   "$defs": {
+    "StartMode": {
+      "type": "string",
+      "enum": [
+        "Append",
+        "Overwrite"
+      ],
+      "default": "Overwrite",
+      "description": "Defines how the script should start.\n- Append: add to existing data\n- Overwrite: replace existing data"
+    },
+    "EndMode": {
+      "type": "string",
+      "enum": [
+        "Wait",
+        "Exit"
+      ],
+      "default": "Exit",
+      "description": "Defines how the script should end.\n- Wait: wait for user interaction\n- Exit: automatically exit"
+    },
     "IdString": {
       "type": "string",
       "description": "Stable identifier for activities/steps. Lowercase, kebab/number friendly for logs and selectors.",
       "pattern": "^[a-z][a-z0-9-]*$",
-      "examples": ["ra-1", "ra-step-2", "pc-ap-step-1"]
+      "examples": [
+        "ra-1",
+        "ra-step-2",
+        "pc-ap-step-1"
+      ]
     },
-
     "Message": {
       "type": "object",
       "description": "Timed banner/message shown by the host app (intro/success/fail/end).",
@@ -57,23 +92,61 @@
           "description": "Display duration in seconds. 0 hides instantly after render."
         }
       },
-      "required": ["header", "seconds"]
+      "required": [
+        "header",
+        "seconds"
+      ]
     },
-
     "ConditionType": {
       "type": "string",
-      "enum": ["And", "Or"],
-      "default": "And",
-      "description": "How to combine multiple per-shot condition clauses for a single shot.\n- And: all clauses must pass for the shot to qualify.\n- Or: any one clause passing qualifies the shot."
+      "enum": [
+        "",
+        "And",
+        "Or"
+      ],
+      "default": "",
+      "description": "How to combine multiple per-shot condition clauses for a single shot.\n- (empty): no condition type specified (for when no conditions are present)\n- And: all clauses must pass for the shot to qualify.\n- Or: any one clause passing qualifies the shot."
     },
-
     "ParameterName": {
       "description": "Per-shot metric name evaluated in a clause. Engine-defined; open list.\nTypical: Total (m), Curve (m; left negative, right positive), FromPin (m), StrokesGained (Δ strokes vs baseline).",
       "type": "string",
-      "pattern": "^[A-Za-z][A-Za-z0-9]*$",
-      "examples": ["Total", "Curve", "FromPin", "StrokesGained"]
+      "enum": [
+        "ClubSpeed",
+        "AttackAngle",
+        "ClubPath",
+        "DynamicLoft",
+        "FaceAngle",
+        "DynamicLie",
+        "ImpactHeight",
+        "SpinLoft",
+        "FaceToPath",
+        "SwingPlane",
+        "SwingDirection",
+        "LowPoint",
+        "ImpactOffset",
+        "Curve",
+        "Height",
+        "Carry",
+        "Total",
+        "Side",
+        "SideTotal",
+        "LandingAngle",
+        "FromPin",
+        "BallSpeed",
+        "SmashFactor",
+        "LaunchAngle",
+        "LaunchDirection",
+        "SpinRate",
+        "SpinAxis",
+        "StrokesGained"
+      ],
+      "examples": [
+        "Total",
+        "Curve",
+        "FromPin",
+        "StrokesGained"
+      ]
     },
-
     "ConditionClause": {
       "type": "object",
       "description": "Single per-shot check. Bounds are inclusive. If both min and max are set and equal → exact match.",
@@ -92,15 +165,38 @@
           "description": "Inclusive upper bound. Omit if not needed."
         }
       },
-      "required": ["parameter"],
-      "anyOf": [{ "required": ["min"] }, { "required": ["max"] }],
+      "required": [
+        "parameter"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "min"
+          ]
+        },
+        {
+          "required": [
+            "max"
+          ]
+        }
+      ],
       "examples": [
-        { "parameter": "Total", "min": 200 },
-        { "parameter": "Curve", "min": -3, "max": 3 },
-        { "parameter": "Curve", "min": 10, "max": 10 }
+        {
+          "parameter": "Total",
+          "min": 200
+        },
+        {
+          "parameter": "Curve",
+          "min": -3,
+          "max": 3
+        },
+        {
+          "parameter": "Curve",
+          "min": 10,
+          "max": 10
+        }
       ]
     },
-
     "RangeAnalysisScriptedConditions": {
       "type": "object",
       "description": "Success/fail condition for Range Analysis steps. Counts shots that pass the per-shot clauses (if provided).",
@@ -115,17 +211,23 @@
           "minimum": 1,
           "description": "Threshold count.\n- For success: number of qualifying shots needed to pass.\n- For fail: number of violating shots that triggers failure."
         },
-        "conditionType": { "$ref": "#/$defs/ConditionType" },
+        "conditionType": {
+          "$ref": "#/$defs/ConditionType"
+        },
         "conditions": {
           "type": "array",
           "description": "Per-shot clauses. If omitted, any shot counts toward the threshold.",
-          "minItems": 1,
-          "items": { "$ref": "#/$defs/ConditionClause" }
+          "minItems": 0,
+          "items": {
+            "$ref": "#/$defs/ConditionClause"
+          }
         }
       },
-      "required": ["nodeType", "shots"]
+      "required": [
+        "nodeType",
+        "shots"
+      ]
     },
-
     "PerformanceCenterScriptedConditions": {
       "type": "object",
       "description": "Success/fail condition for Performance Center steps. Same semantics as Range Analysis conditions.",
@@ -140,17 +242,23 @@
           "minimum": 1,
           "description": "Threshold count (see RangeAnalysisScriptedConditions.shots)."
         },
-        "conditionType": { "$ref": "#/$defs/ConditionType" },
+        "conditionType": {
+          "$ref": "#/$defs/ConditionType"
+        },
         "conditions": {
           "type": "array",
           "description": "Per-shot clauses. If omitted, any shot counts toward the threshold.",
-          "minItems": 1,
-          "items": { "$ref": "#/$defs/ConditionClause" }
+          "minItems": 0,
+          "items": {
+            "$ref": "#/$defs/ConditionClause"
+          }
         }
       },
-      "required": ["nodeType", "shots"]
+      "required": [
+        "nodeType",
+        "shots"
+      ]
     },
-
     "RangeAnalysisScriptedSetup": {
       "type": "object",
       "description": "Environment for a Range Analysis step.",
@@ -163,6 +271,46 @@
         "club": {
           "type": "string",
           "minLength": 1,
+          "enum": [
+            "None",
+            "Drv",
+            "_2W",
+            "_3W",
+            "_4W",
+            "_5W",
+            "_6W",
+            "_7W",
+            "_8W",
+            "_9W",
+            "_1H",
+            "_2H",
+            "_3H",
+            "_4H",
+            "_5H",
+            "_6H",
+            "_7H",
+            "_8H",
+            "_9H",
+            "_1I",
+            "_2I",
+            "_3I",
+            "_4I",
+            "_5I",
+            "_6I",
+            "_7I",
+            "_8I",
+            "_9I",
+            "_PW",
+            "_SW",
+            "_LW",
+            "_50W",
+            "_52W",
+            "_54W",
+            "_56W",
+            "_58W",
+            "_60W",
+            "Putt"
+          ],
           "description": "Club code (e.g., Drv, 7i, Wdg)."
         },
         "distance": {
@@ -171,9 +319,12 @@
           "description": "Target/reference distance in meters."
         }
       },
-      "required": ["nodeType", "club", "distance"]
+      "required": [
+        "nodeType",
+        "club",
+        "distance"
+      ]
     },
-
     "PerformanceCenterApproachScriptedSetup": {
       "type": "object",
       "description": "Approach-shot scenario configuration in Performance Center.",
@@ -195,7 +346,11 @@
         },
         "playerCategory": {
           "type": "string",
-          "enum": ["Handicap", "PGA", "LPGA"],
+          "enum": [
+            "Handicap",
+            "PGA",
+            "LPGA"
+          ],
           "default": "Handicap",
           "description": "Baseline cohort for strokes-gained and contours."
         },
@@ -207,7 +362,11 @@
         },
         "gender": {
           "type": "string",
-          "enum": ["Male", "Female", "Unspecified"],
+          "enum": [
+            "Male",
+            "Female",
+            "Unspecified"
+          ],
           "default": "Unspecified",
           "description": "Baseline cohort dimension."
         },
@@ -233,7 +392,6 @@
         "maxDistance"
       ]
     },
-
     "PerformanceCenterTeeShotsScriptedSetup": {
       "type": "object",
       "description": "Tee-shot scenario configuration in Performance Center.",
@@ -250,7 +408,11 @@
         },
         "playerCategory": {
           "type": "string",
-          "enum": ["Handicap", "PGA", "LPGA"],
+          "enum": [
+            "Handicap",
+            "PGA",
+            "LPGA"
+          ],
           "default": "Handicap",
           "description": "Baseline cohort for strokes-gained and contours."
         },
@@ -262,7 +424,11 @@
         },
         "gender": {
           "type": "string",
-          "enum": ["Male", "Female", "Unspecified"],
+          "enum": [
+            "Male",
+            "Female",
+            "Unspecified"
+          ],
           "default": "Unspecified",
           "description": "Baseline cohort dimension."
         },
@@ -282,7 +448,6 @@
         "courseDistance"
       ]
     },
-
     "RangeAnalysisScriptedLogic": {
       "type": "object",
       "description": "Evaluation logic for a Range Analysis step: setup + success/fail conditions + flow flags.",
@@ -324,7 +489,6 @@
         "skipOnSuccess"
       ]
     },
-
     "PerformanceCenterScriptedLogic": {
       "type": "object",
       "description": "Evaluation logic for a Performance Center step: setup + success/fail conditions + flow flags.",
@@ -336,8 +500,12 @@
         },
         "setup": {
           "oneOf": [
-            { "$ref": "#/$defs/PerformanceCenterApproachScriptedSetup" },
-            { "$ref": "#/$defs/PerformanceCenterTeeShotsScriptedSetup" }
+            {
+              "$ref": "#/$defs/PerformanceCenterApproachScriptedSetup"
+            },
+            {
+              "$ref": "#/$defs/PerformanceCenterTeeShotsScriptedSetup"
+            }
           ],
           "description": "Pick exactly one setup variant matching the step scenario."
         },
@@ -369,7 +537,6 @@
         "skipOnSuccess"
       ]
     },
-
     "RangeAnalysisScriptedUI": {
       "type": "object",
       "description": "UI hints/overrides for Range Analysis. Empty object means defaults.",
@@ -380,9 +547,10 @@
           "description": "Discriminator. Must be exactly this value."
         }
       },
-      "required": ["nodeType"]
+      "required": [
+        "nodeType"
+      ]
     },
-
     "PerformanceCenterScriptedUI": {
       "type": "object",
       "description": "UI hints/overrides for Performance Center. Empty object means defaults.",
@@ -393,9 +561,10 @@
           "description": "Discriminator. Must be exactly this value."
         }
       },
-      "required": ["nodeType"]
+      "required": [
+        "nodeType"
+      ]
     },
-
     "RangeAnalysisScriptedStep": {
       "type": "object",
       "description": "One step in a Range Analysis activity.",
@@ -440,7 +609,6 @@
         "ui"
       ]
     },
-
     "PerformanceCenterScriptedStep": {
       "type": "object",
       "description": "One step in a Performance Center activity.",
@@ -485,7 +653,6 @@
         "ui"
       ]
     },
-
     "RangeAnalysisScriptedActivity": {
       "type": "object",
       "description": "Activity targeting the Range Analysis app. Steps run in order.",
@@ -511,12 +678,19 @@
           "type": "array",
           "description": "Ordered Range Analysis steps.",
           "minItems": 1,
-          "items": { "$ref": "#/$defs/RangeAnalysisScriptedStep" }
+          "items": {
+            "$ref": "#/$defs/RangeAnalysisScriptedStep"
+          }
         }
       },
-      "required": ["nodeType", "id", "introMessage", "endMessage", "steps"]
+      "required": [
+        "nodeType",
+        "id",
+        "introMessage",
+        "endMessage",
+        "steps"
+      ]
     },
-
     "PerformanceCenterScriptedActivity": {
       "type": "object",
       "description": "Activity targeting the Performance Center app. Steps run in order.",
@@ -542,16 +716,27 @@
           "type": "array",
           "description": "Ordered Performance Center steps.",
           "minItems": 1,
-          "items": { "$ref": "#/$defs/PerformanceCenterScriptedStep" }
+          "items": {
+            "$ref": "#/$defs/PerformanceCenterScriptedStep"
+          }
         }
       },
-      "required": ["nodeType", "id", "introMessage", "endMessage", "steps"]
+      "required": [
+        "nodeType",
+        "id",
+        "introMessage",
+        "endMessage",
+        "steps"
+      ]
     },
-
     "Activity": {
       "oneOf": [
-        { "$ref": "#/$defs/RangeAnalysisScriptedActivity" },
-        { "$ref": "#/$defs/PerformanceCenterScriptedActivity" }
+        {
+          "$ref": "#/$defs/RangeAnalysisScriptedActivity"
+        },
+        {
+          "$ref": "#/$defs/PerformanceCenterScriptedActivity"
+        }
       ],
       "description": "Activity union. Exactly one of the supported activity types."
     }

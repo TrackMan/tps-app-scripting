@@ -3,6 +3,13 @@ import { ScriptData, Activity, Step } from '../types';
 import { TreeView } from './TreeView';
 import { BaySelector } from './BaySelector';
 import { LocationSelector } from './LocationSelector';
+import { 
+  LoadScriptButton, 
+  DownloadButton, 
+  CloneSelectedButton, 
+  AddActivityButton, 
+  AddStepButton 
+} from './buttons';
 
 interface Bay {
   id: string;
@@ -113,23 +120,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="file-operations-section">
         <h3 className="section-title">File Operations</h3>
         <div className="file-buttons">
-          <button className="tree-btn load-btn" onClick={onLoadScript}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-            </svg>
-            Load Script
-          </button>
-          <button 
-            className="tree-btn download-btn" 
-            disabled={!isValid}
-            onClick={onDownloadScript}
-            title={!isValid ? "Fix validation errors before downloading" : "Download script"}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
-            </svg>
-            Download
-          </button>
+          <LoadScriptButton onClick={onLoadScript} />
+          <DownloadButton isValid={isValid} onClick={onDownloadScript} />
         </div>
       </div>
 
@@ -168,36 +160,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="edit-operations-section">
         <h3 className="section-title">Edit Operations</h3>
         <div className="edit-buttons">
-          <button
-            className="tree-btn"
-            disabled={!selectedNode || !isValid}
-            onClick={onCloneSelected}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/>
-            </svg>
-            Clone Selected
-          </button>
-          <button className="tree-btn" onClick={onShowActivityDialog}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M11,15H13V17H15V15H17V13H15V11H13V13H11V15Z"/>
-            </svg>
-            Add Activity
-          </button>
-          <button
-            className="tree-btn"
-            disabled={!parentActivityForAdd}
-            onClick={() => {
-              if (parentActivityForAdd) {
-                onShowStepDialog();
-              }
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
-            </svg>
-            Add Step
-          </button>
+          <CloneSelectedButton 
+            selectedNode={selectedNode} 
+            isValid={isValid} 
+            onClick={onCloneSelected} 
+          />
+          <AddActivityButton onClick={onShowActivityDialog} />
+          <AddStepButton 
+            parentActivityForAdd={parentActivityForAdd} 
+            onShowStepDialog={onShowStepDialog} 
+          />
         </div>
       </div>
       <TreeView

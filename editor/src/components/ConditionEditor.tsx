@@ -49,7 +49,28 @@ export const ConditionEditor: React.FC<ConditionEditorProps> = ({ label, conditi
         {(c.conditions || []).length === 0 && <div className="cond-empty">No parameter constraints</div>}
         {(c.conditions || []).map((row, i) => (
           <div key={i} className="cond-row">
-            <input className="cond-input" placeholder="parameter" value={row.parameter || ''} onChange={e => updateConditionRow(i, { parameter: e.target.value })} />
+            <select className="cond-input" value={row.parameter || ''} onChange={e => updateConditionRow(i, { parameter: e.target.value })} aria-label="Parameter">
+              <option value="">Select parameter...</option>
+              <option value="AttackAngle">AttackAngle</option>
+              <option value="BallSpeed">BallSpeed</option>
+              <option value="CarryDistance">CarryDistance</option>
+              <option value="ClubPath">ClubPath</option>
+              <option value="ClubSpeed">ClubSpeed</option>
+              <option value="Curve">Curve</option>
+              <option value="DynamicLoft">DynamicLoft</option>
+              <option value="FaceAngle">FaceAngle</option>
+              <option value="FaceToPath">FaceToPath</option>
+              <option value="FromPin">FromPin</option>
+              <option value="Height">Height</option>
+              <option value="LandingAngle">LandingAngle</option>
+              <option value="LaunchAngle">LaunchAngle</option>
+              <option value="LaunchDirection">LaunchDirection</option>
+              <option value="Smash">Smash</option>
+              <option value="Spin">Spin</option>
+              <option value="SpinAxis">SpinAxis</option>
+              <option value="StrokesGained">StrokesGained</option>
+              <option value="Total">Total</option>
+            </select>
             <input className="cond-input-narrow" placeholder="min" type="number" value={row.min ?? ''} onChange={e => updateConditionRow(i, { min: e.target.value === '' ? undefined : Number(e.target.value) })} />
             <input className="cond-input-narrow" placeholder="max" type="number" value={row.max ?? ''} onChange={e => updateConditionRow(i, { max: e.target.value === '' ? undefined : Number(e.target.value) })} />
             <button className="cond-remove" onClick={() => removeRow(i)}>✕</button>

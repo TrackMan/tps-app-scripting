@@ -2,6 +2,7 @@ import React from 'react';
 import { Activity, Step, isActivity, isStep, ConditionGroup } from '../types';
 import { ConditionEditor } from './ConditionEditor';
 import { EditPanel } from './EditPanel';
+import { CollapsibleSection } from './CollapsibleSection';
 
 interface NodeDetailsPanelProps {
   selectedNode: Activity | Step | null;
@@ -30,33 +31,7 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
       <h2>Node Details</h2>
       {selectedNode ? (
         <>
-          {isStepSelected && (selectedNode as Step).logic && (
-            <div className="logic-block">
-              <h3>Logic</h3>
-              <ConditionEditor
-                label="Success Condition"
-                condition={(selectedNode as Step).logic.successCondition as ConditionGroup}
-                showConditionType={true}
-                onChange={(c) => {
-                  const s = selectedNode as Step; 
-                  updateStep(s.id, { logic: { ...s.logic, successCondition: c } });
-                }}
-              />
-              <ConditionEditor
-                label="Fail Condition"
-                condition={(selectedNode as Step).logic.failCondition as ConditionGroup}
-                showConditionType={true}
-                onChange={(c) => {
-                  const s = selectedNode as Step; 
-                  updateStep(s.id, { logic: { ...s.logic, failCondition: c } });
-                }}
-              />
-              <div className="logic-flags">
-                <label>Can Retry: <input type="checkbox" checked={!!(selectedNode as Step).logic.canRetry} onChange={e => { const s = selectedNode as Step; updateStep(s.id, { logic: { ...s.logic, canRetry: e.target.checked } }); }} /></label>
-                <label>Skip On Success: <input type="checkbox" checked={!!(selectedNode as Step).logic.skipOnSuccess} onChange={e => { const s = selectedNode as Step; updateStep(s.id, { logic: { ...s.logic, skipOnSuccess: e.target.checked } }); }} /></label>
-              </div>
-            </div>
-          )}
+          {/* For both activities and steps, show metadata first */}
           <EditPanel
             node={selectedNode}
             onChange={(patch: Partial<Activity> | Partial<Step>) => {
@@ -67,6 +42,33 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
               }
             }}
           />
+          {/* Step-only logic section follows metadata */}
+          {isStepSelected && (selectedNode as Step).logic && (
+            <CollapsibleSection title="Logic" className="logic-block" bodyClassName="logic-inner" defaultOpen persistKey={`${(selectedNode as Step).id}-logic`}>
+              <ConditionEditor
+                label="Success Condition"
+                condition={(selectedNode as Step).logic.successCondition as ConditionGroup}
+                showConditionType={true}
+                onChange={(c) => {
+                  const s = selectedNode as Step;
+                  updateStep(s.id, { logic: { ...s.logic, successCondition: c } });
+                }}
+              />
+              <ConditionEditor
+                label="Fail Condition"
+                condition={(selectedNode as Step).logic.failCondition as ConditionGroup}
+                showConditionType={true}
+                onChange={(c) => {
+                  const s = selectedNode as Step;
+                  updateStep(s.id, { logic: { ...s.logic, failCondition: c } });
+                }}
+              />
+              <div className="logic-flags">
+                <label>Can Retry: <input type="checkbox" checked={!!(selectedNode as Step).logic.canRetry} onChange={e => { const s = selectedNode as Step; updateStep(s.id, { logic: { ...s.logic, canRetry: e.target.checked } }); }} /></label>
+                <label>Skip On Success: <input type="checkbox" checked={!!(selectedNode as Step).logic.skipOnSuccess} onChange={e => { const s = selectedNode as Step; updateStep(s.id, { logic: { ...s.logic, skipOnSuccess: e.target.checked } }); }} /></label>
+              </div>
+            </CollapsibleSection>
+          )}
           <pre>{JSON.stringify(selectedNode, null, 2)}</pre>
         </>
       ) : (

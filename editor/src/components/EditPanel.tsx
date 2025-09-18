@@ -1,5 +1,6 @@
 import React from 'react';
 import { Activity, Step, isActivity } from '../types';
+import { CollapsibleSection } from './CollapsibleSection';
 
 interface EditPanelProps {
   node: Activity | Step;
@@ -12,8 +13,14 @@ export const EditPanel: React.FC<EditPanelProps> = ({ node, onChange }) => {
   const endOrSuccess = isActivityNode ? (node as Activity).endMessage : (node as Step).successMessage; 
   
   return (
-    <div className="edit-panel">
-      <h3>Edit {isActivityNode ? 'Activity' : 'Step'} Metadata</h3>
+    <CollapsibleSection
+      key={`${isActivityNode ? 'activity' : 'step'}-${node.id}`}
+      title={`Edit ${isActivityNode ? 'Activity' : 'Step'} Metadata`}
+      className="edit-panel"
+      bodyClassName="edit-panel-body"
+      defaultOpen
+      persistKey={`${node.id}-meta`}
+    >
       <div className="edit-field">
         <label>ID <input value={node.id} onChange={e => onChange({ id: e.target.value })} /></label>
       </div>
@@ -33,6 +40,6 @@ export const EditPanel: React.FC<EditPanelProps> = ({ node, onChange }) => {
           <label>End Header <input value={endOrSuccess.header} onChange={e => onChange({ endMessage: { ...endOrSuccess, header: e.target.value } as any })} /></label>
         </div>
       )}
-    </div>
+    </CollapsibleSection>
   );
 };
