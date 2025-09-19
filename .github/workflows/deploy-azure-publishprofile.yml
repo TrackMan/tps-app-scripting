@@ -1,0 +1,38 @@
+name: Deploy to Azure App Service (Publish Profile)
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types:
+      - completed
+    branches: [ main ]
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: 'your-app-name'    # Replace with your App Service name
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/app-scripting-editor
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+    - name: Lowercase repository name
+      run: echo "IMAGE_NAME_LOWER=$(echo ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+    - name: Deploy to Azure Web App
+      id: deploy-to-webapp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        images: '${{ env.IMAGE_NAME_LOWER }}:latest'
+        slot-name: 'production'
