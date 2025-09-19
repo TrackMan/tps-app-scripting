@@ -2,9 +2,11 @@
 FROM node:18-alpine AS build
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-RUN npm install
+# Copy package files first for better Docker layer caching
+COPY package.json package-lock.json ./
+
+# Install dependencies (including dev dependencies needed for build)
+RUN npm ci
 
 # Copy source code
 COPY . .
@@ -16,7 +18,7 @@ RUN npm run build
 FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy custom nginx config if needed
+# Copy custom nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Expose port 80
