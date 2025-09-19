@@ -418,9 +418,9 @@
         },
         "hcp": {
           "type": "integer",
-          "minimum": -10,
-          "maximum": 54,
-          "description": "Player handicap used for baselines."
+          "minimum": 0,
+          "maximum": 15,
+          "description": "Player handicap used for baselines. Required only when playerCategory is 'Handicap'."
         },
         "gender": {
           "type": "string",
@@ -443,9 +443,22 @@
         "nodeType",
         "hole",
         "playerCategory",
-        "hcp",
         "gender",
         "courseDistance"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "playerCategory": {
+                "const": "Handicap"
+              }
+            }
+          },
+          "then": {
+            "required": ["hcp"]
+          }
+        }
       ]
     },
     "RangeAnalysisScriptedLogic": {

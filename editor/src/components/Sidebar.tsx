@@ -119,80 +119,82 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }
   return (
     <div className="tree-sidebar">
-      {/* File Operations Section */}
-      <CollapsibleSection
-        title="File Operations"
-        className="file-operations-section"
-        bodyClassName="file-buttons"
-        defaultOpen
-        persistKey="file-operations"
-      >
-        <LoadScriptButton onClick={onLoadScript} />
-        <DownloadButton isValid={isValid} onClick={onDownloadScript} />
-      </CollapsibleSection>
-
-      {/* Bay Operations Section */}
-      <CollapsibleSection
-        title="Bay Operations"
-        className="bay-operations-section"
-        bodyClassName="bay-buttons"
-        defaultOpen
-        persistKey="bay-operations"
-      >
-        <LocationSelector
-          selectedFacilityId={selectedFacilityId}
-          selectedLocationId={selectedLocationId}
-          persistedLocationId={persistedLocationId}
-          onLocationSelect={onLocationSelect}
-        />
-        <BaySelector
-          selectedFacilityId={selectedFacilityId}
-          selectedLocationId={selectedLocationId}
-          selectedBayId={selectedBayId}
-          persistedBayId={persistedBayId}
-          onBaySelect={onBaySelect}
-        />
-        <button
-          className="tree-btn execute-btn"
-          disabled={!canExecute || executing}
-          onClick={handleExecuteScript}
-          title={!isValid ? 'Script must be valid' : !selectedBayObj ? 'Select a bay first' : 'Execute script on bay'}
+      <div className="sidebar-content">
+        {/* File Operations Section */}
+        <CollapsibleSection
+          title="File Operations"
+          className="file-operations-section"
+          bodyClassName="file-buttons"
+          defaultOpen
+          persistKey="file-operations"
         >
-          {executing ? 'Executing...' : 'Execute Script'}
-        </button>
-        {execMessage && (
-          <div className="exec-status small-note">{execMessage}</div>
-        )}
-      </CollapsibleSection>
+          <LoadScriptButton onClick={onLoadScript} />
+          <DownloadButton isValid={isValid} onClick={onDownloadScript} />
+        </CollapsibleSection>
 
-      {/* Edit Operations Section */}
-      <CollapsibleSection
-        title="Edit Operations"
-        className="edit-operations-section"
-        bodyClassName="edit-buttons"
-        defaultOpen
-        persistKey="edit-operations"
-      >
-        <CloneSelectedButton 
-          selectedNode={selectedNode} 
-          isValid={isValid} 
-          onClick={onCloneSelected} 
-        />
-        <AddActivityButton onClick={onShowActivityDialog} />
-        <AddStepButton 
-          parentActivityForAdd={parentActivityForAdd} 
-          onShowStepDialog={onShowStepDialog} 
-        />
-        <TreeView
-          script={script}
-          selectedRef={selectedRef}
-          onSelectScript={onSelectScript}
-          onSelectActivity={onSelectActivity}
-          onSelectStep={onSelectStep}
-          onDeleteActivity={onDeleteActivity}
-          onDeleteStep={onDeleteStep}
-        />
-      </CollapsibleSection>
+        {/* Bay Operations Section */}
+        <CollapsibleSection
+          title="Bay Operations"
+          className="bay-operations-section"
+          bodyClassName="bay-buttons"
+          defaultOpen
+          persistKey="bay-operations"
+        >
+          <LocationSelector
+            selectedFacilityId={selectedFacilityId}
+            selectedLocationId={selectedLocationId}
+            persistedLocationId={persistedLocationId}
+            onLocationSelect={onLocationSelect}
+          />
+          <BaySelector
+            selectedFacilityId={selectedFacilityId}
+            selectedLocationId={selectedLocationId}
+            selectedBayId={selectedBayId}
+            persistedBayId={persistedBayId}
+            onBaySelect={onBaySelect}
+          />
+          <button
+            className="tree-btn execute-btn"
+            disabled={!canExecute || executing}
+            onClick={handleExecuteScript}
+            title={!isValid ? 'Script must be valid' : !selectedBayObj ? 'Select a bay first' : 'Execute script on bay'}
+          >
+            {executing ? 'Executing...' : 'Execute Script'}
+          </button>
+          {execMessage && (
+            <div className="exec-status small-note">{execMessage}</div>
+          )}
+        </CollapsibleSection>
+
+        {/* Edit Operations Section */}
+        <CollapsibleSection
+          title="Edit Operations"
+          className="edit-operations-section"
+          bodyClassName="edit-buttons"
+          defaultOpen
+          persistKey="edit-operations"
+        >
+          <CloneSelectedButton 
+            selectedNode={selectedNode} 
+            isValid={isValid} 
+            onClick={onCloneSelected} 
+          />
+          <AddActivityButton onClick={onShowActivityDialog} />
+          <AddStepButton 
+            parentActivityForAdd={parentActivityForAdd} 
+            onShowStepDialog={onShowStepDialog} 
+          />
+          <TreeView
+            script={script}
+            selectedRef={selectedRef}
+            onSelectScript={onSelectScript}
+            onSelectActivity={onSelectActivity}
+            onSelectStep={onSelectStep}
+            onDeleteActivity={onDeleteActivity}
+            onDeleteStep={onDeleteStep}
+          />
+        </CollapsibleSection>
+      </div>
       
       {/* Validation panel at bottom of sidebar */}
       <div className={`validation-panel-sidebar-bottom ${isValid ? 'ok' : 'fail'}`}> 

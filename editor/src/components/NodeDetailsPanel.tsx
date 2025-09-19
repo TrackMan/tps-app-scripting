@@ -3,6 +3,7 @@ import { Activity, Step, isActivity, isStep, ConditionGroup } from '../types';
 import { ConditionEditor } from './ConditionEditor';
 import { EditPanel } from './EditPanel';
 import { CollapsibleSection } from './CollapsibleSection';
+import { SetupEditor } from './SetupEditor';
 
 interface NodeDetailsPanelProps {
   selectedNode: Activity | Step | null;
@@ -45,6 +46,10 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
           {/* Step-only logic section follows metadata */}
           {isStepSelected && (selectedNode as Step).logic && (
             <CollapsibleSection title="Logic" className="logic-block" bodyClassName="logic-inner" defaultOpen persistKey={`${(selectedNode as Step).id}-logic`}>
+              <SetupEditor
+                step={selectedNode as Step}
+                onUpdateStep={updateStep}
+              />
               <ConditionEditor
                 label="Success Condition"
                 condition={(selectedNode as Step).logic.successCondition as ConditionGroup}

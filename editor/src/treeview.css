@@ -1,7 +1,7 @@
 /* Core Layout - Light Theme */
-html, body, #root { height:100%; font-family: system-ui, 'Segoe UI', Roboto, Oxygen, sans-serif; background:#f5f7fa; color:#2d3a45; margin:0; padding:0; }
-.app-container { display:flex; flex-direction:column; height:100vh; }
-.tree-flex { display:flex; flex:1; background: linear-gradient(135deg,#ffffff 0%, #f5f7fa 60%, #edf1f5 100%); }
+html, body, #root { height:100%; font-family: system-ui, 'Segoe UI', Roboto, Oxygen, sans-serif; background:#f5f7fa; color:#2d3a45; margin:0; padding:0; overflow:hidden; }
+.app-container { display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+.tree-flex { display:flex; flex:1; background: linear-gradient(135deg,#ffffff 0%, #f5f7fa 60%, #edf1f5 100%); min-height:0; }
 
 /* Top Bar */
 .top-bar { 
@@ -53,18 +53,27 @@ html, body, #root { height:100%; font-family: system-ui, 'Segoe UI', Roboto, Oxy
 }
 
 /* Sidebar */
-.tree-sidebar { width:340px; display:flex; flex-direction:column; background:#ffffff; border-right:1px solid #e2e8ef; box-shadow: 2px 0 6px -2px rgba(0,0,0,.06); position:relative; }
-.tree-container { padding:0 16px 40px; flex:1; overflow-y:auto; }
+.tree-sidebar { width:340px; display:flex; flex-direction:column; background:#ffffff; border-right:1px solid #e2e8ef; box-shadow: 2px 0 6px -2px rgba(0,0,0,.06); position:relative; min-height:0; }
+
+/* Scrollable content area for entire sidebar */
+.sidebar-content { flex:1; overflow-y:auto; min-height:0; padding:4px; }
+
+.tree-container { padding:0 0 40px; }
 
 /* Scrollbar styling (Webkit) */
-.tree-container::-webkit-scrollbar { width:10px; }
-.tree-container::-webkit-scrollbar-track { background:#ffffff; }
-.tree-container::-webkit-scrollbar-thumb { background:#d4dde4; border-radius:6px; }
-.tree-container::-webkit-scrollbar-thumb:hover { background:#c2ccd5; }
+.sidebar-content::-webkit-scrollbar { width:10px; }
+.sidebar-content::-webkit-scrollbar-track { background:#ffffff; }
+.sidebar-content::-webkit-scrollbar-thumb { background:#d4dde4; border-radius:6px; }
+.sidebar-content::-webkit-scrollbar-thumb:hover { background:#c2ccd5; }
 
 /* Sidebar Sections */
 .file-operations-section,
-.bay-operations-section,
+.bay-operations-section {
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .edit-operations-section {
   margin-bottom: 20px;
   width: 100%;
@@ -87,7 +96,15 @@ html, body, #root { height:100%; font-family: system-ui, 'Segoe UI', Roboto, Oxy
 }
 
 .file-buttons,
-.bay-buttons,
+.bay-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .edit-buttons {
   display: flex;
   flex-direction: column;
@@ -308,8 +325,8 @@ html, body, #root { height:100%; font-family: system-ui, 'Segoe UI', Roboto, Oxy
 
 /* Tree */
 ul { list-style:none; margin:0; padding:0; }
-.tree-container h2 { margin:0 0 10px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1.1px; color:#7b8a96; }
-.tree-section-header { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#8a949e; margin:8px 0 4px 0; padding:0 4px; }
+.tree-container h2 { margin:0 0 10px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1.1px; color:#7b8a96; padding:0 16px; }
+.tree-section-header { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#8a949e; margin:8px 0 4px 0; padding:0 20px; }
 
 /* Message Editor */
 .message-editor { 
@@ -330,7 +347,45 @@ ul { list-style:none; margin:0; padding:0; }
   border-bottom: 1px solid #d3dde5; 
 }
 
-.tree-activity, .tree-step { position:relative; display:flex; flex-direction:column; align-items:flex-start; padding:6px 10px 6px 12px; margin:2px 0; border-radius:6px; font-size:13px; line-height:1.2; cursor:pointer; transition:.12s background, .12s color, .12s box-shadow; flex:1; min-width:0; }
+/* Setup Editor */
+.setup-editor {
+  margin-bottom: 16px;
+}
+
+.setup-type-switch {
+  display: flex;
+  gap: 8px;
+}
+
+.setup-type-btn {
+  padding: 8px 16px;
+  border: 1px solid #d3dde5;
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #2d3a45;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-weight: 500;
+}
+
+.setup-type-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.setup-type-btn.active {
+  background: #ff7a00;
+  color: #ffffff;
+  border-color: #ff7a00;
+}
+
+.setup-type-btn.active:hover {
+  background: #ff8d26;
+  border-color: #ff8d26;
+}
+
+.tree-activity, .tree-step { position:relative; display:flex; flex-direction:column; align-items:flex-start; padding:6px 10px 6px 12px; margin:2px 2px; border-radius:6px; font-size:13px; line-height:1.2; cursor:pointer; transition:.12s background, .12s color, .12s box-shadow; flex:1; min-width:0; }
 .tree-activity { font-weight:600; color:#1d3647; background:#eef3f7; }
 .tree-step { margin-left:22px; color:#374c59; background:#f5f8fa; }
 
@@ -346,10 +401,16 @@ li ul { margin-left:14px; padding-left:14px; border-left:1px solid #d9e2ea; }
 .tree-step:before { content:'└'; position:absolute; left:-16px; color:#c4cfd7; }
 
 /* Selection */
-.tree-selected { outline:2px solid #ff9a40; background:#ffecdd !important; color:#5a2d00 !important; box-shadow:0 0 0 2px rgba(255,154,64,0.35); }
+.tree-selected { 
+  outline:2px solid #ff9a40; 
+  outline-offset: -1px;
+  background:#ffecdd !important; 
+  color:#5a2d00 !important; 
+  box-shadow:0 0 0 2px rgba(255,154,64,0.35); 
+}
 
 /* Main panel */
-.tree-main { flex:1; padding:30px 40px 44px; overflow-y:auto; background:linear-gradient(160deg,#ffffff 0%, #f5f7fa 70%, #eef2f6 100%); }
+.tree-main { flex:1; padding:30px 40px 44px; overflow-y:auto; background:linear-gradient(160deg,#ffffff 0%, #f5f7fa 70%, #eef2f6 100%); min-height:0; }
 .tree-main h2 { margin-top:0; font-weight:600; font-size:22px; letter-spacing:.4px; color:#1d2f3a; }
 
 /* Edit panel */
@@ -399,6 +460,8 @@ li ul { margin-left:14px; padding-left:14px; border-left:1px solid #d9e2ea; }
 .collapsible-body { animation:fadeSlide .18s ease; }
 /* hide when closed (collapsible adds .hidden class) */
 .collapsible-body.hidden { display:none; }
+
+
 @keyframes fadeSlide { from { opacity:0; transform:translateY(-4px);} to { opacity:1; transform:translateY(0);} }
 
 
@@ -543,6 +606,7 @@ pre::-webkit-scrollbar-thumb:hover { background:#c2ccd5; }
   display: flex;
   flex: 1;
   background: #ffffff;
+  min-height: 0;
 }
 
 .documentation-viewer {
