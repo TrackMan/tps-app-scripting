@@ -10,18 +10,37 @@ const formatNodeType = (nodeType: string): string => {
 
 interface TreeViewProps {
   script: ScriptData;
-  selectedRef: { kind: 'activity'; activityId: string } | { kind: 'step'; activityId: string; stepId: string } | null;
+  selectedRef: { kind: 'script' } | { kind: 'activity'; activityId: string } | { kind: 'step'; activityId: string; stepId: string } | null;
+  onSelectScript: () => void;
   onSelectActivity: (activityId: string) => void;
   onSelectStep: (activityId: string, stepId: string) => void;
   onDeleteActivity: (id: string) => void;
   onDeleteStep: (activityId: string, stepId: string) => void;
 }
 
-export const TreeView: React.FC<TreeViewProps> = ({ script, selectedRef, onSelectActivity, onSelectStep, onDeleteActivity, onDeleteStep }) => {
+export const TreeView: React.FC<TreeViewProps> = ({ script, selectedRef, onSelectScript, onSelectActivity, onSelectStep, onDeleteActivity, onDeleteStep }) => {
   return (
     <div className="tree-container">
-      <h2>Activities</h2>
+      <h2>Script Structure</h2>
       <ul>
+        {/* Root Script Node */}
+        <li>
+          <div className="tree-item-container">
+            <span className={"tree-activity" + (selectedRef && selectedRef.kind === 'script' ? ' tree-selected' : '')} onClick={() => onSelectScript()}>
+              <div className="tree-node-id">Script</div>
+              <div className="tree-node-type">Configuration</div>
+            </span>
+          </div>
+        </li>
+        
+        {/* Activities Section Header */}
+        {script.activities.length > 0 && (
+          <li>
+            <div className="tree-section-header">Activities</div>
+          </li>
+        )}
+        
+        {/* Activities at same level as Script */}
         {script.activities.map((activity, i) => (
           <li key={activity.id || i}>
             <div className="tree-item-container">

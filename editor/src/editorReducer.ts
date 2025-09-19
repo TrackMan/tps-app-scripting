@@ -3,7 +3,7 @@ import { normalizeActivity, normalizeStep } from './normalizer';
 
 export interface EditorState {
   script: ScriptData;
-  selectedRef: { kind: 'activity'; activityId: string } | { kind: 'step'; activityId: string; stepId: string } | null;
+  selectedRef: { kind: 'script' } | { kind: 'activity'; activityId: string } | { kind: 'step'; activityId: string; stepId: string } | null;
   validation: { isValid: boolean; errors: string[] };
 }
 
@@ -23,6 +23,7 @@ export type EditorAction =
   | { type: 'UPDATE_STEP'; stepId: string; patch: Partial<Step> }
   | { type: 'DELETE_ACTIVITY'; activityId: string }
   | { type: 'DELETE_STEP'; activityId: string; stepId: string }
+  | { type: 'SELECT_SCRIPT' }
   | { type: 'SELECT_ACTIVITY'; activityId: string }
   | { type: 'SELECT_STEP'; activityId: string; stepId: string }
   | { type: 'CLONE_SELECTED' }
@@ -106,6 +107,8 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
       const selectedRef = state.selectedRef && state.selectedRef.kind === 'step' && state.selectedRef.stepId === action.stepId ? null : state.selectedRef;
       return { ...state, script: { ...state.script, activities }, selectedRef };
     }
+    case 'SELECT_SCRIPT':
+      return { ...state, selectedRef: { kind: 'script' } };
     case 'SELECT_ACTIVITY':
       return { ...state, selectedRef: { kind: 'activity', activityId: action.activityId } };
     case 'SELECT_STEP':
@@ -113,6 +116,10 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
     case 'CLONE_SELECTED': {
       const ref = state.selectedRef;
       if (!ref) return state;
+      if (ref.kind === 'script') {
+        // Cannot clone script itself
+        return state;
+      }
       if (ref.kind === 'activity') {
         const act = findActivity(state.script, ref.activityId);
         if (act) {
@@ -121,19 +128,21 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         }
         return state;
       }
-      const stepFound = findStep(state.script, ref.stepId);
-      if (stepFound) {
-        const { parent, step } = stepFound;
-        const cloned = normalizeStep({ ...step, id: step.id + '-copy' }, parent.nodeType as any);
-        return {
-          ...state,
-          script: {
-            ...state.script,
-            activities: state.script.activities.map(a =>
-              a.id === parent.id ? { ...a, steps: [...a.steps, cloned] } : a
-            )
-          }
-        };
+      if (ref.kind === 'step') {
+        const stepFound = findStep(state.script, ref.stepId);
+        if (stepFound) {
+          const { parent, step } = stepFound;
+          const cloned = normalizeStep({ ...step, id: step.id + '-copy' }, parent.nodeType as any);
+          return {
+            ...state,
+            script: {
+              ...state.script,
+              activities: state.script.activities.map(a =>
+                a.id === parent.id ? { ...a, steps: [...a.steps, cloned] } : a
+              )
+            }
+          };
+        }
       }
       return state;
     }
@@ -147,10 +156,17 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
 export function getSelectedNode(state: EditorState): Activity | Step | null {
   const ref = state.selectedRef;
   if (!ref) return null;
+  if (ref.kind === 'script') {
+    // Script selection doesn't return a node, handled separately in App
+    return null;
+  }
   if (ref.kind === 'activity') {
     return state.script.activities.find(a => a.id === ref.activityId) || null;
   }
-  const parent = state.script.activities.find(a => a.id === ref.activityId);
-  if (!parent) return null;
-  return parent.steps.find(s => s.id === ref.stepId) || null;
+  if (ref.kind === 'step') {
+    const parent = state.script.activities.find(a => a.id === ref.activityId);
+    if (!parent) return null;
+    return parent.steps.find(s => s.id === ref.stepId) || null;
+  }
+  return null;
 }

@@ -46,7 +46,14 @@ export interface Activity extends BaseNode {
   steps: Step[];
 }
 
+// Enums matching schema definitions
+export type StartMode = 'Append' | 'Overwrite';
+export type EndMode = 'Wait' | 'Exit';
+
 export interface ScriptData {
+  id?: string;
+  startMode?: StartMode;
+  endMode?: EndMode;
   activities: Activity[];
 }
 

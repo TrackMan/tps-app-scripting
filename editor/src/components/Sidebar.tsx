@@ -3,6 +3,7 @@ import { ScriptData, Activity, Step } from '../types';
 import { TreeView } from './TreeView';
 import { BaySelector } from './BaySelector';
 import { LocationSelector } from './LocationSelector';
+import { CollapsibleSection } from './CollapsibleSection';
 import { 
   LoadScriptButton, 
   DownloadButton, 
@@ -24,7 +25,7 @@ interface Location {
 
 interface SidebarProps {
   script: ScriptData;
-  selectedRef: { kind: 'activity'; activityId: string } | { kind: 'step'; activityId: string; stepId: string } | null;
+  selectedRef: { kind: 'script' } | { kind: 'activity'; activityId: string } | { kind: 'step'; activityId: string; stepId: string } | null;
   selectedNode: Activity | Step | null;
   isValid: boolean;
   validationErrors: string[];
@@ -41,6 +42,7 @@ interface SidebarProps {
   onCloneSelected: () => void;
   onShowActivityDialog: () => void;
   onShowStepDialog: () => void;
+  onSelectScript: () => void;
   onSelectActivity: (activityId: string) => void;
   onSelectStep: (activityId: string, stepId: string) => void;
   onDeleteActivity: (activityId: string) => void;
@@ -67,6 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloneSelected,
   onShowActivityDialog,
   onShowStepDialog,
+  onSelectScript,
   onSelectActivity,
   onSelectStep,
   onDeleteActivity,
@@ -117,69 +120,79 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div className="tree-sidebar">
       {/* File Operations Section */}
-      <div className="file-operations-section">
-        <h3 className="section-title">File Operations</h3>
-        <div className="file-buttons">
-          <LoadScriptButton onClick={onLoadScript} />
-          <DownloadButton isValid={isValid} onClick={onDownloadScript} />
-        </div>
-      </div>
+      <CollapsibleSection
+        title="File Operations"
+        className="file-operations-section"
+        bodyClassName="file-buttons"
+        defaultOpen
+        persistKey="file-operations"
+      >
+        <LoadScriptButton onClick={onLoadScript} />
+        <DownloadButton isValid={isValid} onClick={onDownloadScript} />
+      </CollapsibleSection>
 
       {/* Bay Operations Section */}
-      <div className="bay-operations-section">
-        <h3 className="section-title">Bay Operations</h3>
-        <div className="bay-buttons">
-          <LocationSelector
-            selectedFacilityId={selectedFacilityId}
-            selectedLocationId={selectedLocationId}
-            persistedLocationId={persistedLocationId}
-            onLocationSelect={onLocationSelect}
-          />
-          <BaySelector
-            selectedFacilityId={selectedFacilityId}
-            selectedLocationId={selectedLocationId}
-            selectedBayId={selectedBayId}
-            persistedBayId={persistedBayId}
-            onBaySelect={onBaySelect}
-          />
-          <button
-            className="tree-btn execute-btn"
-            disabled={!canExecute || executing}
-            onClick={handleExecuteScript}
-            title={!isValid ? 'Script must be valid' : !selectedBayObj ? 'Select a bay first' : 'Execute script on bay'}
-          >
-            {executing ? 'Executing...' : 'Execute Script'}
-          </button>
-          {execMessage && (
-            <div className="exec-status small-note">{execMessage}</div>
-          )}
-        </div>
-      </div>
+      <CollapsibleSection
+        title="Bay Operations"
+        className="bay-operations-section"
+        bodyClassName="bay-buttons"
+        defaultOpen
+        persistKey="bay-operations"
+      >
+        <LocationSelector
+          selectedFacilityId={selectedFacilityId}
+          selectedLocationId={selectedLocationId}
+          persistedLocationId={persistedLocationId}
+          onLocationSelect={onLocationSelect}
+        />
+        <BaySelector
+          selectedFacilityId={selectedFacilityId}
+          selectedLocationId={selectedLocationId}
+          selectedBayId={selectedBayId}
+          persistedBayId={persistedBayId}
+          onBaySelect={onBaySelect}
+        />
+        <button
+          className="tree-btn execute-btn"
+          disabled={!canExecute || executing}
+          onClick={handleExecuteScript}
+          title={!isValid ? 'Script must be valid' : !selectedBayObj ? 'Select a bay first' : 'Execute script on bay'}
+        >
+          {executing ? 'Executing...' : 'Execute Script'}
+        </button>
+        {execMessage && (
+          <div className="exec-status small-note">{execMessage}</div>
+        )}
+      </CollapsibleSection>
 
       {/* Edit Operations Section */}
-      <div className="edit-operations-section">
-        <h3 className="section-title">Edit Operations</h3>
-        <div className="edit-buttons">
-          <CloneSelectedButton 
-            selectedNode={selectedNode} 
-            isValid={isValid} 
-            onClick={onCloneSelected} 
-          />
-          <AddActivityButton onClick={onShowActivityDialog} />
-          <AddStepButton 
-            parentActivityForAdd={parentActivityForAdd} 
-            onShowStepDialog={onShowStepDialog} 
-          />
-        </div>
-      </div>
-      <TreeView
-        script={script}
-        selectedRef={selectedRef}
-        onSelectActivity={onSelectActivity}
-        onSelectStep={onSelectStep}
-        onDeleteActivity={onDeleteActivity}
-        onDeleteStep={onDeleteStep}
-      />
+      <CollapsibleSection
+        title="Edit Operations"
+        className="edit-operations-section"
+        bodyClassName="edit-buttons"
+        defaultOpen
+        persistKey="edit-operations"
+      >
+        <CloneSelectedButton 
+          selectedNode={selectedNode} 
+          isValid={isValid} 
+          onClick={onCloneSelected} 
+        />
+        <AddActivityButton onClick={onShowActivityDialog} />
+        <AddStepButton 
+          parentActivityForAdd={parentActivityForAdd} 
+          onShowStepDialog={onShowStepDialog} 
+        />
+        <TreeView
+          script={script}
+          selectedRef={selectedRef}
+          onSelectScript={onSelectScript}
+          onSelectActivity={onSelectActivity}
+          onSelectStep={onSelectStep}
+          onDeleteActivity={onDeleteActivity}
+          onDeleteStep={onDeleteStep}
+        />
+      </CollapsibleSection>
       
       {/* Validation panel at bottom of sidebar */}
       <div className={`validation-panel-sidebar-bottom ${isValid ? 'ok' : 'fail'}`}> 

@@ -49,7 +49,7 @@
         "Overwrite"
       ],
       "default": "Overwrite",
-      "description": "Defines how the script should start.\n- Append: add to existing data\n- Overwrite: replace existing data"
+      "description": "Defines how the script should start.\n- Append: to the currently running script\n- Overwrite: replace currently running script"
     },
     "EndMode": {
       "type": "string",

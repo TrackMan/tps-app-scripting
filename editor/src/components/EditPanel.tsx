@@ -1,6 +1,7 @@
 import React from 'react';
 import { Activity, Step, isActivity } from '../types';
 import { CollapsibleSection } from './CollapsibleSection';
+import { MessageEditor } from './MessageEditor';
 
 interface EditPanelProps {
   node: Activity | Step;
@@ -9,8 +10,6 @@ interface EditPanelProps {
 
 export const EditPanel: React.FC<EditPanelProps> = ({ node, onChange }) => {
   const isActivityNode = isActivity(node);
-  const intro = node.introMessage; 
-  const endOrSuccess = isActivityNode ? (node as Activity).endMessage : (node as Step).successMessage; 
   
   return (
     <CollapsibleSection
@@ -24,21 +23,34 @@ export const EditPanel: React.FC<EditPanelProps> = ({ node, onChange }) => {
       <div className="edit-field">
         <label>ID <input value={node.id} onChange={e => onChange({ id: e.target.value })} /></label>
       </div>
-      <div className="edit-field">
-        <label>Header <input value={intro.header} onChange={e => onChange({ introMessage: { ...intro, header: e.target.value } as any })} /></label>
-      </div>
-      <div className="edit-field">
-        <label>Description <input value={intro.description} onChange={e => onChange({ introMessage: { ...intro, description: e.target.value } as any })} /></label>
-      </div>
-      {!isActivityNode && (
-        <div className="edit-field">
-          <label>Success Header <input value={endOrSuccess.header} onChange={e => onChange({ successMessage: { ...endOrSuccess, header: e.target.value } as any })} /></label>
-        </div>
-      )}
+
+      <MessageEditor
+        title="Intro Message"
+        message={node.introMessage}
+        onChange={introMessage => onChange({ introMessage } as any)}
+      />
+
       {isActivityNode && (
-        <div className="edit-field">
-          <label>End Header <input value={endOrSuccess.header} onChange={e => onChange({ endMessage: { ...endOrSuccess, header: e.target.value } as any })} /></label>
-        </div>
+        <MessageEditor
+          title="End Message"
+          message={(node as Activity).endMessage}
+          onChange={endMessage => onChange({ endMessage } as any)}
+        />
+      )}
+
+      {!isActivityNode && (
+        <>
+          <MessageEditor
+            title="Success Message"
+            message={(node as Step).successMessage}
+            onChange={successMessage => onChange({ successMessage } as any)}
+          />
+          <MessageEditor
+            title="Fail Message"
+            message={(node as Step).failMessage}
+            onChange={failMessage => onChange({ failMessage } as any)}
+          />
+        </>
       )}
     </CollapsibleSection>
   );

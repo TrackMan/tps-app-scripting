@@ -4,6 +4,7 @@ import { TopBar } from './components/TopBar';
 import { TabBar } from './components/TabBar';
 import { Sidebar } from './components/Sidebar';
 import { NodeDetailsPanel } from './components/NodeDetailsPanel';
+import { ScriptEditor } from './components/ScriptEditor';
 import { DialogManager } from './components/DialogManager';
 import { DocumentationViewer } from './components/DocumentationViewer';
 import { Activity, Step, ScriptData, isActivity, isStep, LogicNode } from './types';
@@ -304,6 +305,10 @@ export default function App() {
       return undefined;
     }
     
+    if (state.selectedRef.kind === 'script') {
+      return undefined;
+    }
+    
     const activityId = state.selectedRef.activityId;
     return script.activities.find(a => a.id === activityId);
   }, [state.selectedRef, script.activities]);
@@ -311,6 +316,11 @@ export default function App() {
   // Helper to update a step (by id) inside the script
   const updateStep = (stepId: string, patch: Partial<Step>) => {
     dispatch({ type: 'UPDATE_STEP', stepId, patch });
+  };
+
+  // Helper to update the script data
+  const updateScript = (patch: Partial<ScriptData>) => {
+    dispatch({ type: 'LOAD_SCRIPT', script: { ...script, ...patch } });
   };
 
   // Ensure step logic is properly initialized when a step is selected
@@ -374,17 +384,28 @@ export default function App() {
             onCloneSelected={() => dispatch({ type: 'CLONE_SELECTED' })}
             onShowActivityDialog={() => setShowActivityDialog(true)}
             onShowStepDialog={() => setShowStepDialog(true)}
+            onSelectScript={() => dispatch({ type: 'SELECT_SCRIPT' })}
             onSelectActivity={(activityId: string) => dispatch({ type: 'SELECT_ACTIVITY', activityId })}
             onSelectStep={(activityId: string, stepId: string) => dispatch({ type: 'SELECT_STEP', activityId, stepId })}
             onDeleteActivity={deleteActivity}
             onDeleteStep={deleteStep}
             parentActivityForAdd={parentActivityForAdd}
           />
-          <NodeDetailsPanel
-            selectedNode={selectedNode}
-            onUpdateActivity={updateActivity}
-            onUpdateStep={updateStep}
-          />
+          {state.selectedRef?.kind === 'script' ? (
+            <div className="tree-main">
+              <h2>Script Configuration</h2>
+              <ScriptEditor
+                script={script}
+                onChange={updateScript}
+              />
+            </div>
+          ) : (
+            <NodeDetailsPanel
+              selectedNode={selectedNode}
+              onUpdateActivity={updateActivity}
+              onUpdateStep={updateStep}
+            />
+          )}
         </div>
       ) : (
         <div className="documentation-flex">
