@@ -5,8 +5,9 @@ WORKDIR /app
 # Copy package files first for better Docker layer caching
 COPY package.json package-lock.json ./
 
-# Install dependencies, skipping platform-specific optional dependencies
-RUN npm ci --omit=optional || npm install --omit=optional
+# Remove Windows-specific Rollup package and install dependencies
+RUN npm pkg delete devDependencies.@rollup/rollup-win32-x64-msvc && \
+    npm ci || npm install
 
 # Copy source code
 COPY . .
