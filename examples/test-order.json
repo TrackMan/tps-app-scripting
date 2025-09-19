@@ -1,0 +1,55 @@
+{
+  "$schema": "../schema/1.0.0/app-scripting.schema.json",
+  "id": "test-script-1",
+  "startMode": "Overwrite",
+  "endMode": "Wait",
+  "activities": [
+    {
+      "nodeType": "RangeAnalysisScriptedActivity",
+      "id": "ra-1",
+      "introMessage": { "header": "Test Activity", "description": "Testing property order", "seconds": 3 },
+      "endMessage": { "header": "Done", "description": "", "seconds": 3 },
+      "steps": [
+        {
+          "nodeType": "RangeAnalysisScriptedStep",
+          "id": "ra-step-1",
+          "introMessage": {
+            "header": "Hit 3 shots",
+            "description": "",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Great!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Try again",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "RangeAnalysisScriptedLogic",
+            "setup": {
+              "nodeType": "RangeAnalysisScriptedSetup",
+              "club": "Drv",
+              "distance": 200
+            },
+            "successCondition": {
+              "nodeType": "RangeAnalysisScriptedConditions",
+              "shots": 3,
+              "conditions": [{ "parameter": "Total", "min": 200 }]
+            },
+            "failCondition": {
+              "nodeType": "RangeAnalysisScriptedConditions",
+              "shots": 5
+            },
+            "canRetry": true,
+            "skipOnSuccess": true
+          },
+          "ui": { "nodeType": "RangeAnalysisScriptedUI" }
+        }
+      ]
+    }
+  ]
+}

@@ -318,9 +318,29 @@ export default function App() {
     dispatch({ type: 'UPDATE_STEP', stepId, patch });
   };
 
-  // Helper to update the script data
+  // Helper to update the script data while preserving property order
   const updateScript = (patch: Partial<ScriptData>) => {
-    dispatch({ type: 'LOAD_SCRIPT', script: { ...script, ...patch } });
+    // Merge patch into current script first
+    const merged = { ...script, ...patch };
+    
+    // Always reconstruct the script object in the desired property order
+    const orderedScript: any = {};
+    
+    // Add properties in the desired order: id, startMode, endMode, activities
+    if (merged.id !== undefined && merged.id !== '') {
+      orderedScript.id = merged.id;
+    }
+    if (merged.startMode !== undefined) {
+      orderedScript.startMode = merged.startMode;
+    }
+    if (merged.endMode !== undefined) {
+      orderedScript.endMode = merged.endMode;
+    }
+    
+    // Always include activities (required property) last
+    orderedScript.activities = merged.activities;
+    
+    dispatch({ type: 'LOAD_SCRIPT', script: orderedScript as ScriptData });
   };
 
   // Ensure step logic is properly initialized when a step is selected
@@ -398,6 +418,7 @@ export default function App() {
                 script={script}
                 onChange={updateScript}
               />
+              <pre>{JSON.stringify(script, null, 2)}</pre>
             </div>
           ) : (
             <NodeDetailsPanel
