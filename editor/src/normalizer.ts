@@ -92,13 +92,11 @@ export function normalizeStep(raw: any, parentActivityType: 'RangeAnalysisScript
 export function normalizeScript(raw: any): ScriptData {
   const activities = Array.isArray(raw.activities) ? raw.activities.map((a: any) => normalizeActivity(a)) : [];
   
-  // Preserve root-level properties in proper order: id, startMode, endMode, activities
-  const result: ScriptData = { activities };
+  // Build script object with explicit property order
+  const orderedResult: any = {};
   
-  // Add properties in desired order by reconstructing the object
-  const orderedResult: ScriptData = { activities: [] };
-  
-  if (raw.id !== undefined) {
+  // Force property order: id, startMode, endMode, activities
+  if (raw.id !== undefined && raw.id !== '') {
     orderedResult.id = raw.id;
   }
   if (raw.startMode !== undefined) {
@@ -108,8 +106,9 @@ export function normalizeScript(raw: any): ScriptData {
     orderedResult.endMode = raw.endMode;
   }
   
-  // Always include activities last (required property)
+  // Always include activities (required property) last
   orderedResult.activities = activities;
   
-  return orderedResult;
+  // Ensure clean object with proper property order
+  return JSON.parse(JSON.stringify(orderedResult)) as ScriptData;
 }

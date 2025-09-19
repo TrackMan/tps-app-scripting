@@ -1,5 +1,6 @@
 import React from 'react';
 import { Step } from '../types';
+import { HoleSelector } from './HoleSelector';
 
 interface SetupEditorProps {
   step: Step;
@@ -154,15 +155,12 @@ export const SetupEditor: React.FC<SetupEditorProps> = ({ step, onUpdateStep }) 
 
         {/* Common Fields */}
         <div className="edit-field">
-          <label>
-            Hole
-            <input
-              type="number"
-              min="1"
-              value={setup.hole || 1}
-              onChange={e => updateSetup({ hole: parseInt(e.target.value) || 1 })}
-            />
-          </label>
+          <label>Hole</label>
+          <HoleSelector
+            selectedHole={setup.hole || 1}
+            onHoleSelect={(holeNumber) => updateSetup({ hole: holeNumber })}
+            setupType={isTeeShotsSetup ? 'tee' : 'approach'}
+          />
         </div>
 
         <div className="edit-field">

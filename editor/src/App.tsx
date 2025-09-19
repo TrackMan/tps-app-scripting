@@ -323,24 +323,25 @@ export default function App() {
     // Merge patch into current script first
     const merged = { ...script, ...patch };
     
-    // Always reconstruct the script object in the desired property order
+    // Force property order by using JSON parse/stringify trick
     const orderedScript: any = {};
     
-    // Add properties in the desired order: id, startMode, endMode, activities
-    if (merged.id !== undefined && merged.id !== '') {
-      orderedScript.id = merged.id;
-    }
-    if (merged.startMode !== undefined) {
-      orderedScript.startMode = merged.startMode;
-    }
-    if (merged.endMode !== undefined) {
-      orderedScript.endMode = merged.endMode;
+    // Build object with explicit property order
+    const propertyOrder: (keyof ScriptData)[] = ['id', 'startMode', 'endMode', 'activities'];
+    
+    for (const key of propertyOrder) {
+      if (key === 'activities') {
+        // Always include activities (required)
+        orderedScript.activities = merged.activities;
+      } else if (merged[key] !== undefined && merged[key] !== '') {
+        orderedScript[key] = merged[key];
+      }
     }
     
-    // Always include activities (required property) last
-    orderedScript.activities = merged.activities;
+    // Ensure we have a clean object with proper property order
+    const cleanScript = JSON.parse(JSON.stringify(orderedScript));
     
-    dispatch({ type: 'LOAD_SCRIPT', script: orderedScript as ScriptData });
+    dispatch({ type: 'LOAD_SCRIPT', script: cleanScript as ScriptData });
   };
 
   // Ensure step logic is properly initialized when a step is selected

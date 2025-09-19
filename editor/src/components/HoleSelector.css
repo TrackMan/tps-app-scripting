@@ -1,0 +1,300 @@
+/* CSS Variables from Figma export */
+:root {
+  --background-black-70: rgba(34, 34, 34, 0.7);
+  --backgroundbackground-inverse-hover: rgba(238, 238, 238, 1);
+  --borderborder-interactive: rgba(236, 105, 26, 1);
+  --grayscalebackground-black: rgba(34, 34, 34, 1);
+  --grayscalegray: rgba(160, 160, 160, 1);
+  --grayscaletext-element: rgba(65, 65, 65, 1);
+  --grayscalewhite: rgba(255, 255, 255, 1);
+  --heading-sm-font-family: "Lato", Helvetica;
+  --heading-sm-font-size: 24px;
+  --heading-sm-font-style: normal;
+  --heading-sm-font-weight: 700;
+  --heading-sm-letter-spacing: 0px;
+  --heading-sm-line-height: 32px;
+  --label-01-md-font-family: "Lato", Helvetica;
+  --label-01-md-font-size: 20px;
+  --label-01-md-font-style: normal;
+  --label-01-md-font-weight: 600;
+  --label-01-md-letter-spacing: 0px;
+  --label-01-md-line-height: 28px;
+  --label-01-sm-font-family: "Lato", Helvetica;
+  --label-01-sm-font-size: 16px;
+  --label-01-sm-font-style: normal;
+  --label-01-sm-font-weight: 600;
+  --label-01-sm-letter-spacing: 0px;
+  --label-01-sm-line-height: 20px;
+  --lato-15-regular-font-family: "Lato", Helvetica;
+  --lato-15-regular-font-size: 15px;
+  --lato-15-regular-font-style: normal;
+  --lato-15-regular-font-weight: 400;
+  --lato-15-regular-letter-spacing: 0px;
+  --lato-15-regular-line-height: 21px;
+  --lato-20-bold-font-family: "Lato", Helvetica;
+  --lato-20-bold-font-size: 20px;
+  --lato-20-bold-font-style: normal;
+  --lato-20-bold-font-weight: 700;
+  --lato-20-bold-letter-spacing: 0px;
+  --lato-20-bold-line-height: 28px;
+  --TM-text-shadow-22-32pt: 0px 1px 2px 0px rgba(0, 0, 0, 0.5);
+  --tpsaction-grey: rgba(49, 49, 49, 1);
+  --uitrackman-orange: rgba(236, 105, 26, 1);
+}
+
+/* HoleSelector Main Container */
+.hole-selector {
+  align-items: center;
+  background-color: white;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 8px 8px;
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  border: 1px solid #e0e0e0;
+}
+
+.hole-selector .header {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  padding: 0px 8px;
+  position: relative;
+  width: 100%;
+}
+
+.hole-selector .title {
+  align-items: center;
+  color: #333;
+  display: flex;
+  font-family: var(--label-01-md-font-family);
+  font-size: var(--label-01-md-font-size);
+  font-style: var(--label-01-md-font-style);
+  font-weight: var(--label-01-md-font-weight);
+  justify-content: center;
+  letter-spacing: var(--label-01-md-letter-spacing);
+  line-height: var(--label-01-md-line-height);
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+/* Randomizer styles removed */
+
+/* Hole Selector Content Layout */
+.hole-selector-content {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* Hole Layout Grid */
+.hole-layout {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+.hole-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 8px;
+  width: 420px;
+}
+
+/* Hole Card */
+.hole-card {
+  background-color: var(--tpsaction-grey);
+  border-radius: 12px;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  aspect-ratio: 2/3;
+  overflow: hidden;
+}
+
+.hole-card:hover {
+  border-color: var(--grayscalegray);
+}
+
+.hole-card.selected {
+  border-color: var(--borderborder-interactive);
+}
+
+.hole-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hole-image {
+  width: 100%;
+  height: calc(100% - 40px);
+  position: relative;
+  overflow: hidden;
+}
+
+.hole-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.hole-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #8B7355, #A0926B);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.hole-number {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  color: var(--grayscalewhite);
+  font-family: var(--lato-20-bold-font-family);
+  font-size: var(--lato-20-bold-font-size);
+  font-weight: var(--lato-20-bold-font-weight);
+  text-shadow: var(--TM-text-shadow-22-32pt);
+  background-color: var(--background-black-70);
+  border-radius: 8px;
+  padding: 4px 8px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.hole-distance {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: var(--grayscalewhite);
+  font-family: var(--lato-20-bold-font-family);
+  font-size: var(--lato-20-bold-font-size);
+  font-weight: var(--lato-20-bold-font-weight);
+  text-shadow: var(--TM-text-shadow-22-32pt);
+  text-align: center;
+  padding: 8px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hole Preview Panel */
+.hole-preview {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+  position: relative;
+}
+
+.hole-preview-header {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.hole-preview-number {
+  color: var(--grayscalewhite);
+  font-family: var(--lato-20-bold-font-family);
+  font-size: var(--lato-20-bold-font-size);
+  font-weight: var(--lato-20-bold-font-weight);
+  text-shadow: var(--TM-text-shadow-22-32pt);
+  background-color: var(--background-black-70);
+  border-radius: 8px;
+  padding: 4px 8px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.hole-preview-distance {
+  color: var(--grayscalewhite);
+  font-family: var(--lato-20-bold-font-family);
+  font-size: var(--lato-20-bold-font-size);
+  font-weight: var(--lato-20-bold-font-weight);
+  text-shadow: var(--TM-text-shadow-22-32pt);
+  background-color: var(--background-black-70);
+  border-radius: 8px;
+  padding: 4px 8px;
+  text-align: center;
+}
+
+.hole-preview-image {
+  display: inline-block;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f8f8f8;
+  overflow: hidden;
+  position: relative;
+}
+
+.hole-preview-image img {
+  height: 622px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 6px;
+  display: block;
+}
+
+.hole-preview-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--grayscalegray, #999);
+  font-size: 16px;
+  text-align: center;
+  background-color: #f8f8f8;
+  border-radius: 6px;
+}
+
+.hole-preview-placeholder-text {
+  color: var(--grayscalegray, #999);
+  font-size: 16px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hole-selector-content {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .hole-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    width: 100%;
+  }
+  
+  .hole-selector .title {
+    font-size: 18px;
+  }
+  
+  .hole-preview {
+    min-height: 250px;
+  }
+}
