@@ -357,8 +357,8 @@
         },
         "hcp": {
           "type": "integer",
-          "minimum": -10,
-          "maximum": 54,
+          "minimum": 0,
+          "maximum": 15,
           "description": "Player handicap used for baselines."
         },
         "gender": {
