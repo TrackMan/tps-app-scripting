@@ -65,6 +65,86 @@ npm run validate
 
 ---
 
+## Reference: Clubs and Parameters
+
+### Club Codes
+
+All setup objects support an optional `club` property with these values:
+
+- **Drivers**: `Drv`
+- **Woods**: `_2W`, `_3W`, `_4W`, `_5W`, `_6W`, `_7W`, `_8W`, `_9W`
+- **Hybrids**: `_1H`, `_2H`, `_3H`, `_4H`, `_5H`, `_6H`, `_7H`, `_8H`, `_9H`
+- **Irons**: `_1I`, `_2I`, `_3I`, `_4I`, `_5I`, `_6I`, `_7I`, `_8I`, `_9I`
+- **Wedges**: `_PW`, `_SW`, `_LW`, `_50W`, `_52W`, `_54W`, `_56W`, `_58W`, `_60W`
+- **Putter**: `Putt`
+
+**Default**: `"Drv"` if not specified.
+
+**Examples**:
+```json
+"club": "Drv"     // Driver
+"club": "_7I"     // 7-iron  
+"club": "_PW"     // Pitching wedge
+```
+
+### Shot Parameters
+
+Parameters can be used in conditions and UI data tiles. Values are expressed in:
+- **Meters** for distance parameters
+- **Meters per second** for speeds  
+- **Degrees** for angles
+
+**Club Metrics**:
+- `ClubSpeed`, `AttackAngle`, `ClubPath`, `DynamicLoft`, `FaceAngle`
+- `DynamicLie`, `ImpactHeight`, `SpinLoft`, `FaceToPath`, `SwingPlane`
+- `SwingDirection`, `LowPoint`, `ImpactOffset`
+
+**Ball Flight**:
+- `Curve`, `Height`, `Carry`, `Total`, `Side`, `SideTotal`
+- `LandingAngle`, `FromPin`, `BallSpeed`, `SmashFactor`
+- `LaunchAngle`, `LaunchDirection`, `SpinRate`, `SpinAxis`
+
+**Performance**:
+- `StrokesGained`
+
+**Example condition**:
+```json
+"conditions": [
+  { "parameter": "Total", "min": 180.0, "max": 250.0 },
+  { "parameter": "Curve", "min": -10.0, "max": 10.0 }
+]
+```
+
+### UI Frame Management
+
+Control UI visibility during different shot phases using `beforeShot`, `duringShot`, and `afterShot`:
+
+**Available Frames**:
+- `Player`, `Markers`, `Tiles`, `ShotList`, `GoToSetup`, `Minimap`
+- `BroadcastTiles`, `ClubDelivery`, `AllTiles`, `LandingCamera`
+- `StrokesGainedSummaryTile`, `StrokesGainedShotResult`, `TargetCarry`
+
+**Actions**:
+- `addFrames`: Show additional frames beyond defaults
+- `removeFrames`: Hide frames that would normally show
+- `disableFrames`: Prevent user interaction with frames
+
+**Example**:
+```json
+"beforeShot": {
+  "removeFrames": ["Player", "Minimap"],
+  "disableFrames": ["GoToSetup"]
+},
+"duringShot": {
+  "removeFrames": ["LandingCamera", "BroadcastTiles"]
+},
+"afterShot": {
+  "addFrames": ["AllTiles"]
+}
+```
+
+---
+
 ## File Anatomy
 
 Top-level shape:
@@ -260,6 +340,35 @@ Top-level shape:
   "ui": { "nodeType": "PerformanceCenterScriptedUI" }
 }
 ```
+
+---
+
+## Important Behavioral Notes
+
+### Success/Fail Condition Behavior
+
+- **Missing `successCondition`**: Shots will always be considered not successful
+- **Missing `failCondition`**: Shots will always be considered not failed  
+- **Both missing**: Step can't be completed (useful for allowing unlimited practice shots until a new script overwrites)
+
+### Flow Control
+
+- `canRetry: true`: Allows user to retry failed steps, otherwise auto-skips to next step
+- `skipOnSuccess: true`: Continues to next step immediately after success condition is met
+- `skipOnSuccess: false`: Continues only when both success and fail conditions are met
+
+### Distance Ranges
+
+For Performance Center approach setups:
+- If `minDistance == maxDistance`: All shots use that exact distance
+- If `minDistance != maxDistance`: Each shot uses a random distance between the values
+
+### Data Tiles and UI
+
+- `activeDataTiles`: Only first 8 items will be used
+- `shotListParameters`: Defaults to `["Total", "Carry", "BallSpeed"]` if not specified
+- `defaultShotListParameter`: Defaults to `"Carry"` if not specified
+- Message `seconds: -1`: Requires user to click button to dismiss message
 
 ---
 

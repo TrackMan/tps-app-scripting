@@ -78,18 +78,18 @@
         "header": {
           "type": "string",
           "minLength": 1,
-          "description": "Short title/headline for the banner."
+          "description": "Primary message header text displayed to the user."
         },
         "description": {
           "type": "string",
           "default": "",
-          "description": "Optional supporting copy. Keep concise; plain text only."
+          "description": "Secondary message description text displayed to the user. Keep concise; plain text only."
         },
         "seconds": {
           "type": "integer",
           "minimum": 0,
           "default": 3,
-          "description": "Display duration in seconds. 0 hides instantly after render."
+          "description": "Seconds to display message on screen. Use -1 to require user to click button to dismiss message."
         }
       },
       "required": [
@@ -108,7 +108,7 @@
       "description": "How to combine multiple per-shot condition clauses for a single shot.\n- (empty): no condition type specified (for when no conditions are present)\n- And: all clauses must pass for the shot to qualify.\n- Or: any one clause passing qualifies the shot."
     },
     "ParameterName": {
-      "description": "Per-shot metric name evaluated in a clause. Engine-defined; open list.\nTypical: Total (m), Curve (m; left negative, right positive), FromPin (m), StrokesGained (Δ strokes vs baseline).",
+      "description": "Parameter against which shots are checked for conditions or displayed in UI. Values are expressed in meters for distance parameters, meters per second for speeds, and degrees for angles. Available parameters: Club metrics (ClubSpeed, AttackAngle, ClubPath, DynamicLoft, FaceAngle, DynamicLie, ImpactHeight, SpinLoft, FaceToPath, SwingPlane, SwingDirection, LowPoint, ImpactOffset), Ball flight (Curve, Height, Carry, Total, Side, SideTotal, LandingAngle, FromPin, BallSpeed, SmashFactor, LaunchAngle, LaunchDirection, SpinRate, SpinAxis), Performance (StrokesGained).",
       "type": "string",
       "enum": [
         "ClubSpeed",
@@ -311,12 +311,13 @@
             "_60W",
             "Putt"
           ],
-          "description": "Club code (e.g., Drv, 7i, Wdg)."
+          "description": "Club specification for the range analysis shot. Optional, defaults to 'Drv'. Available clubs: Drivers (Drv), Woods (_2W to _9W), Hybrids (_1H to _9H), Irons (_1I to _9I), Wedges (_PW, _SW, _LW, _50W, _52W, _54W, _56W, _58W, _60W), and Putter (Putt).",
+          "default": "Drv"
         },
         "distance": {
           "type": "number",
           "minimum": 0,
-          "description": "Target/reference distance in meters."
+          "description": "Required distance to the target in meters."
         }
       },
       "required": [
@@ -373,12 +374,19 @@
         "minDistance": {
           "type": "number",
           "minimum": 0,
-          "description": "Min approach distance in meters."
+          "description": "Minimum approach distance in meters. Optional, defaults to 30 meters. If minDistance != maxDistance, each shot will be from a random distance between the two values.",
+          "default": 30.0
         },
         "maxDistance": {
           "type": "number",
           "minimum": 0,
-          "description": "Max approach distance in meters."
+          "description": "Maximum approach distance in meters. Optional, defaults to 220 meters. If minDistance != maxDistance, each shot will be from a random distance between the two values.",
+          "default": 220.0
+        },
+        "club": {
+          "type": "string",
+          "description": "Club specification for the approach shot. Optional, defaults to 'Drv'. Available clubs: {Drv, _2W, _3W, _4W, _5W, _6W, _7W, _8W, _9W, _1H, _2H, _3H, _4H, _5H, _6H, _7H, _8H, _9H, _1I, _2I, _3I, _4I, _5I, _6I, _7I, _8I, _9I, _PW, _SW, _LW, _50W, _52W, _54W, _56W, _58W, _60W, Putt}.",
+          "default": "Drv"
         }
       },
       "required": [
@@ -436,7 +444,13 @@
           "type": "integer",
           "minimum": 1000,
           "maximum": 9000,
-          "description": "Total course distance in meters (context for tee-shot modeling)."
+          "description": "Total course distance in meters (context for tee-shot modeling). Optional, defaults to 6900 meters.",
+          "default": 6900
+        },
+        "club": {
+          "type": "string",
+          "description": "Club specification for the tee shot. Optional, defaults to 'Drv'. Available clubs: {Drv, _2W, _3W, _4W, _5W, _6W, _7W, _8W, _9W, _1H, _2H, _3H, _4H, _5H, _6H, _7H, _8H, _9H, _1I, _2I, _3I, _4I, _5I, _6I, _7I, _8I, _9I, _PW, _SW, _LW, _50W, _52W, _54W, _56W, _58W, _60W, Putt}.",
+          "default": "Drv"
         }
       },
       "required": [
@@ -497,8 +511,6 @@
         "nodeType",
         "setup",
         "successCondition",
-        "failCondition",
-        "canRetry",
         "skipOnSuccess"
       ]
     },
@@ -544,10 +556,57 @@
       "required": [
         "nodeType",
         "setup",
-        "successCondition",
-        "failCondition",
-        "canRetry",
-        "skipOnSuccess"
+        "successCondition"
+      ]
+    },
+    "UIFrameAction": {
+      "type": "object",
+      "description": "UI frame management actions for different shot phases.",
+      "additionalProperties": false,
+      "properties": {
+        "addFrames": {
+          "type": "array",
+          "description": "UI frames to add/show.",
+          "items": {
+            "$ref": "#/$defs/UIFrameName"
+          },
+          "default": []
+        },
+        "removeFrames": {
+          "type": "array",
+          "description": "UI frames to remove/hide.",
+          "items": {
+            "$ref": "#/$defs/UIFrameName"
+          },
+          "default": []
+        },
+        "disableFrames": {
+          "type": "array",
+          "description": "UI frames to disable (keep visible but non-interactive).",
+          "items": {
+            "$ref": "#/$defs/UIFrameName"
+          },
+          "default": []
+        }
+      }
+    },
+    "UIFrameName": {
+      "type": "string",
+      "description": "Names of UI frames that can be manipulated during different shot phases. Available frames: Player (player information), Markers (course markers), Tiles (data tiles), ShotList (shot history), GoToSetup (setup controls), Minimap (course overview), BroadcastTiles (broadcast view tiles), ClubDelivery (club delivery analysis), AllTiles (all data tiles), LandingCamera (landing view), StrokesGainedSummaryTile (strokes gained summary), StrokesGainedShotResult (strokes gained per shot), TargetCarry (target carry display).",
+      "enum": [
+        "Player",
+        "Markers", 
+        "Tiles",
+        "ShotList",
+        "GoToSetup",
+        "Minimap",
+        "BroadcastTiles",
+        "ClubDelivery",
+        "AllTiles",
+        "LandingCamera",
+        "StrokesGainedSummaryTile",
+        "StrokesGainedShotResult",
+        "TargetCarry"
       ]
     },
     "RangeAnalysisScriptedUI": {
@@ -558,6 +617,45 @@
         "nodeType": {
           "const": "RangeAnalysisScriptedUI",
           "description": "Discriminator. Must be exactly this value."
+        },
+        "targetAvailable": {
+          "type": "boolean",
+          "description": "Whether a target will be displayed on the screen and in the UI. Optional, defaults to true.",
+          "default": true
+        },
+        "activeDataTiles": {
+          "type": "array",
+          "description": "Selection of data tiles displayed on screen on the left side. Optional, defaults to tiles set by TPS. Only first 8 will be used.",
+          "items": {
+            "$ref": "#/$defs/ParameterName"
+          },
+          "maxItems": 8,
+          "default": []
+        },
+        "shotListParameters": {
+          "type": "array",
+          "description": "List of available parameters to select for display in the shot list. Optional, defaults to [Total, Carry, BallSpeed]. Valid values are same as activeDataTiles plus StrokesGained.",
+          "items": {
+            "$ref": "#/$defs/ParameterName"
+          },
+          "default": ["Total", "Carry", "BallSpeed"]
+        },
+        "defaultShotListParameter": {
+          "$ref": "#/$defs/ParameterName",
+          "description": "Parameter to display in the shot list by default. Optional, defaults to 'Carry'.",
+          "default": "Carry"
+        },
+        "beforeShot": {
+          "$ref": "#/$defs/UIFrameAction",
+          "description": "UI frame management before taking a shot. Optional, defaults to default game behavior if left empty."
+        },
+        "duringShot": {
+          "$ref": "#/$defs/UIFrameAction",
+          "description": "UI frame management during shot playback. Optional, defaults to default game behavior if left empty."
+        },
+        "afterShot": {
+          "$ref": "#/$defs/UIFrameAction",
+          "description": "UI frame management after ball stops. Optional, defaults to default game behavior if left empty."
         }
       },
       "required": [
@@ -572,6 +670,45 @@
         "nodeType": {
           "const": "PerformanceCenterScriptedUI",
           "description": "Discriminator. Must be exactly this value."
+        },
+        "targetAvailable": {
+          "type": "boolean",
+          "description": "Whether target/aiming functionality is available. Optional, defaults to true.",
+          "default": true
+        },
+        "activeDataTiles": {
+          "type": "array",
+          "description": "Selection of data tiles displayed on screen on the left side. Optional, defaults to tiles set by TPS. Only first 8 will be used.",
+          "items": {
+            "$ref": "#/$defs/ParameterName"
+          },
+          "maxItems": 8,
+          "default": []
+        },
+        "shotListParameters": {
+          "type": "array",
+          "description": "List of available parameters to select for display in the shot list. Optional, defaults to [Total, Carry, BallSpeed]. Valid values are same as activeDataTiles plus StrokesGained.",
+          "items": {
+            "$ref": "#/$defs/ParameterName"
+          },
+          "default": ["Total", "Carry", "BallSpeed"]
+        },
+        "defaultShotListParameter": {
+          "$ref": "#/$defs/ParameterName",
+          "description": "Parameter to display in the shot list by default. Optional, defaults to 'Carry'.",
+          "default": "Carry"
+        },
+        "beforeShot": {
+          "$ref": "#/$defs/UIFrameAction",
+          "description": "UI frame management before taking a shot. Optional, defaults to default game behavior if left empty."
+        },
+        "duringShot": {
+          "$ref": "#/$defs/UIFrameAction",
+          "description": "UI frame management during shot playback. Optional, defaults to default game behavior if left empty."
+        },
+        "afterShot": {
+          "$ref": "#/$defs/UIFrameAction",
+          "description": "UI frame management after ball stops. Optional, defaults to default game behavior if left empty."
         }
       },
       "required": [
@@ -610,6 +747,21 @@
         "ui": {
           "$ref": "#/$defs/RangeAnalysisScriptedUI",
           "description": "Optional UI hints (empty for defaults)."
+        },
+        "greenTarget": {
+          "type": "boolean",
+          "description": "Whether to show a green target/flag.",
+          "default": false
+        },
+        "targetWidthHCP": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Target width for handicap players (in meters)."
+        },
+        "targetWidthPro": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Target width for professional players (in meters)."
         }
       },
       "required": [

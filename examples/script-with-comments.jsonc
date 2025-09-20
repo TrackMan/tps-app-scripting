@@ -1,0 +1,283 @@
+{
+  "id": "sample-id", //string, unique identifier, optional, used for external event reporting
+  "startMode": "Append", //Enum {Append, Overwrite}, default Append. Optional. Defines if the script should append to the last or overwrite it
+  "endMode": "Wait", //Enum {Wait, Exit}, default Wait. Optional. Defines if when reaching the end it should wait for a new script or exit the application
+  "activities": [
+    {
+      "nodeType": "RangeAnalysisScriptedActivity", //either PerformanceCenterScriptedActivity or RangeAnalysisScriptedActivity
+      "id": "activity-id", //string, unique identifier, optional, used for external event reporting
+      "introMessage": {
+        "header": "Header Text",
+        "description": "Description",
+        "seconds": 5 //seconds to display message on the screen. -1 means user needs to click button to dismiss message
+      },
+      "endMessage": {
+        "header": "Header Text",
+        "description": "Description",
+        "seconds": 5 //seconds to display message on the screen. -1 means user needs to click button to dismiss message
+      },
+      "steps": [
+        {
+          "nodeType": "RangeAnalysisScriptedStep", //only RangeAnalysisScriptedStep is supported in a RangeAnalysisScriptedActivity
+          "id": "step-id", //optional, string unique id for external event reporting
+          "introMessage": {
+            "header": "Header Text",
+            "description": "Description",
+            "seconds": 5 //seconds to display message on the screen. -1 means user needs to click button to dismiss message
+          },
+          "successMessage": {
+            "header": "Header Text",
+            "description": "Description",
+            "seconds": 5 //seconds to display message on the screen. -1 means user needs to click button to dismiss message
+          },
+          "failMessage": {
+            "header": "Header Text",
+            "description": "Description",
+            "seconds": 5 //seconds to display message on the screen. -1 means user needs to click button to dismiss message
+          },
+          "greenTarget": true, //optional, default true. If set to true a green is planted under the target.
+          "targetWidthHCP": 5, //optional. Defaults to SharedCalculator formula for target size. If specified it will overwrite formula with this value in meters for the target
+          "targetWidthPro": 3, //optional. Defaults to SharedCalculator formula for target size of pro player. Specifing it will overwrite the formula. Value is in meters.
+          "logic": {
+            "nodeType": "RangeAnalysisScriptedLogic", //required, only valid value for RangeAnalysisScriptedStep.logic
+            "setup": {
+              "nodeType": "RangeAnalysisScriptedSetup", //required. Only option for RangeAnalysisScriptedLogic
+              "club": "Drv", //Optional, defaults to Drv. Enum value defining the clubs as {Drv, _2W, _3W, ... _9W, _1H, _2H ... _9H, _1I, _2I, ..., _9I, _PW, _SW, _LW, _50W, _52W, _54W, _56W, _58W, _60W, Putt}
+              "distance": 220.0 //required, distance to the target
+            },
+            "successCondition": { //optional. If missing, shots will always be considered not succesful
+              "nodeType": "RangeAnalysisScriptedConditions", //required. Only option for RangeAnalysisScriptedLogic
+              "shots": 1, //optional, defaults to 1. Defines how many shots need to meet the conditions to set the step as succesful
+              "conditionType": "And", //optional. defaults to And. Can be And or Or. If And, a shot is considered succesfull if all conditions in conditions array are met. For Or only 1 is enough.
+              "conditions": [ //optional. If empty all shots will be considered to meet the conditions
+                {
+                  "parameter": "Total", //required. Parameter against which shots are checked for. Can be any of {ClubSpeed, AttackAngle, ClubPath, DynamicLoft, FaceAngle, DynamicLie, ImpactHeight, SpinLoft, FaceToPath, SwingPlane, SwingDirection, LowPoint, ImpactOffset, Curve, Height, Carry, Total, Side, SideTotal, LandingAngle, FromPin, BallSpeed, SmashFactor, LaunchAngle, LaunchDirection, SpinRate, SpinAxis, StrokesGained}
+                  "min": 180.3, //float value. Optional, defaults to float.MinValue, the value is expressed in meters for distance parameters, meters per second for speeds and degrees for angles
+                  "max": 250.5 //float value. Optional, defaults to float.MaxValue, the value is expressed in meters for distance parameters, meters per second for speeds and degrees for angles
+                }
+              ]
+            },
+            "failCondition": { //optional. If missing, shots will always be considered not failed
+              "nodeType": "RangeAnalysisScriptedConditions", //required. Only option for RangeAnalysisScriptedLogic
+              "shots": 1, //optional, defaults to 1. Defines how many shots need to meet the conditions to set the step as succesful
+              "conditionType": "And", //optional. defaults to And. Can be And or Or. If And, a shot is considered succesfull if all conditions in conditions array are met. For Or only 1 is enough.
+              "conditions": [ //optional. If empty all shots will be considered to meet the conditions
+                {
+                  "parameter": "Total", //required. Parameter against which shots are checked for. Can be any of [ClubSpeed, AttackAngle, ClubPath, DynamicLoft, FaceAngle, DynamicLie, ImpactHeight, SpinLoft, FaceToPath, SwingPlane, SwingDirection, LowPoint, ImpactOffset, Curve, Height, Carry, Total, Side, SideTotal, LandingAngle, FromPin, BallSpeed, SmashFactor, LaunchAngle, LaunchDirection, SpinRate, SpinAxis, StrokesGained]
+                  "min": 180.3, //float value. Optional, defaults to float.MinValue, the value is expressed in meters for distance parameters, meters per second for speeds and degrees for angles
+                  "max": 250.5 //float value. Optional, defaults to float.MaxValue, the value is expressed in meters for distance parameters, meters per second for speeds and degrees for angles
+                }
+              ]
+            },
+            //Note. If both successCondition and failCondition are missing, step can't be completed. Feature can be used to allow players to hit shots until a new script startMode:Overwrite is computed in the background.
+            "canRetry": true, //optional, default is false. If true it allows user to retry failed step, otherwise it autoskips to next one
+            "skipOnSuccess": true //optional, default is false. If true it will continue to next step immediatly after successCondition is met. Otherwise it continues to next step when both fail and success conditions are met
+          },
+          "ui": {
+            "nodeType": "RangeAnalysisScriptedUI", //required. RangeAnalysisScriptedUI is the only valid value for RangeAnalysisScriptedStep node.
+            "targetAvailable": false, //optional. Defaults to true. A target will be displayed on the screen and in the UI
+            "activeDataTiles": [ "Total", "Carry" ], //optional. If not defined it defaults to tiles set by TPS. A selection of data tiles displayed on the screen on the left side. Only first 8 will be used. Can be any of [ ClubSpeed, AttackAngle, ClubPath, DynamicLoft, FaceAngle, DynamicLie, ImpactHeight, SpinLoft, FaceToPath, SwingPlane, SwingDirection, LowPoint, ImpactOffset, Curve, Height, Carry, Total, Side, SideTotal, LandingAngle, FromPin, BallSpeed, SmashFactor, LaunchAngle, LaunchDirection, SpinRate, SpinAxis]
+            "shotListParameters": [ "Total", "Carry" ], //optional. If not defined defaults to [Total, Carry, BallSpeed]. Valid values are same as activeDataTiles + StrokesGained. Represents a list of available parameters to select for display in the shot list.
+            "defaultShotListParameter": "Total", //optional. If not defined defaults to Carry. Represents the parameter to display in the shot list by default.
+            "beforeShot": { //optional. If left empty, UI frames behave like in the default VG game. Defines UI behavior before taking a shot
+              "addFrames": [], //optional. Defines what other frames to open in addition to the default ones
+              "removeFrames": [ "Player" ], //optional. Defines what frames to not open from the ones which are opened by default by the game.
+              "disableFrames": [ "Minimap", "GoToSetup", "Tiles" ] //optional. Defines what frames to disable (ban user from interacting)
+            },
+            "duringShot": { //optional. If left empty, UI frames behave like in the default VG game. Defines UI behavior during shot playback
+              "addFrames": [], //same as beforeShot
+              "removeFrames": [], //same as beforeShot
+              "disableFrames": [] //same as beforeShot
+            },
+            "afterShot": { //optional. If left empty, UI frames behave like in the default VG game. Defines UI behavior after ball stops
+              "addFrames": [], //same as beforeShot
+              "removeFrames": [], //same as beforeShot
+              "disableFrames": [] //same as beforeShot
+            }
+          }
+        }
+      ]
+    },
+    {
+      "nodeType": "PerformanceCenterScriptedActivity", //either PerformanceCenterScriptedActivity or RangeAnalysisScriptedActivity
+      "id": "activity-id", //string, unique identifier, optional, used for external events
+      "introMessage": {
+        "header": "Header Text",
+        "description": "Description",
+        "seconds": 5 //seconds to display message on the screen. -1 means user needs to click button to dismiss message
+      },
+      "endMessage": {
+        "header": "Header Text",
+        "description": "Description",
+        "seconds": 5 //seconds to display message on the screen. -1 means user needs to click button to dismiss message
+      },
+      "steps": [
+        {
+          "nodeType": "PerformanceCenterScriptedStep", //only PerformanceCenterScriptedStep is supported in a PerformanceCenterScriptedActivity
+          "id": "step-id", //optional, string unique id for external event reporting
+          "introMessage": {
+            "header": "Header Text",
+            "description": "Description",
+            "seconds": 5 //seconds to display message on the screen. -1 means user needs to click button to dismiss message
+          },
+          "successMessage": {
+            "header": "Header Text",
+            "description": "Description",
+            "seconds": 5 //seconds to display message on the screen. -1 means user needs to click button to dismiss message
+          },
+          "failMessage": {
+            "header": "Header Text",
+            "description": "Description",
+            "seconds": 5 //seconds to display message on the screen. -1 means user needs to click button to dismiss message
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic", //required, only valid value for PerformanceCenterScriptedStep.logic
+            "setup": {
+              "nodeType": "PerformanceCenterTeeShotsScriptedSetup", //required. PerformanceCenterTeeShotsScriptedSetup or PerformanceCenterApproachScriptedSetup
+              "courseDistance": 5000, //optional. Defaults to 6900. Defines the course distance in meters(total length of all holes).
+              "club": "Drv", //Optional, defaults to Drv. Enum value defining the clubs as {Drv, _2W, _3W, ... _9W, _1H, _2H ... _9H, _1I, _2I, ..., _9I, _PW, _SW, _LW, _50W, _52W, _54W, _56W, _58W, _60W, Putt}
+              "hole": 1, //Optional. Defaults to -1. Don't define or use -1 for random hole for each shot during the step
+              "playerCategory": "Handicap", //Optional. Defaults to Handicap. Allowed values Handicap or TourPro
+              "hcp": 15, //Optional. Defaults to 15.
+              "gender": "Female" //Optional. Defaults to Male, allowed values are Male Female
+            },
+            "successCondition": { //optional. If missing, shots will always be considered not succesful
+              "nodeType": "PerformanceCenterScriptedConditions", //required. Only option for PerformanceCenterScriptedConditions
+              "shots": 1, //optional, defaults to 1. Defines how many shots need to meet the conditions to set the step as succesful
+              "conditionType": "And", //optional. defaults to And. Can be And or Or. If And, a shot is considered succesfull if all conditions in conditions array are met. For Or only 1 is enough.
+              "conditions": [ //optional. If empty all shots will be considered to meet the conditions
+                {
+                  "parameter": "Total", //required. Parameter against which shots are checked for. Can be any of {ClubSpeed, AttackAngle, ClubPath, DynamicLoft, FaceAngle, DynamicLie, ImpactHeight, SpinLoft, FaceToPath, SwingPlane, SwingDirection, LowPoint, ImpactOffset, Curve, Height, Carry, Total, Side, SideTotal, LandingAngle, FromPin, BallSpeed, SmashFactor, LaunchAngle, LaunchDirection, SpinRate, SpinAxis, StrokesGained}
+                  "min": 180.3, //float value. Optional, defaults to float.MinValue, the value is expressed in meters for distance parameters, meters per second for speeds and degrees for angles
+                  "max": 250.5 //float value. Optional, defaults to float.MaxValue, the value is expressed in meters for distance parameters, meters per second for speeds and degrees for angles
+                }
+              ]
+            },
+            "failCondition": { //optional. If missing, shots will always be considered not failed
+              "nodeType": "PerformanceCenterScriptedConditions", //required. Only option for PerformanceCenterScriptedConditions
+              "shots": 1, //optional, defaults to 1. Defines how many shots need to meet the conditions to set the step as succesful
+              "conditionType": "And", //optional. defaults to And. Can be And or Or. If And, a shot is considered succesfull if all conditions in conditions array are met. For Or only 1 is enough.
+              "conditions": [ //optional. If empty all shots will be considered to meet the conditions
+                {
+                  "parameter": "Total", //required. Parameter against which shots are checked for. Can be any of [ClubSpeed, AttackAngle, ClubPath, DynamicLoft, FaceAngle, DynamicLie, ImpactHeight, SpinLoft, FaceToPath, SwingPlane, SwingDirection, LowPoint, ImpactOffset, Curve, Height, Carry, Total, Side, SideTotal, LandingAngle, FromPin, BallSpeed, SmashFactor, LaunchAngle, LaunchDirection, SpinRate, SpinAxis, StrokesGained]
+                  "min": 180.3, //float value. Optional, defaults to float.MinValue, the value is expressed in meters for distance parameters, meters per second for speeds and degrees for angles
+                  "max": 250.5 //float value. Optional, defaults to float.MaxValue, the value is expressed in meters for distance parameters, meters per second for speeds and degrees for angles
+                }
+              ]
+            },
+            //Note. If both successCondition and failCondition are missing, step can't be completed. Feature can be used to allow players to hit shots until a new script startMode:Overwrite is computed in the background.
+            "canRetry": true, //optional, default is false. If true it allows user to retry failed step, otherwise it autoskips to next one
+            "skipOnSuccess": true //optional, default is false. If true it will continue to next step immediatly after successCondition is met. Otherwise it continues to next step when both fail and success conditions are met
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI", //required. PerformanceCenterScriptedUI is the only valid value for PerformanceCenterScriptedStep node.
+            "activeDataTiles": [ "Total", "Carry" ], //optional. If not defined it defaults to tiles set by TPS. A selection of data tiles displayed on the screen on the left side. Only first 8 will be used. Can be any of [ ClubSpeed, AttackAngle, ClubPath, DynamicLoft, FaceAngle, DynamicLie, ImpactHeight, SpinLoft, FaceToPath, SwingPlane, SwingDirection, LowPoint, ImpactOffset, Curve, Height, Carry, Total, Side, SideTotal, LandingAngle, FromPin, BallSpeed, SmashFactor, LaunchAngle, LaunchDirection, SpinRate, SpinAxis]
+            "shotListParameters": [ "Total", "Carry" ], //optional. If not defined defaults to [Total, Carry, BallSpeed]. Valid values are same as activeDataTiles + StrokesGained. Represents a list of available parameters to select for display in the shot list.
+            "defaultShotListParameter": "Total", //optional. If not defined defaults to Carry. Represents the parameter to display in the shot list by default.
+            "beforeShot": { //optional. If left empty, UI frames behave like in the default VG game. Defines UI behavior before taking a shot
+              "addFrames": [], //optional. Defines what other frames to open in addition to the default ones
+              "removeFrames": [ "Player" ], //optional. Defines what frames to not open from the ones which are opened by default by the game.
+              "disableFrames": [ "Minimap", "GoToSetup", "Tiles" ] //optional. Defines what frames to disable (ban user from interacting)
+            },
+            "duringShot": { //optional. If left empty, UI frames behave like in the default VG game. Defines UI behavior during shot playback
+              "addFrames": [], //same as beforeShot
+              "removeFrames": [], //same as beforeShot
+              "disableFrames": [] //same as beforeShot
+            },
+            "afterShot": { //optional. If left empty, UI frames behave like in the default VG game. Defines UI behavior after ball stops
+              "addFrames": [], //same as beforeShot
+              "removeFrames": [], //same as beforeShot
+              "disableFrames": [] //same as beforeShot
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep", //only PerformanceCenterScriptedStep is supported in a PerformanceCenterScriptedActivity
+          "id": "step-id", //optional, string unique id for external event reporting
+          "introMessage": {
+            "header": "Header Text",
+            "description": "Description",
+            "seconds": 5 //seconds to display message on the screen. -1 means user needs to click button to dismiss message
+          },
+          "successMessage": {
+            "header": "Header Text",
+            "description": "Description",
+            "seconds": 5 //seconds to display message on the screen. -1 means user needs to click button to dismiss message
+          },
+          "failMessage": {
+            "header": "Header Text",
+            "description": "Description",
+            "seconds": 5 //seconds to display message on the screen. -1 means user needs to click button to dismiss message
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic", //required, only valid value for PerformanceCenterScriptedStep.logic
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup", //required. PerformanceCenterTeeShotsScriptedSetup or PerformanceCenterApproachScriptedSetup
+              "minDistance": 50.0, //Optional. Defaults to 30 meters. Defines the min distance for the approach shot.
+              "maxDistance": 100.0, //Optional. Defaults to 220 meters. Defines the max distance for the approach shot.
+              //if minDistance != maxDistance, each shot in the step will be from a different random distance between the two values.
+              "club": "Drv", //Optional, defaults to Drv. Enum value defining the clubs as {Drv, _2W, _3W, ... _9W, _1H, _2H ... _9H, _1I, _2I, ..., _9I, _PW, _SW, _LW, _50W, _52W, _54W, _56W, _58W, _60W, Putt}
+              "hole": 1, //Optional. Defaults to -1. Don't define or use -1 for random hole for each shot during the step
+              "pin": 1, //Optional. Defaults to -1. Don't define or use -1 for random pin for each shot during the step.
+              "playerCategory": "Handicap", //Optional. Defaults to Handicap. Allowed values Handicap or TourPro
+              "hcp": 15, //Optional. Defaults to 15.
+              "gender": "Female" //Optional. Defaults to Male, allowed values are Male Female
+            },
+            "successCondition": { //optional. If missing, shots will always be considered not succesful
+              "nodeType": "PerformanceCenterScriptedConditions", //required. Only option for PerformanceCenterScriptedConditions
+              "shots": 1, //optional, defaults to 1. Defines how many shots need to meet the conditions to set the step as succesful
+              "conditionType": "And", //optional. defaults to And. Can be And or Or. If And, a shot is considered succesfull if all conditions in conditions array are met. For Or only 1 is enough.
+              "conditions": [ //optional. If empty all shots will be considered to meet the conditions
+                {
+                  "parameter": "Total", //required. Parameter against which shots are checked for. Can be any of {ClubSpeed, AttackAngle, ClubPath, DynamicLoft, FaceAngle, DynamicLie, ImpactHeight, SpinLoft, FaceToPath, SwingPlane, SwingDirection, LowPoint, ImpactOffset, Curve, Height, Carry, Total, Side, SideTotal, LandingAngle, FromPin, BallSpeed, SmashFactor, LaunchAngle, LaunchDirection, SpinRate, SpinAxis, StrokesGained}
+                  "min": 180.3, //float value. Optional, defaults to float.MinValue, the value is expressed in meters for distance parameters, meters per second for speeds and degrees for angles
+                  "max": 250.5 //float value. Optional, defaults to float.MaxValue, the value is expressed in meters for distance parameters, meters per second for speeds and degrees for angles
+                }
+              ]
+            },
+            "failCondition": { //optional. If missing, shots will always be considered not failed
+              "nodeType": "PerformanceCenterScriptedConditions", //required. Only option for PerformanceCenterScriptedConditions
+              "shots": 1, //optional, defaults to 1. Defines how many shots need to meet the conditions to set the step as succesful
+              "conditionType": "And", //optional. defaults to And. Can be And or Or. If And, a shot is considered succesfull if all conditions in conditions array are met. For Or only 1 is enough.
+              "conditions": [ //optional. If empty all shots will be considered to meet the conditions
+                {
+                  "parameter": "Total", //required. Parameter against which shots are checked for. Can be any of [ClubSpeed, AttackAngle, ClubPath, DynamicLoft, FaceAngle, DynamicLie, ImpactHeight, SpinLoft, FaceToPath, SwingPlane, SwingDirection, LowPoint, ImpactOffset, Curve, Height, Carry, Total, Side, SideTotal, LandingAngle, FromPin, BallSpeed, SmashFactor, LaunchAngle, LaunchDirection, SpinRate, SpinAxis, StrokesGained]
+                  "min": 180.3, //float value. Optional, defaults to float.MinValue, the value is expressed in meters for distance parameters, meters per second for speeds and degrees for angles
+                  "max": 250.5 //float value. Optional, defaults to float.MaxValue, the value is expressed in meters for distance parameters, meters per second for speeds and degrees for angles
+                }
+              ]
+            },
+            //Note. If both successCondition and failCondition are missing, step can't be completed. Feature can be used to allow players to hit shots until a new script startMode:Overwrite is computed in the background.
+            "canRetry": true, //optional, default is false. If true it allows user to retry failed step, otherwise it autoskips to next one
+            "skipOnSuccess": true //optional, default is false. If true it will continue to next step immediatly after successCondition is met. Otherwise it continues to next step when both fail and success conditions are met
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI", //required. PerformanceCenterScriptedUI is the only valid value for PerformanceCenterScriptedStep node.
+            "activeDataTiles": [ "Total", "Carry" ], //optional. If not defined it defaults to tiles set by TPS. A selection of data tiles displayed on the screen on the left side. Only first 8 will be used. Can be any of [ ClubSpeed, AttackAngle, ClubPath, DynamicLoft, FaceAngle, DynamicLie, ImpactHeight, SpinLoft, FaceToPath, SwingPlane, SwingDirection, LowPoint, ImpactOffset, Curve, Height, Carry, Total, Side, SideTotal, LandingAngle, FromPin, BallSpeed, SmashFactor, LaunchAngle, LaunchDirection, SpinRate, SpinAxis]
+            "shotListParameters": [ "Total", "Carry" ], //optional. If not defined defaults to [Total, Carry, BallSpeed]. Valid values are same as activeDataTiles + StrokesGained. Represents a list of available parameters to select for display in the shot list.
+            "defaultShotListParameter": "Total", //optional. If not defined defaults to Carry. Represents the parameter to display in the shot list by default.
+            "beforeShot": { //optional. If left empty, UI frames behave like in the default VG game. Defines UI behavior before taking a shot
+              "addFrames": [], //optional. Defines what other frames to open in addition to the default ones
+              "removeFrames": [ "Player" ], //optional. Defines what frames to not open from the ones which are opened by default by the game.
+              "disableFrames": [ "Minimap", "GoToSetup", "Tiles" ] //optional. Defines what frames to disable (ban user from interacting)
+            },
+            "duringShot": { //optional. If left empty, UI frames behave like in the default VG game. Defines UI behavior during shot playback
+              "addFrames": [], //same as beforeShot
+              "removeFrames": [], //same as beforeShot
+              "disableFrames": [] //same as beforeShot
+            },
+            "afterShot": { //optional. If left empty, UI frames behave like in the default VG game. Defines UI behavior after ball stops
+              "addFrames": [], //same as beforeShot
+              "removeFrames": [], //same as beforeShot
+              "disableFrames": [] //same as beforeShot
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
+
+//nodeType is required field which is used to parse the object. Depending on this field the object has different schema.
+//frames from addFrames, removeFrames, disableFrames are part of the enum {Player, AllTiles, Tiles, LandingCamera, BroadcastTiles, ClubDelivery, Markers, StrokesGainedSummaryTile, StrokesGainedShotResult, TargetCarry, ShotList, GoToSetup, Minimap}
