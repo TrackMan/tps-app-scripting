@@ -1,0 +1,193 @@
+{
+  "$schema": "../schema/1.0.0/app-scripting.schema.json",
+  "version": "1.0.0",
+  "id": "pc-ui-demo-script",
+  "startMode": "Overwrite",
+  "endMode": "Exit",
+  "activities": [
+    {
+      "nodeType": "PerformanceCenterScriptedActivity",
+      "id": "pc-demo",
+      "introMessage": {
+        "header": "Performance Center UI Demo",
+        "description": "Demonstrating UI configuration for Performance Center",
+        "seconds": 3
+      },
+      "endMessage": {
+        "header": "Demo Complete",
+        "description": "You have completed the Performance Center UI demo",
+        "seconds": 3
+      },
+      "steps": [
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "approach-step-1",
+          "introMessage": {
+            "header": "Approach Shot Practice",
+            "description": "Hit 3 approach shots with default UI",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Excellent approach shots!",
+            "description": "Great accuracy and distance control",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Keep practicing",
+            "description": "Focus on your approach technique",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 1,
+              "pin": 1,
+              "playerCategory": "Handicap",
+              "hcp": 10,
+              "gender": "Male",
+              "minDistance": 100,
+              "maxDistance": 150
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 3
+            }
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI"
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "approach-step-2",
+          "introMessage": {
+            "header": "Precision Approach",
+            "description": "Hit 2 precise approach shots with custom UI",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Perfect precision!",
+            "description": "Outstanding accuracy and strokes gained",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Try again",
+            "description": "Focus on precision and distance control",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 2,
+              "pin": 2,
+              "playerCategory": "Handicap",
+              "hcp": 8,
+              "gender": "Female",
+              "minDistance": 80,
+              "maxDistance": 120
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 2,
+              "conditionType": "And",
+              "conditions": [
+                {
+                  "parameter": "FromPin",
+                  "max": 10
+                },
+                {
+                  "parameter": "StrokesGained",
+                  "min": 0.1
+                }
+              ]
+            }
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "targetAvailable": true,
+            "activeDataTiles": ["FromPin", "StrokesGained", "Carry", "Total", "LaunchAngle"],
+            "shotListParameters": ["FromPin", "StrokesGained", "Carry", "Total", "LaunchAngle", "BallSpeed"],
+            "defaultShotListParameter": "FromPin",
+            "beforeShot": {
+              "addFrames": ["StrokesGainedSummaryTile", "TargetCarry"],
+              "removeFrames": ["BroadcastTiles"]
+            },
+            "duringShot": {
+              "disableFrames": ["GoToSetup", "ShotList"]
+            },
+            "afterShot": {
+              "addFrames": ["StrokesGainedShotResult", "AllTiles"],
+              "removeFrames": ["LandingCamera"]
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "tee-shot-step",
+          "introMessage": {
+            "header": "Tee Shot Challenge",
+            "description": "Hit 3 long tee shots with optimized UI",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Powerful drives!",
+            "description": "Excellent distance and accuracy off the tee",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Keep swinging",
+            "description": "Focus on your tee shot technique",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterTeeShotsScriptedSetup",
+              "hole": 3,
+              "playerCategory": "PGA",
+              "gender": "Male",
+              "courseDistance": 7200
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 3,
+              "conditionType": "And",
+              "conditions": [
+                {
+                  "parameter": "Total",
+                  "min": 250
+                },
+                {
+                  "parameter": "Curve",
+                  "min": -10,
+                  "max": 10
+                }
+              ]
+            }
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "targetAvailable": true,
+            "activeDataTiles": ["Total", "Carry", "Curve", "BallSpeed", "ClubSpeed", "LaunchAngle"],
+            "shotListParameters": ["Total", "Carry", "Curve", "BallSpeed", "ClubSpeed", "LaunchAngle", "SmashFactor"],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "addFrames": ["Player", "ClubDelivery"],
+              "removeFrames": ["Minimap", "StrokesGainedSummaryTile"]
+            },
+            "duringShot": {
+              "addFrames": ["LandingCamera"],
+              "removeFrames": ["Tiles"]
+            },
+            "afterShot": {
+              "addFrames": ["AllTiles", "ShotList"],
+              "disableFrames": []
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
