@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FacilitySelectorPortal } from './FacilitySelectorPortal';
+import { BuildVersion } from './BuildVersion';
 
 interface Facility {
   id: string;
@@ -48,7 +49,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           </div>
         </div>
         <div className="top-bar-right">
-          {/* Additional controls can go here */}
+          <BuildVersion />
         </div>
       </div>
     </div>

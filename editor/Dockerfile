@@ -2,6 +2,16 @@
 FROM node:18-alpine AS build
 WORKDIR /app
 
+# Build arguments for version info
+ARG REACT_APP_VERSION=1.0.0
+ARG REACT_APP_BUILD_TIME
+ARG REACT_APP_COMMIT_SHA
+
+# Set environment variables for the build
+ENV REACT_APP_VERSION=$REACT_APP_VERSION
+ENV REACT_APP_BUILD_TIME=$REACT_APP_BUILD_TIME
+ENV REACT_APP_COMMIT_SHA=$REACT_APP_COMMIT_SHA
+
 # Copy package files first for better Docker layer caching
 COPY package.json package-lock.json ./
 
@@ -12,7 +22,7 @@ RUN npm pkg delete devDependencies.@rollup/rollup-win32-x64-msvc && \
 # Copy source code
 COPY . .
 
-# Build the application
+# Build the application with version info
 RUN npm run build
 
 # Production stage

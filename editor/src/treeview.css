@@ -1007,3 +1007,23 @@ pre::-webkit-scrollbar-thumb:hover { background:#c2ccd5; }
   font-size: 14px;
 }
 
+/* Build Version Indicator */
+.build-version {
+  font-size: 11px;
+  color: #999;
+  font-family: 'Courier New', Consolas, monospace;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
+  opacity: 0.8;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: opacity 0.2s ease;
+}
+
+.build-version:hover {
+  opacity: 1;
+}
+
