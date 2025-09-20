@@ -4,6 +4,7 @@ import { ConditionEditor } from './ConditionEditor';
 import { EditPanel } from './EditPanel';
 import { CollapsibleSection } from './CollapsibleSection';
 import { SetupEditor } from './SetupEditor';
+import { UIEditor } from './UIEditor';
 
 interface NodeDetailsPanelProps {
   selectedNode: Activity | Step | null;
@@ -37,9 +38,9 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
             node={selectedNode}
             onChange={(patch: Partial<Activity> | Partial<Step>) => {
               if (isActivitySelected) {
-                updateActivity(selectedNode.id, patch as Partial<Activity>);
+                updateActivity(selectedNode.id!, patch as Partial<Activity>);
               } else if (isStepSelected) {
-                updateStep(selectedNode.id, patch as Partial<Step>);
+                updateStep(selectedNode.id!, patch as Partial<Step>);
               }
             }}
           />
@@ -56,7 +57,7 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
                 showConditionType={true}
                 onChange={(c) => {
                   const s = selectedNode as Step;
-                  updateStep(s.id, { logic: { ...s.logic, successCondition: c } });
+                  updateStep(s.id!, { logic: { ...s.logic, successCondition: c } });
                 }}
               />
               <ConditionEditor
@@ -65,13 +66,22 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
                 showConditionType={true}
                 onChange={(c) => {
                   const s = selectedNode as Step;
-                  updateStep(s.id, { logic: { ...s.logic, failCondition: c } });
+                  updateStep(s.id!, { logic: { ...s.logic, failCondition: c } });
                 }}
               />
               <div className="logic-flags">
-                <label>Can Retry: <input type="checkbox" checked={!!(selectedNode as Step).logic.canRetry} onChange={e => { const s = selectedNode as Step; updateStep(s.id, { logic: { ...s.logic, canRetry: e.target.checked } }); }} /></label>
-                <label>Skip On Success: <input type="checkbox" checked={!!(selectedNode as Step).logic.skipOnSuccess} onChange={e => { const s = selectedNode as Step; updateStep(s.id, { logic: { ...s.logic, skipOnSuccess: e.target.checked } }); }} /></label>
+                <label>Can Retry: <input type="checkbox" checked={!!(selectedNode as Step).logic.canRetry} onChange={e => { const s = selectedNode as Step; updateStep(s.id!, { logic: { ...s.logic, canRetry: e.target.checked } }); }} /></label>
+                <label>Skip On Success: <input type="checkbox" checked={!!(selectedNode as Step).logic.skipOnSuccess} onChange={e => { const s = selectedNode as Step; updateStep(s.id!, { logic: { ...s.logic, skipOnSuccess: e.target.checked } }); }} /></label>
               </div>
+            </CollapsibleSection>
+          )}
+          {/* UI Editor section for steps that support UI configuration */}
+          {isStepSelected && ((selectedNode as Step).nodeType === 'RangeAnalysisScriptedStep' || (selectedNode as Step).nodeType === 'PerformanceCenterScriptedStep') && (
+            <CollapsibleSection title="UI Configuration" className="ui-block" bodyClassName="ui-inner" defaultOpen persistKey={`${(selectedNode as Step).id}-ui`}>
+              <UIEditor
+                step={selectedNode as Step}
+                onUpdateStep={updateStep}
+              />
             </CollapsibleSection>
           )}
           <pre>{JSON.stringify(selectedNode, null, 2)}</pre>

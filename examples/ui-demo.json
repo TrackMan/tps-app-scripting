@@ -1,0 +1,123 @@
+{
+  "$schema": "../schema/1.0.0/app-scripting.schema.json",
+  "version": "1.0.0",
+  "id": "ui-demo-script",
+  "startMode": "Overwrite",
+  "endMode": "Exit",
+  "activities": [
+    {
+      "nodeType": "RangeAnalysisScriptedActivity",
+      "id": "ra-demo",
+      "introMessage": {
+        "header": "Range Analysis UI Demo",
+        "description": "Demonstrating UI configuration options",
+        "seconds": 3
+      },
+      "endMessage": {
+        "header": "Demo Complete",
+        "description": "You have completed the UI configuration demo",
+        "seconds": 3
+      },
+      "steps": [
+        {
+          "nodeType": "RangeAnalysisScriptedStep",
+          "id": "step-1",
+          "introMessage": {
+            "header": "Step 1: Basic Settings",
+            "description": "Hit 5 shots with default UI settings",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Great job!",
+            "description": "You hit 5 good shots",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Try again",
+            "description": "Keep practicing to improve your accuracy",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "RangeAnalysisScriptedLogic",
+            "setup": {
+              "nodeType": "RangeAnalysisScriptedSetup",
+              "club": "Drv",
+              "distance": 200
+            },
+            "successCondition": {
+              "nodeType": "RangeAnalysisScriptedConditions",
+              "shots": 5
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "RangeAnalysisScriptedUI"
+          }
+        },
+        {
+          "nodeType": "RangeAnalysisScriptedStep",
+          "id": "step-2",
+          "introMessage": {
+            "header": "Step 2: Custom UI Configuration",
+            "description": "Hit 3 accurate shots with customized UI",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Perfect!",
+            "description": "Excellent accuracy with custom UI",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Try again",
+            "description": "Focus on accuracy",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "RangeAnalysisScriptedLogic",
+            "setup": {
+              "nodeType": "RangeAnalysisScriptedSetup",
+              "club": "_7I",
+              "distance": 150
+            },
+            "successCondition": {
+              "nodeType": "RangeAnalysisScriptedConditions",
+              "shots": 3,
+              "conditionType": "And",
+              "conditions": [
+                {
+                  "parameter": "Total",
+                  "min": 140,
+                  "max": 160
+                },
+                {
+                  "parameter": "Curve",
+                  "min": -5,
+                  "max": 5
+                }
+              ]
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "RangeAnalysisScriptedUI",
+            "targetAvailable": true,
+            "activeDataTiles": ["Total", "Carry", "Curve", "BallSpeed"],
+            "shotListParameters": ["Total", "Carry", "Curve", "BallSpeed", "LaunchAngle"],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "addFrames": ["Player", "Tiles"],
+              "removeFrames": ["Minimap"]
+            },
+            "duringShot": {
+              "removeFrames": ["ShotList"],
+              "disableFrames": ["GoToSetup"]
+            },
+            "afterShot": {
+              "addFrames": ["ShotList", "AllTiles"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

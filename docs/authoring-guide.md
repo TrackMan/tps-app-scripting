@@ -143,6 +143,53 @@ Control UI visibility during different shot phases using `beforeShot`, `duringSh
 }
 ```
 
+### UI Configuration
+
+Steps can include a `ui` configuration object to customize the user interface. This is available for both Range Analysis and Performance Center steps.
+
+**Basic Properties**:
+- `targetAvailable` (boolean, default: true): Whether targeting functionality is available
+- `activeDataTiles` (ParameterName[], max 8): Custom data tiles displayed on screen
+- `shotListParameters` (ParameterName[]): Available parameters for shot list selection
+- `defaultShotListParameter` (ParameterName, default: "Carry"): Default parameter shown in shot list
+
+**UI Frame Actions**: Control frame visibility during different shot phases
+- `beforeShot`: Actions before taking a shot
+- `duringShot`: Actions during shot playback  
+- `afterShot`: Actions after ball stops
+
+**Complete Example**:
+```json
+{
+  "ui": {
+    "nodeType": "RangeAnalysisScriptedUI",
+    "targetAvailable": true,
+    "activeDataTiles": ["Total", "Carry", "Curve", "BallSpeed"],
+    "shotListParameters": ["Total", "Carry", "Curve", "BallSpeed", "LaunchAngle"],
+    "defaultShotListParameter": "Total",
+    "beforeShot": {
+      "addFrames": ["Player", "Tiles"],
+      "removeFrames": ["Minimap"]
+    },
+    "duringShot": {
+      "removeFrames": ["ShotList"],
+      "disableFrames": ["GoToSetup"]
+    },
+    "afterShot": {
+      "addFrames": ["ShotList", "AllTiles"]
+    }
+  }
+}
+```
+
+**Available Parameters**: ClubSpeed, AttackAngle, ClubPath, DynamicLoft, FaceAngle, DynamicLie, ImpactHeight, SpinLoft, FaceToPath, SwingPlane, SwingDirection, LowPoint, ImpactOffset, Curve, Height, Carry, Total, Side, SideTotal, LandingAngle, FromPin, BallSpeed, SmashFactor, LaunchAngle, LaunchDirection, SpinRate, SpinAxis, StrokesGained
+
+**Editor Integration**: The built-in editor provides a user-friendly interface for configuring UI settings:
+- Toggle target availability
+- Multi-select dropdowns for data tiles and parameters (with visual tags)
+- Frame action configuration for each shot phase
+- Real-time validation and preview
+
 ---
 
 ## File Anatomy
