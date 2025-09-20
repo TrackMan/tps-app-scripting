@@ -7,6 +7,7 @@ import { NodeDetailsPanel } from './components/NodeDetailsPanel';
 import { ScriptEditor } from './components/ScriptEditor';
 import { DialogManager } from './components/DialogManager';
 import { DocumentationViewer } from './components/DocumentationViewer';
+import { EnvironmentDebug } from './components/EnvironmentDebug';
 import { Activity, Step, ScriptData, isActivity, isStep, LogicNode } from './types';
 import { normalizeScript } from './normalizer';
 import { createActivity, createStep } from './factories';
@@ -410,6 +411,7 @@ export default function App() {
         activeTab={activeTab} 
         onTabChange={setActiveTab} 
       />
+      <EnvironmentDebug />
       {activeTab === 'edit' ? (
         <div className="tree-flex">
           <DialogManager

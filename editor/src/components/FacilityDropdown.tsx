@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from 'urql';
 import { GET_FACILITIES_WITH_ACCESS, TEST_QUERY } from '../graphql/queries';
 import { debugEnvironment } from '../lib/debug-env';
+import { logEnvironmentInfo, logAuthError } from '../utils/debugUtils';
 
 interface Facility {
   id: string;
@@ -43,6 +44,12 @@ export const FacilityDropdown: React.FC<FacilityDropdownProps> = ({
   // Log detailed debugging info
   console.log('🧪 Test Query Result:', testResult);
   console.log('🏢 Facilities Query Result:', { data, fetching, error });
+  
+  // Enhanced error logging
+  if (error && import.meta.env.DEV) {
+    logEnvironmentInfo();
+    logAuthError(error, 'Facilities Query');
+  }
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -144,7 +151,35 @@ export const FacilityDropdown: React.FC<FacilityDropdownProps> = ({
           <div className="facility-list">
             {error && (
               <div className="facility-error">
-                Error loading facilities: {error.message}
+                <div className="error-header">⚠️ Unable to load facilities</div>
+                <div className="error-message">{error.message}</div>
+                {error.message.includes('not authorized') && (
+                  <div className="error-help">
+                    <p><strong>This may be due to:</strong></p>
+                    <ul>
+                      <li>Insufficient permissions for your account</li>
+                      <li>Authentication session expired</li>
+                      <li>Network connectivity issues</li>
+                      <li>Environment configuration differences between local and cloud</li>
+                    </ul>
+                    <p><strong>Troubleshooting:</strong></p>
+                    <ul>
+                      <li>Try refreshing the page to restart authentication</li>
+                      <li>Check if you're logged into TrackMan services</li>
+                      <li>Contact support if the issue persists</li>
+                    </ul>
+                    <p><em>You can still use the editor to create and edit scripts without selecting a specific facility.</em></p>
+                  </div>
+                )}
+                <details className="error-debug">
+                  <summary>Debug Information</summary>
+                  <div className="debug-info">
+                    <p><strong>GraphQL Endpoint:</strong> {import.meta.env.VITE_BACKEND_BASE_URL || 'Not set'}/graphql</p>
+                    <p><strong>Login Service:</strong> {import.meta.env.VITE_LOGIN_BASE_URL || 'Not set'}</p>
+                    <p><strong>Environment:</strong> {import.meta.env.VITE_NODE_ENV || 'development'}</p>
+                    <p><strong>Error Details:</strong> {JSON.stringify(error, null, 2)}</p>
+                  </div>
+                </details>
               </div>
             )}
             
