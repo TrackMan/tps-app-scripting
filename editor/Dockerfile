@@ -3,14 +3,14 @@ FROM node:18-alpine AS build
 WORKDIR /app
 
 # Build arguments for version info
-ARG REACT_APP_VERSION=1.0.0
-ARG REACT_APP_BUILD_TIME
-ARG REACT_APP_COMMIT_SHA
+ARG VITE_APP_VERSION=1.0.0
+ARG VITE_APP_BUILD_TIME
+ARG VITE_APP_COMMIT_SHA
 
-# Set environment variables for the build
-ENV REACT_APP_VERSION=$REACT_APP_VERSION
-ENV REACT_APP_BUILD_TIME=$REACT_APP_BUILD_TIME
-ENV REACT_APP_COMMIT_SHA=$REACT_APP_COMMIT_SHA
+# Set environment variables for the build (Vite requires VITE_ prefix)
+ENV VITE_APP_VERSION=$VITE_APP_VERSION
+ENV VITE_APP_BUILD_TIME=$VITE_APP_BUILD_TIME
+ENV VITE_APP_COMMIT_SHA=$VITE_APP_COMMIT_SHA
 
 # Copy package files first for better Docker layer caching
 COPY package.json package-lock.json ./

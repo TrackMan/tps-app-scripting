@@ -14,11 +14,35 @@ export const getBuildInfo = (): BuildInfo => {
     };
   }
 
-  // In production, these will be replaced by build process
+  // Debug: log available environment variables in development/console
+  if (import.meta.env.DEV) {
+    console.log('Available Vite env vars:', {
+      VITE_APP_VERSION: import.meta.env.VITE_APP_VERSION,
+      VITE_APP_BUILD_TIME: import.meta.env.VITE_APP_BUILD_TIME, 
+      VITE_APP_COMMIT_SHA: import.meta.env.VITE_APP_COMMIT_SHA,
+    });
+  }
+
+  // In production, use Vite environment variables (VITE_ prefix required)
+  // Fallback to package version if environment variable not available
+  const envVersion = import.meta.env.VITE_APP_VERSION;
+  const version = envVersion && envVersion !== 'undefined' ? envVersion : '0.1.0';
+  const buildTime = import.meta.env.VITE_APP_BUILD_TIME;
+  const commitSha = import.meta.env.VITE_APP_COMMIT_SHA;
+
+  // Format the build time if available
+  let timestamp: string;
+  if (buildTime) {
+    // Convert ISO timestamp to readable format
+    timestamp = new Date(buildTime).toISOString().slice(0, 16).replace('T', ' ');
+  } else {
+    timestamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  }
+
   return {
-    version: process.env.REACT_APP_VERSION || 'unknown',
-    timestamp: process.env.REACT_APP_BUILD_TIME || new Date().toISOString().slice(0, 16).replace('T', ' '),
-    commit: process.env.REACT_APP_COMMIT_SHA?.slice(0, 7) || undefined,
+    version,
+    timestamp,
+    commit: commitSha?.slice(0, 7) || undefined,
   };
 };
 
