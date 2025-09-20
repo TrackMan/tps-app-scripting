@@ -351,17 +351,52 @@ export default function App() {
     const step = selectedNode as Step;
     if (step.logic && step.logic.successCondition && step.logic.failCondition) return;
     
-    const logicNodeType = step.nodeType?.replace('Step', 'Logic');
-    const condNodeType = step.nodeType?.replace('Step', 'Conditions');
-    const logicPatch: LogicNode = {
-      nodeType: logicNodeType,
-      setup: step.logic?.setup || {},
-      successCondition: step.logic?.successCondition || { nodeType: condNodeType, shots: 0, conditions: [] },
-      failCondition: step.logic?.failCondition || { nodeType: condNodeType, shots: 0, conditions: [] },
-      canRetry: step.logic?.canRetry ?? true,
-      skipOnSuccess: step.logic?.skipOnSuccess ?? false,
-    };
-    updateStep(step.id, { logic: logicPatch });
+    // Only add logic if it doesn't already exist, and avoid string replacement corruption
+    if (!step.nodeType || !step.id) return;
+    
+    // Create proper default logic based on step type without corrupting existing valid data
+    let logicPatch: Partial<LogicNode> = {};
+    
+    if (step.nodeType === 'RangeAnalysisScriptedStep') {
+      logicPatch = {
+        nodeType: 'RangeAnalysisScriptedLogic',
+        setup: step.logic?.setup || { nodeType: 'RangeAnalysisScriptedSetup' },
+        successCondition: step.logic?.successCondition || { 
+          nodeType: 'RangeAnalysisScriptedConditions', 
+          shots: 1, 
+          conditions: [] 
+        },
+        failCondition: step.logic?.failCondition || { 
+          nodeType: 'RangeAnalysisScriptedConditions', 
+          shots: 1, 
+          conditions: [] 
+        },
+        canRetry: step.logic?.canRetry ?? true,
+        skipOnSuccess: step.logic?.skipOnSuccess ?? false,
+      };
+    } else if (step.nodeType === 'PerformanceCenterScriptedStep') {
+      logicPatch = {
+        nodeType: 'PerformanceCenterScriptedLogic',
+        setup: step.logic?.setup || { nodeType: 'PerformanceCenterTeeShotsScriptedSetup' },
+        successCondition: step.logic?.successCondition || { 
+          nodeType: 'PerformanceCenterScriptedConditions', 
+          shots: 1, 
+          conditions: [] 
+        },
+        failCondition: step.logic?.failCondition || { 
+          nodeType: 'PerformanceCenterScriptedConditions', 
+          shots: 1, 
+          conditions: [] 
+        },
+        canRetry: step.logic?.canRetry ?? true,
+        skipOnSuccess: step.logic?.skipOnSuccess ?? false,
+      };
+    } else {
+      // Unknown step type, don't modify
+      return;
+    }
+    
+    updateStep(step.id, { logic: logicPatch } as any);
   }, [selectedNode]);
 
   return (

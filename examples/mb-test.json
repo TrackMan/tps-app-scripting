@@ -1,0 +1,280 @@
+{
+  "id": "sample-custom-test",
+  "activities": [
+    {
+      "nodeType": "PerformanceCenterScriptedActivity",
+      "id": "custom-test-sample",
+      "introMessage": {
+        "header": "CUSTOM TEST",
+        "description": "You will be hitting 4 shots with different clubs in varied scenarios",
+        "seconds": 6
+      },
+      "endMessage": {
+        "header": "TEST ENDED",
+        "description": "",
+        "seconds": 6
+      },
+      "steps": [
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-1-sample-id",
+          "introMessage": {
+            "header": "Shot 1",
+            "description": "Hit your driver off the tee",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterTeeShotsScriptedSetup",
+              "hole": 2,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "courseDistance": 5000,
+              "club": "Drv"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "failCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 0,
+              "conditions": []
+            },
+            "canRetry": true,
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [
+                "Player",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult",
+                "TargetCarry"
+              ],
+              "disableFrames": [
+                "Tiles",
+                "ShotList",
+                "GoToSetup",
+                "Minimap"
+              ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "LandingCamera",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery",
+                "Tiles",
+                "Player",
+                "Minimap"
+              ]
+            },
+            "afterShot": {
+              "removeFrames": [
+                "GoToSetup",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult"
+              ],
+              "addFrames": [
+                "AllTiles"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-2-sample-id",
+          "introMessage": {
+            "header": "Shot 2",
+            "description": "Hit a 7-iron for your approach shot",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 1,
+              "pin": 3,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "minDistance": 150,
+              "maxDistance": 150,
+              "club": "_7I"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total"
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-3-sample-id",
+          "introMessage": {
+            "header": "Shot 3",
+            "description": "Hit your driver off the tee",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterTeeShotsScriptedSetup",
+              "hole": 2,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "courseDistance": 5000,
+              "club": "Drv"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total"
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-4-sample-id",
+          "introMessage": {
+            "header": "Shot 4",
+            "description": "Hit a PW for your approach shot",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 3,
+              "pin": 1,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "minDistance": 150,
+              "maxDistance": 150,
+              "club": "_PW"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total"
+          }
+        }
+      ]
+    }
+  ],
+  "startMode": "Append",
+  "endMode": "Wait"
+}
