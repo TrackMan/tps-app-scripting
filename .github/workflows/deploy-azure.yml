@@ -12,8 +12,8 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: 'tps-app-scripting-editor'
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/app-scripting-editor
+  REGISTRY: tpsappscriptingacr.azurecr.io
+  IMAGE_NAME: app-scripting-editor
 
 jobs:
   deploy:
