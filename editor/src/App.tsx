@@ -57,6 +57,49 @@ export default function App() {
   const { script } = state;
   const { isValid, errors: validationErrors } = state.validation;
 
+  // Handle OAuth callback - monitor URL changes
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      const currentUrl = window.location.href;
+      const urlPath = window.location.pathname;
+      
+      // Check if we're on the callback route with an authorization code
+      console.log('🔍 Checking OAuth callback:', { urlPath, hasCode: currentUrl.includes('code=') });
+      
+      if (urlPath === '/account/callback' && currentUrl.includes('code=')) {
+        console.log('🔄 OAuth callback detected:', currentUrl);
+        try {
+          const { authService } = await import('./lib/auth-service');
+          await authService.handleOAuthCallback(currentUrl);
+          
+          // Clear the URL parameters and redirect to main app
+          window.history.replaceState({}, document.title, '/');
+          
+          console.log('✅ OAuth login successful, reloading app...');
+          window.location.reload();
+        } catch (error) {
+          console.error('❌ OAuth callback failed:', error);
+          alert('Login failed: ' + (error as Error).message);
+          window.history.replaceState({}, document.title, '/');
+        }
+      }
+    };
+
+    // Handle callback on mount
+    handleOAuthCallback();
+
+    // Also listen for URL changes (in case of navigation without page reload)
+    const handlePopState = () => {
+      handleOAuthCallback();
+    };
+    
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
   // One-time migration effect: ensure any pre-existing steps have required setup & at least one condition
   const [migrationComplete, setMigrationComplete] = useState(false);
   useEffect(() => {

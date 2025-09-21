@@ -34,6 +34,58 @@ html, body, #root { height:100%; font-family: system-ui, 'Segoe UI', Roboto, Oxy
 .top-bar-right {
   display: flex;
   align-items: center;
+  gap: 12px;
+}
+
+.top-bar-auth {
+  display: flex;
+  align-items: center;
+}
+
+.top-bar-auth .auth-button {
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.top-bar-auth .auth-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.top-bar-auth .auth-button.login {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.top-bar-auth .auth-button.login:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.top-bar-auth .auth-button.logout {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.top-bar-auth .auth-button.logout:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.top-bar-auth .auth-loading {
+  color: #ffffff;
+  font-size: 14px;
+  opacity: 0.8;
 }
 
 .top-bar-logo { 

@@ -2,6 +2,7 @@ interface TokenResponse {
   access_token: string;
   token_type: string;
   expires_in: number;
+  refresh_token?: string;
   scope?: string;
 }
 
@@ -9,6 +10,7 @@ interface TokenData {
   accessToken: string;
   tokenType: string;
   expiresAt: Date;
+  refreshToken?: string;
   scope?: string;
 }
 
@@ -208,10 +210,203 @@ class AuthService {
   }
 
   /**
-   * Check if user is authenticated
+   * Logout and clear server-side OAuth session
+   */
+  public async logoutOAuth(): Promise<void> {
+    const { ENV_URLS } = await import('./env');
+    
+    console.log('🔓 Starting OAuth logout...');
+    
+    // Clear local token first
+    this.clearToken();
+    
+    // For now, let's do a simpler approach: 
+    // 1. Clear local tokens
+    // 2. Open logout URL in a new tab to clear server session
+    // 3. Keep user in the app with clear feedback
+    
+    try {
+      // Open logout endpoint in new tab to clear server session silently
+      const logoutUrl = `${ENV_URLS.loginBase}/connect/endsession`;
+      console.log('🌐 Opening logout URL in background:', logoutUrl);
+      
+      // Open in a new tab that will close itself
+      const logoutTab = window.open(logoutUrl, '_blank', 'width=1,height=1');
+      
+      // Close the logout tab after a brief delay
+      setTimeout(() => {
+        if (logoutTab) {
+          logoutTab.close();
+        }
+      }, 2000);
+      
+      console.log('✅ Local logout completed. Server session cleared in background.');
+      
+    } catch (error) {
+      console.warn('⚠️ Could not clear server session:', error);
+      console.log('✅ Local logout completed (server session may still be active)');
+    }
+  }
+
+  /**
+   * Check if user is authenticated (has OAuth user tokens)
    */
   public isAuthenticated(): boolean {
+    // Only consider user authenticated if we have valid OAuth tokens with proper scopes
+    if (!this.tokenData || !this.isTokenValid()) {
+      return false;
+    }
+    
+    // Check if this is a user token (has user-specific scopes) vs client credential token
+    const scope = this.tokenData.scope || '';
+    const hasUserScopes = scope.includes('openid') || scope.includes('profile') || scope.includes('email');
+    
+    console.log('🔍 Authentication check:', {
+      hasToken: !!this.tokenData,
+      isValid: this.isTokenValid(),
+      scope: scope,
+      hasUserScopes: hasUserScopes
+    });
+    
+    return hasUserScopes;
+  }
+
+  /**
+   * Check if we have any valid token (user or client credential)
+   */
+  public hasValidToken(): boolean {
     return this.tokenData !== null && this.isTokenValid();
+  }
+
+  /**
+   * Start OAuth2 Authorization Code flow - redirects to login server
+   */
+  public async startOAuthLogin(): Promise<void> {
+    const { buildAuthorizationUrl, generateCodeVerifier, generateState } = await import('./oauth2-utils');
+    const { ENV_URLS, OAUTH_CONFIG } = await import('./env');
+
+    console.log('🚀 Starting OAuth login flow...');
+    console.log('OAuth Config:', {
+      webClientId: OAUTH_CONFIG.webClientId,
+      redirectUri: OAUTH_CONFIG.redirectUri,
+      loginBaseUrl: ENV_URLS.loginBase,
+      scopes: OAUTH_CONFIG.scopes
+    });
+
+    // Check for required configuration
+    if (!OAUTH_CONFIG.webClientId) {
+      console.error('❌ Missing OAuth client ID');
+      throw new Error('OAuth client ID is not configured');
+    }
+    if (!OAUTH_CONFIG.redirectUri) {
+      console.error('❌ Missing OAuth redirect URI');
+      throw new Error('OAuth redirect URI is not configured');
+    }
+    if (!ENV_URLS.loginBase) {
+      console.error('❌ Missing login base URL');
+      throw new Error('Login base URL is not configured');
+    }
+
+    // Generate PKCE parameters
+    const codeVerifier = generateCodeVerifier();
+    const state = generateState();
+
+    console.log('📝 Generated PKCE parameters:', {
+      codeVerifierLength: codeVerifier.length,
+      stateLength: state.length
+    });
+
+    // Store PKCE parameters in sessionStorage for callback
+    sessionStorage.setItem('oauth_code_verifier', codeVerifier);
+    sessionStorage.setItem('oauth_state', state);
+
+    // Build authorization URL
+    const authUrl = await buildAuthorizationUrl(
+      {
+        clientId: OAUTH_CONFIG.webClientId,
+        loginBaseUrl: ENV_URLS.loginBase,
+        redirectUri: OAUTH_CONFIG.redirectUri,
+        scopes: OAUTH_CONFIG.scopes
+      },
+      codeVerifier,
+      state
+    );
+
+    console.log('🔗 Authorization URL:', authUrl);
+    console.log('🌐 About to redirect to TrackMan login server...');
+    
+    // Redirect to login server
+    window.location.href = authUrl;
+  }
+
+  /**
+   * Handle OAuth callback - exchange authorization code for tokens
+   */
+  public async handleOAuthCallback(callbackUrl: string): Promise<void> {
+    const { parseAuthorizationCallback, exchangeCodeForToken } = await import('./oauth2-utils');
+    const { ENV_URLS, OAUTH_CONFIG } = await import('./env');
+
+    console.log('🔄 Processing OAuth callback...');
+
+    // Parse callback URL
+    const { code, state, error, error_description } = parseAuthorizationCallback(callbackUrl);
+
+    if (error) {
+      throw new Error(`OAuth error: ${error} - ${error_description}`);
+    }
+
+    if (!code || !state) {
+      throw new Error('Missing authorization code or state parameter');
+    }
+
+    // Verify state parameter
+    const storedState = sessionStorage.getItem('oauth_state');
+    if (state !== storedState) {
+      throw new Error('Invalid state parameter - possible CSRF attack');
+    }
+
+    // Get stored code verifier
+    const codeVerifier = sessionStorage.getItem('oauth_code_verifier');
+    if (!codeVerifier) {
+      throw new Error('Missing code verifier - OAuth flow was not properly initiated');
+    }
+
+    try {
+      // Exchange code for tokens
+      const tokenResponse = await exchangeCodeForToken(
+        {
+          clientId: OAUTH_CONFIG.webClientId,
+          clientSecret: OAUTH_CONFIG.webClientSecret,
+          loginBaseUrl: ENV_URLS.loginBase,
+          redirectUri: OAUTH_CONFIG.redirectUri,
+          scopes: OAUTH_CONFIG.scopes
+        },
+        code,
+        codeVerifier
+      );
+
+      // Convert to internal format
+      const tokenData: TokenData = {
+        accessToken: tokenResponse.access_token,
+        tokenType: tokenResponse.token_type,
+        expiresAt: new Date(Date.now() + tokenResponse.expires_in * 1000),
+        refreshToken: tokenResponse.refresh_token,
+        scope: tokenResponse.scope
+      };
+
+      // Store tokens
+      this.tokenData = tokenData;
+      this.saveTokenToStorage();
+
+      console.log('✅ OAuth login successful!');
+      console.log('  Token expires at:', tokenData.expiresAt);
+      console.log('  Scopes:', tokenData.scope);
+
+    } finally {
+      // Clean up session storage
+      sessionStorage.removeItem('oauth_code_verifier');
+      sessionStorage.removeItem('oauth_state');
+    }
   }
 
   /**

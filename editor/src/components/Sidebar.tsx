@@ -117,6 +117,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       setTimeout(() => setExecMessage(null), 6000);
     }
   }
+
   return (
     <div className="tree-sidebar">
       <div className="sidebar-content">

@@ -68,6 +68,42 @@ export const ENV_URLS = {
   oauthToken: loginBase ? `${loginBase}/connect/token` : import.meta.env.VITE_OAUTH_TOKEN_URL || '',
 };
 
+// OAuth Web Client Configuration (for authorization code flow)
+export const OAUTH_CONFIG = {
+  webClientId: (() => {
+    // Try runtime environment first (for Azure App Service)
+    const runtimeClientId = (window as any)?.env?.VITE_OAUTH_WEB_CLIENT_ID;
+    if (runtimeClientId && runtimeClientId !== '__VITE_OAUTH_WEB_CLIENT_ID__') {
+      return runtimeClientId;
+    }
+    return import.meta.env.VITE_OAUTH_WEB_CLIENT_ID || '';
+  })(),
+  webClientSecret: (() => {
+    // Try runtime environment first (for Azure App Service)
+    const runtimeClientSecret = (window as any)?.env?.VITE_OAUTH_WEB_CLIENT_SECRET;
+    if (runtimeClientSecret && runtimeClientSecret !== '__VITE_OAUTH_WEB_CLIENT_SECRET__') {
+      return runtimeClientSecret;
+    }
+    return import.meta.env.VITE_OAUTH_WEB_CLIENT_SECRET || '';
+  })(),
+  redirectUri: (() => {
+    // Try runtime environment first (for Azure App Service)
+    const runtimeRedirectUri = (window as any)?.env?.VITE_OAUTH_REDIRECT_URI;
+    if (runtimeRedirectUri && runtimeRedirectUri !== '__VITE_OAUTH_REDIRECT_URI__') {
+      return runtimeRedirectUri;
+    }
+    return import.meta.env.VITE_OAUTH_REDIRECT_URI || '';
+  })(),
+  scopes: [
+    'openid',
+    'profile', 
+    'email',
+    'offline_access',
+    'https://auth.trackman.com/dr/cloud',
+    'https://auth.trackman.com/authorization'
+  ]
+};
+
 export function assertRequiredUrls() {
   if (!ENV_URLS.graphql) {
     throw new Error('GraphQL endpoint is not configured. Set VITE_BACKEND_BASE_URL or VITE_GRAPHQL_URL.');

@@ -4,6 +4,9 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   root: '.',
+  server: {
+    port: 5000,
+  },
   build: {
     // Ensure proper cache-busting for Azure Front Door
     rollupOptions: {

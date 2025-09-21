@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FacilitySelectorPortal } from './FacilitySelectorPortal';
 import { BuildVersion } from './BuildVersion';
+import { useAuth } from '../lib/AuthProvider';
 
 interface Facility {
   id: string;
@@ -21,6 +22,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   selectedFacilityId,
   onFacilitySelect 
 }) => {
+  const { isAuthenticated, isLoading, loginWithOAuth, logout } = useAuth();
+  
   const handleFacilitySelect = (facility: Facility | null) => {
     onFacilitySelect(facility);
     console.log('Selected facility:', facility);
@@ -49,6 +52,19 @@ export const TopBar: React.FC<TopBarProps> = ({
           </div>
         </div>
         <div className="top-bar-right">
+          <div className="top-bar-auth">
+            {isLoading ? (
+              <span className="auth-loading">🔄</span>
+            ) : isAuthenticated ? (
+              <button onClick={logout} className="auth-button logout">
+                🔓 Logout
+              </button>
+            ) : (
+              <button onClick={loginWithOAuth} className="auth-button login">
+                🔑 Login
+              </button>
+            )}
+          </div>
           <BuildVersion />
         </div>
       </div>

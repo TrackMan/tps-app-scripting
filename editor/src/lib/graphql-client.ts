@@ -17,7 +17,13 @@ let clientPromise: Promise<any> | null = null;
 let cachedClient: any = null;
 
 async function createAuthedClient() {
-  const token = await authService.getAccessToken().catch(() => null);
+  // Only use existing tokens, don't automatically fetch new ones
+  // This prevents automatic client credential authentication on app startup
+  const hasValidToken = authService.hasValidToken();
+  const token = hasValidToken ? await authService.getAccessToken().catch(() => null) : null;
+  
+  console.log('🌐 Creating GraphQL client:', { hasValidToken, hasToken: !!token });
+  
   return createClient({
     url: graphqlUrl,
     requestPolicy: 'cache-and-network',
@@ -28,6 +34,7 @@ async function createAuthedClient() {
             (e: any) => e.extensions?.code === 'UNAUTHENTICATED' || e.extensions?.code === 'UNAUTHORIZED'
           );
           if (isAuthError) {
+            console.log('🚫 GraphQL authentication error, clearing tokens');
             authService.clearToken();
           }
         },
