@@ -20,8 +20,17 @@ function stripTrailingSlash(url: string): string {
 }
 
 const backendBase = (() => {
+  // Try runtime environment first (for Azure App Service)
+  const runtimeBase = (window as any)?.env?.VITE_BACKEND_BASE_URL;
+  if (runtimeBase && runtimeBase !== '__VITE_BACKEND_BASE_URL__') {
+    return stripTrailingSlash(runtimeBase);
+  }
+  
+  // Fall back to build-time environment
   const base = import.meta.env.VITE_BACKEND_BASE_URL?.trim();
   if (base) return stripTrailingSlash(base);
+  
+  // Legacy fallback
   const legacyGraphql = import.meta.env.VITE_GRAPHQL_URL?.trim();
   if (legacyGraphql) {
     console.warn('[env] Using legacy VITE_GRAPHQL_URL as backend base fallback');
@@ -32,8 +41,17 @@ const backendBase = (() => {
 })();
 
 const loginBase = (() => {
+  // Try runtime environment first (for Azure App Service)
+  const runtimeBase = (window as any)?.env?.VITE_LOGIN_BASE_URL;
+  if (runtimeBase && runtimeBase !== '__VITE_LOGIN_BASE_URL__') {
+    return stripTrailingSlash(runtimeBase);
+  }
+  
+  // Fall back to build-time environment
   const base = import.meta.env.VITE_LOGIN_BASE_URL?.trim();
   if (base) return stripTrailingSlash(base);
+  
+  // Legacy fallback
   const legacyToken = import.meta.env.VITE_OAUTH_TOKEN_URL?.trim();
   if (legacyToken) {
     console.warn('[env] Using legacy VITE_OAUTH_TOKEN_URL as login base fallback');

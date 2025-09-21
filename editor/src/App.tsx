@@ -6,7 +6,7 @@ import { Sidebar } from './components/Sidebar';
 import { NodeDetailsPanel } from './components/NodeDetailsPanel';
 import { ScriptEditor } from './components/ScriptEditor';
 import { DialogManager } from './components/DialogManager';
-import { DocumentationViewer } from './components/DocumentationViewer';
+import { DocViewer } from './components/DocViewer';
 import { EnvironmentDebug } from './components/EnvironmentDebug';
 import { Activity, Step, ScriptData, isActivity, isStep, LogicNode } from './types';
 import { normalizeScript } from './normalizer';
@@ -468,7 +468,7 @@ export default function App() {
         </div>
       ) : (
         <div className="documentation-flex">
-          <DocumentationViewer />
+          <DocViewer />
         </div>
       )}
     </div>

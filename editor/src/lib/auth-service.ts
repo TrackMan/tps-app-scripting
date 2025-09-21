@@ -68,8 +68,18 @@ class AuthService {
   private async fetchNewToken(): Promise<TokenData> {
   const { ENV_URLS } = await import('./env');
   const tokenUrl = ENV_URLS.oauthToken;
-  const clientId = import.meta.env.VITE_OAUTH_CLIENT_ID;
-  const clientSecret = import.meta.env.VITE_OAUTH_CLIENT_SECRET;
+  
+  // Try runtime environment first (for Azure App Service)
+  const runtimeClientId = (window as any)?.env?.VITE_OAUTH_CLIENT_ID;
+  const runtimeClientSecret = (window as any)?.env?.VITE_OAUTH_CLIENT_SECRET;
+  
+  const clientId = (runtimeClientId && runtimeClientId !== '__VITE_OAUTH_CLIENT_ID__') 
+    ? runtimeClientId 
+    : import.meta.env.VITE_OAUTH_CLIENT_ID;
+    
+  const clientSecret = (runtimeClientSecret && runtimeClientSecret !== '__VITE_OAUTH_CLIENT_SECRET__') 
+    ? runtimeClientSecret 
+    : import.meta.env.VITE_OAUTH_CLIENT_SECRET;
 
     // Debug logging for OAuth configuration
     console.log('🔍 OAuth Debug Info:');
