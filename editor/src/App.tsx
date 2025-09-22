@@ -422,7 +422,7 @@ export default function App() {
     // Ensure unique step id within the parent activity to avoid selection confusion
     const parent = script.activities.find(a => a.id === targetParentActivityId);
     if (parent) {
-      console.log('🔍 Found parent activity:', parent.id, 'existing steps:', parent.steps.map(s => s.id));
+
       let baseId = step.id?.trim() || 'step';
       let candidate = baseId;
       let counter = 1;
@@ -433,11 +433,11 @@ export default function App() {
       }
       if (candidate !== step.id) {
         step = { ...step, id: candidate } as Step;
-        console.log('🔍 Updated step id to:', candidate);
+
       }
     }
     
-    console.log('🔍 Dispatching ADD_STEP with:', { parentActivityId: targetParentActivityId, stepId: step.id });
+
     dispatch({ type: 'ADD_STEP', parentActivityId: targetParentActivityId, step, select: true });
   };
 

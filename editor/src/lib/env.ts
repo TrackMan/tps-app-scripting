@@ -87,12 +87,10 @@ export const OAUTH_CONFIG = {
     return import.meta.env.VITE_OAUTH_WEB_CLIENT_SECRET || '';
   })(),
   redirectUri: (() => {
-    // Try runtime environment first (for Azure App Service)
-    const runtimeRedirectUri = (window as any)?.env?.VITE_OAUTH_REDIRECT_URI;
-    if (runtimeRedirectUri && runtimeRedirectUri !== '__VITE_OAUTH_REDIRECT_URI__') {
-      return runtimeRedirectUri;
-    }
-    return import.meta.env.VITE_OAUTH_REDIRECT_URI || '';
+    // Build redirect URI dynamically from current window location
+    // This automatically works for localhost, dev, staging, and production environments
+    const origin = window.location.origin;
+    return `${origin}/account/callback`;
   })(),
   scopes: [
     'openid',

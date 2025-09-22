@@ -7,7 +7,7 @@ interface TokenResponse {
 }
 
 interface TokenData {
- cessToken: string;
+ sToken: string;
   tokenType: string;
   expiresAt: Date;
   refreshToken?: string;
