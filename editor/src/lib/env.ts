@@ -69,23 +69,35 @@ export const ENV_URLS = {
 };
 
 // OAuth Web Client Configuration (for authorization code flow)
+// Function to get OAuth client ID with proper runtime support
+function getOAuthClientId(): string {
+  // Try runtime environment first (for Azure App Service)
+  const runtimeClientId = (window as any)?.env?.VITE_OAUTH_WEB_CLIENT_ID;
+  if (runtimeClientId && runtimeClientId !== '__VITE_OAUTH_WEB_CLIENT_ID__') {
+    return runtimeClientId;
+  }
+  // Fallback to build-time environment variable
+  return import.meta.env.VITE_OAUTH_WEB_CLIENT_ID || '';
+}
+
+// Function to get OAuth client secret with proper runtime support  
+function getOAuthClientSecret(): string {
+  // Try runtime environment first (for Azure App Service)
+  const runtimeClientSecret = (window as any)?.env?.VITE_OAUTH_WEB_CLIENT_SECRET;
+  if (runtimeClientSecret && runtimeClientSecret !== '__VITE_OAUTH_WEB_CLIENT_SECRET__') {
+    return runtimeClientSecret;
+  }
+  // Fallback to build-time environment variable
+  return import.meta.env.VITE_OAUTH_WEB_CLIENT_SECRET || '';
+}
+
 export const OAUTH_CONFIG = {
-  webClientId: (() => {
-    // Try runtime environment first (for Azure App Service)
-    const runtimeClientId = (window as any)?.env?.VITE_OAUTH_WEB_CLIENT_ID;
-    if (runtimeClientId && runtimeClientId !== '__VITE_OAUTH_WEB_CLIENT_ID__') {
-      return runtimeClientId;
-    }
-    return import.meta.env.VITE_OAUTH_WEB_CLIENT_ID || '';
-  })(),
-  webClientSecret: (() => {
-    // Try runtime environment first (for Azure App Service)
-    const runtimeClientSecret = (window as any)?.env?.VITE_OAUTH_WEB_CLIENT_SECRET;
-    if (runtimeClientSecret && runtimeClientSecret !== '__VITE_OAUTH_WEB_CLIENT_SECRET__') {
-      return runtimeClientSecret;
-    }
-    return import.meta.env.VITE_OAUTH_WEB_CLIENT_SECRET || '';
-  })(),
+  get webClientId() {
+    return getOAuthClientId();
+  },
+  get webClientSecret() {
+    return getOAuthClientSecret();
+  },
   redirectUri: (() => {
     // Build redirect URI dynamically from current window location
     // This automatically works for localhost, dev, staging, and production environments
