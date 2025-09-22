@@ -60,7 +60,7 @@ export const FacilitySelectorPortal: React.FC<FacilitySelectorPortalProps> = ({
       const facilityToRestore = facilities.find((facility: Facility) => facility.id === selectedFacilityId);
       if (facilityToRestore) {
         onFacilitySelect(facilityToRestore);
-        console.log('Restored facility object from facilities list:', facilityToRestore);
+
       }
     }
   }, [facilities, selectedFacilityId, selectedFacility, onFacilitySelect]);
@@ -94,25 +94,6 @@ export const FacilitySelectorPortal: React.FC<FacilitySelectorPortalProps> = ({
 
   // Get facilities for current tab
   const currentFacilities = groupedFacilities[activeTab];
-
-  // Log access information for debugging
-  if (data?.facilities?.items && facilities.length > 0) {
-    console.log('🔍 Facility Access Debug:');
-    facilities.slice(0, 3).forEach((facility: Facility) => {
-      console.log(`  ${facility.name}:`, {
-        kind: facility.kind,
-        developerAccess: facility.developerAccess,
-        apiDeveloperAccess: facility.apiDeveloperAccess,
-        hasAccess: hasDeveloperAccess(facility)
-      });
-    });
-    console.log(`📊 Grouped facilities:`, {
-      Total: facilitiesWithAccess.length,
-      All: groupedFacilities.All.length,
-      Indoor: groupedFacilities.Indoor.length,
-      Range: groupedFacilities.Range.length
-    });
-  }
 
   const handleFacilityClick = (facility: Facility) => {
     if (selectedFacility?.id === facility.id) {

@@ -26,7 +26,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   
   const handleFacilitySelect = (facility: Facility | null) => {
     onFacilitySelect(facility);
-    console.log('Selected facility:', facility);
+
     // - Storing selection in localStorage
   };
 

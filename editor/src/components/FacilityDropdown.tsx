@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from 'urql';
 import { GET_FACILITIES_WITH_ACCESS, TEST_QUERY } from '../graphql/queries';
 import { debugEnvironment } from '../lib/debug-env';
-import { logEnvironmentInfo, logAuthError } from '../utils/debugUtils';
+
 
 interface Facility {
   id: string;
@@ -42,13 +42,11 @@ export const FacilityDropdown: React.FC<FacilityDropdownProps> = ({
   }, []);
 
   // Log detailed debugging info
-  console.log('🧪 Test Query Result:', testResult);
-  console.log('🏢 Facilities Query Result:', { data, fetching, error });
+
   
   // Enhanced error logging
   if (error && import.meta.env.DEV) {
-    logEnvironmentInfo();
-    logAuthError(error, 'Facilities Query');
+    console.error('Facilities Query Error:', error);
   }
 
   // Close dropdown when clicking outside

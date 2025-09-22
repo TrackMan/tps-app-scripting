@@ -14,14 +14,7 @@ export const getBuildInfo = (): BuildInfo => {
     };
   }
 
-  // Debug: log available environment variables in development/console
-  if (import.meta.env.DEV) {
-    console.log('Available Vite env vars:', {
-      VITE_APP_VERSION: import.meta.env.VITE_APP_VERSION,
-      VITE_APP_BUILD_TIME: import.meta.env.VITE_APP_BUILD_TIME, 
-      VITE_APP_COMMIT_SHA: import.meta.env.VITE_APP_COMMIT_SHA,
-    });
-  }
+
 
   // In production, use Vite environment variables (VITE_ prefix required)
   // Fallback to package version if environment variable not available

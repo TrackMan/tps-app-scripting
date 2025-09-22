@@ -76,14 +76,10 @@ export async function buildAuthorizationUrl(
 
   // Add prompt parameter if provided (e.g., 'login' to force login screen)
   if (prompt) {
-    console.log('🔑 Adding prompt parameter to URL:', prompt);
     params.set('prompt', prompt);
-  } else {
-    console.log('⚠️ No prompt parameter to add to URL');
   }
 
   const finalUrl = `${config.loginBaseUrl}/connect/authorize?${params.toString()}`;
-  console.log('🔗 Final authorization URL with all parameters:', finalUrl);
   return finalUrl;
 }
 
@@ -136,19 +132,11 @@ export async function exchangeCodeForToken(
   // For confidential clients, include client_secret in body (like portal does)
   if (config.clientSecret) {
     body.append('client_secret', config.clientSecret);
-    console.log('🔐 Using client credentials in request body (confidential client)');
-  } else {
-    console.log('🔓 Using public client authentication');
   }
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/x-www-form-urlencoded',
   };
-
-  console.log('🔄 Exchanging authorization code for token...');
-  console.log('📍 Token URL:', tokenUrl);
-  console.log('📋 Request body:', body.toString());
-  console.log('🗝️ Auth method:', config.clientSecret ? 'Client credentials in body' : 'Public (client_id only)');
   
   let response: Response;
   
@@ -158,9 +146,6 @@ export async function exchangeCodeForToken(
       headers,
       body: body.toString(),
     });
-
-    console.log('📨 Response status:', response.status);
-    console.log('📨 Response headers:', Object.fromEntries(response.headers.entries()));
   } catch (error) {
     console.error('❌ Network error during token exchange:');
     console.error('  Error:', error);
@@ -178,8 +163,6 @@ export async function exchangeCodeForToken(
   }
 
   const tokenData = await response.json();
-  console.log('✅ Token exchange successful');
-  console.log('📦 Token data keys:', Object.keys(tokenData));
   
   return tokenData;
 }

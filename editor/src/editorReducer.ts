@@ -52,12 +52,7 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         selectedRef: action.select ? { kind: 'activity', activityId: action.activity.id } : state.selectedRef
       };
     case 'ADD_STEP': {
-      console.log('🔍 ADD_STEP reducer:', { 
-        parentActivityId: action.parentActivityId, 
-        stepId: action.step.id, 
-        select: action.select,
-        currentActivities: state.script.activities.map(a => ({ id: a.id, stepCount: a.steps.length }))
-      });
+
       
       const activities = state.script.activities.map(a =>
         a.id === action.parentActivityId ? { ...a, steps: [...a.steps, action.step] } : a
@@ -69,10 +64,7 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         selectedRef: action.select ? { kind: 'step' as const, activityId: action.parentActivityId, stepId: action.step.id } : state.selectedRef
       };
       
-      console.log('🔍 ADD_STEP result:', {
-        newActivities: newState.script.activities.map(a => ({ id: a.id, stepCount: a.steps.length, steps: a.steps.map(s => s.id) })),
-        newSelectedRef: newState.selectedRef
-      });
+
       
       return newState;
     }

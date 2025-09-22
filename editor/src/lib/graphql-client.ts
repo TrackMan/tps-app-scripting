@@ -22,7 +22,7 @@ async function createAuthedClient() {
   const hasValidToken = authService.hasValidToken();
   const token = hasValidToken ? await authService.getAccessToken().catch(() => null) : null;
   
-  console.log('🌐 Creating GraphQL client:', { hasValidToken, hasToken: !!token });
+
   
   return createClient({
     url: graphqlUrl,
@@ -34,7 +34,7 @@ async function createAuthedClient() {
             (e: any) => e.extensions?.code === 'UNAUTHENTICATED' || e.extensions?.code === 'UNAUTHORIZED'
           );
           if (isAuthError) {
-            console.log('🚫 GraphQL authentication error, clearing tokens');
+
             authService.clearToken();
           }
         },

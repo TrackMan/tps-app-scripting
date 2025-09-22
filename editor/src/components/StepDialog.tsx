@@ -18,7 +18,7 @@ export const StepDialog: React.FC<StepDialogProps> = ({ open, onClose, onAdd, pa
 
   // Whenever dialog is (re)opened or parent activity type changes, reset the fields.
   useEffect(() => {
-    console.log('🔍 StepDialog useEffect:', { open, parentActivityType, parentActivityId });
+
     if (open) {
       setId('');
       setHeader('');
@@ -77,9 +77,7 @@ export const StepDialog: React.FC<StepDialogProps> = ({ open, onClose, onAdd, pa
           <button
             disabled={!id || !header}
             onClick={() => {
-              console.log('🔍 StepDialog Add Step button clicked:', { parentActivityType, parentActivityId, id, header });
               if (!parentActivityType || !parentActivityId) {
-                console.log('🔍 Missing parent info, returning early');
                 return;
               }
               const step: Step = createStep({
@@ -88,7 +86,7 @@ export const StepDialog: React.FC<StepDialogProps> = ({ open, onClose, onAdd, pa
                 introHeader: header,
                 introDescription: description,
               });
-              console.log('🔍 Created step:', step);
+
               onAdd(step, parentActivityId);
               onClose();
             }}

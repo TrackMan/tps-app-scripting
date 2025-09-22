@@ -7,7 +7,7 @@ interface TokenResponse {
 }
 
 interface TokenData {
-  accessToken: string;
+ cessToken: string;
   tokenType: string;
   expiresAt: Date;
   refreshToken?: string;
@@ -35,15 +35,11 @@ class AuthService {
    * Get a valid access token (user tokens only - no client credentials)
    */
   public async getAccessToken(): Promise<string> {
-    console.log('🎫 getAccessToken() called');
-    
     // Only return user tokens, never client credential tokens
     if (this.tokenData && this.isTokenValid() && this.isAuthenticated()) {
-      console.log('✅ Using existing valid user token');
       return this.tokenData.accessToken;
     }
 
-    console.log('❌ No valid user token available - client must authenticate via OAuth');
     throw new Error('No valid user token available. User must log in via OAuth.');
   }
 
@@ -83,10 +79,6 @@ class AuthService {
    */
   private loadTokenFromStorage(): void {
     const stored = localStorage.getItem('trackman_auth_token');
-    console.log('🔍 Loading token from storage:', {
-      hasStoredToken: !!stored,
-      tokenPreview: stored ? stored.substring(0, 50) + '...' : 'none'
-    });
     
     if (stored) {
       try {
@@ -98,17 +90,8 @@ class AuthService {
           scope: parsed.scope,
         };
 
-        console.log('📦 Loaded token data:', {
-          hasAccessToken: !!this.tokenData.accessToken,
-          tokenType: this.tokenData.tokenType,
-          expiresAt: this.tokenData.expiresAt,
-          scope: this.tokenData.scope,
-          isValid: this.isTokenValid()
-        });
-
         // Clean up if token is expired
         if (!this.isTokenValid()) {
-          console.log('🗑️ Token is expired, clearing...');
           this.clearToken();
         }
       } catch (error) {
@@ -122,8 +105,6 @@ class AuthService {
    * Clear the current token and all authentication state
    */
   public clearToken(): void {
-    console.log('🧹 Clearing all authentication tokens and state...');
-    
     // Clear in-memory token
     this.tokenData = null;
     
@@ -136,8 +117,6 @@ class AuthService {
     sessionStorage.removeItem('oauth_code_verifier');
     sessionStorage.removeItem('oauth_state');
     sessionStorage.removeItem('oauth_processed');
-    
-    console.log('✅ All authentication state cleared');
   }
 
   /**
@@ -145,8 +124,6 @@ class AuthService {
    * Use this to completely reset authentication for testing
    */
   public forceResetAuthentication(): void {
-    console.log('🔴 Force resetting all authentication...');
-    
     // Clear all storage
     localStorage.clear();
     sessionStorage.clear();
@@ -155,7 +132,6 @@ class AuthService {
     this.tokenData = null;
     this.tokenRefreshPromise = null;
     
-    console.log('🔄 Reloading page to complete reset...');
     window.location.href = window.location.origin;
   }
 
@@ -172,40 +148,41 @@ class AuthService {
     try {
       localStorage.clear();
       sessionStorage.clear();
-      console.log('🧹 Cleared all browser storage');
+
     } catch (error) {
       console.warn('Failed to clear storage:', error);
     }
     
-    // Use TrackMan portal approach: redirect directly to server logout endpoint
-    // This lets the OAuth server handle session clearing and proper logout flow
+    // Mimic what the portal's /account/logout endpoint does:
+    // Redirect to OAuth logout with returnUrl parameter (exactly like portal)
     try {
       const { ENV_URLS, OAUTH_CONFIG } = await import('./env');
       
-      // Build logout URL with returnUrl parameter (exactly like portal approach)
+      // This is what we want to return to after logout
       const returnUrl = `${window.location.origin}/?logout_complete=true&t=${Date.now()}`;
+      
+      // Build the OAuth logout URL exactly like the portal's server would
       const logoutUrl = new URL(`${ENV_URLS.loginBase}/connect/endsession`);
       
-      // Add required parameters for proper logout
       if (OAUTH_CONFIG.webClientId) {
         logoutUrl.searchParams.set('client_id', OAUTH_CONFIG.webClientId);
       }
       
-      // Use both standard OAuth parameter and portal-style returnUrl
-      logoutUrl.searchParams.set('post_logout_redirect_uri', returnUrl);
-      logoutUrl.searchParams.set('returnUrl', encodeURIComponent(returnUrl)); // Portal style
+      // Use the same returnUrl parameter format as the portal
+      logoutUrl.searchParams.set('returnUrl', returnUrl);
       
-      console.log('🔄 Redirecting to TrackMan logout endpoint:', logoutUrl.toString());
+      console.log('🔄 Mimicking portal logout: redirecting to OAuth logout with returnUrl');
+      console.log('� OAuth logout URL:', logoutUrl.toString());
       console.log('🔍 Return URL after logout:', returnUrl);
       
-      // Direct redirect to OAuth server logout (like portal does)
+      // Redirect to OAuth logout (this is what portal's /account/logout does)
       window.location.href = logoutUrl.toString();
       
     } catch (error) {
-      console.error('❌ Failed to build logout URL:', error);
-      // Fallback to simple logout completion page
+      console.error('❌ Failed to build OAuth logout URL:', error);
+      // Fallback
       const fallbackUrl = `${window.location.origin}/?logout_complete=true&t=${Date.now()}`;
-      console.log('🔄 Fallback: Redirecting to logout completion page:', fallbackUrl);
+
       window.location.href = fallbackUrl;
     }
   }
@@ -223,12 +200,7 @@ class AuthService {
     const scope = this.tokenData.scope || '';
     const hasUserScopes = scope.includes('openid') || scope.includes('profile') || scope.includes('email');
     
-    console.log('🔍 Authentication check:', {
-      hasToken: !!this.tokenData,
-      isValid: this.isTokenValid(),
-      scope: scope,
-      hasUserScopes: hasUserScopes
-    });
+
     
     return hasUserScopes;
   }
@@ -247,19 +219,7 @@ class AuthService {
     const { buildAuthorizationUrl, generateCodeVerifier, generateState } = await import('./oauth2-utils');
     const { ENV_URLS, OAUTH_CONFIG } = await import('./env');
 
-    console.log('🚀 Starting OAuth login flow...');
-    console.log('🔍 startOAuthLogin called with prompt parameter:', prompt);
-    if (prompt) {
-      console.log('🔑 Using prompt parameter:', prompt, '- This will force login screen');
-    } else {
-      console.log('⚠️ No prompt parameter provided - may auto-login if server session exists');
-    }
-    console.log('OAuth Config:', {
-      webClientId: OAUTH_CONFIG.webClientId,
-      redirectUri: OAUTH_CONFIG.redirectUri,
-      loginBaseUrl: ENV_URLS.loginBase,
-      scopes: OAUTH_CONFIG.scopes
-    });
+
 
     // Check for required configuration
     if (!OAUTH_CONFIG.webClientId) {
@@ -279,10 +239,7 @@ class AuthService {
     const codeVerifier = generateCodeVerifier();
     const state = generateState();
 
-    console.log('📝 Generated PKCE parameters:', {
-      codeVerifierLength: codeVerifier.length,
-      stateLength: state.length
-    });
+
 
     // Store PKCE parameters in sessionStorage for callback
     sessionStorage.setItem('oauth_code_verifier', codeVerifier);
@@ -301,8 +258,7 @@ class AuthService {
       prompt
     );
 
-    console.log('🔗 Authorization URL:', authUrl);
-    console.log('🌐 About to redirect to TrackMan login server...');
+
     
     // Redirect to login server
     window.location.href = authUrl;
@@ -315,7 +271,7 @@ class AuthService {
     const { parseAuthorizationCallback, exchangeCodeForToken } = await import('./oauth2-utils');
     const { ENV_URLS, OAUTH_CONFIG } = await import('./env');
 
-    console.log('🔄 Processing OAuth callback...');
+
 
     // Parse callback URL
     const { code, state, error, error_description } = parseAuthorizationCallback(callbackUrl);
@@ -367,9 +323,7 @@ class AuthService {
       this.tokenData = tokenData;
       this.saveTokenToStorage();
 
-      console.log('✅ OAuth login successful!');
-      console.log('  Token expires at:', tokenData.expiresAt);
-      console.log('  Scopes:', tokenData.scope);
+
 
     } finally {
       // Clean up session storage
