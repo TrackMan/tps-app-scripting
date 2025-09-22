@@ -59,7 +59,8 @@ export interface OAuth2Config {
 export async function buildAuthorizationUrl(
   config: OAuth2Config,
   codeVerifier: string,
-  state: string
+  state: string,
+  prompt?: string
 ): Promise<string> {
   const codeChallenge = await generateCodeChallenge(codeVerifier);
   
@@ -73,7 +74,17 @@ export async function buildAuthorizationUrl(
     code_challenge_method: 'S256',
   });
 
-  return `${config.loginBaseUrl}/connect/authorize?${params.toString()}`;
+  // Add prompt parameter if provided (e.g., 'login' to force login screen)
+  if (prompt) {
+    console.log('🔑 Adding prompt parameter to URL:', prompt);
+    params.set('prompt', prompt);
+  } else {
+    console.log('⚠️ No prompt parameter to add to URL');
+  }
+
+  const finalUrl = `${config.loginBaseUrl}/connect/authorize?${params.toString()}`;
+  console.log('🔗 Final authorization URL with all parameters:', finalUrl);
+  return finalUrl;
 }
 
 /**
@@ -139,14 +150,24 @@ export async function exchangeCodeForToken(
   console.log('📋 Request body:', body.toString());
   console.log('🗝️ Auth method:', config.clientSecret ? 'Client credentials in body' : 'Public (client_id only)');
   
-  const response = await fetch(tokenUrl, {
-    method: 'POST',
-    headers,
-    body: body.toString(),
-  });
+  let response: Response;
+  
+  try {
+    response = await fetch(tokenUrl, {
+      method: 'POST',
+      headers,
+      body: body.toString(),
+    });
 
-  console.log('📨 Response status:', response.status);
-  console.log('📨 Response headers:', Object.fromEntries(response.headers.entries()));
+    console.log('📨 Response status:', response.status);
+    console.log('📨 Response headers:', Object.fromEntries(response.headers.entries()));
+  } catch (error) {
+    console.error('❌ Network error during token exchange:');
+    console.error('  Error:', error);
+    console.error('  Token URL:', tokenUrl);
+    console.error('  This is likely a CORS issue or network connectivity problem');
+    throw new Error(`Failed to fetch token: ${error instanceof Error ? error.message : 'Network error'}`);
+  }
 
   if (!response.ok) {
     const errorText = await response.text();

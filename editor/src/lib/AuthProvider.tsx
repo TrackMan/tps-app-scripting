@@ -46,23 +46,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const login = async () => {
-    // This method is for client credential authentication (API-only access)
-    // For user authentication, use loginWithOAuth() instead
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      await authService.getAccessToken();
-      setIsAuthenticated(true);
-      console.log('✅ Successfully authenticated with client credentials');
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Authentication failed';
-      setError(errorMessage);
-      setIsAuthenticated(false);
-      console.error('❌ Authentication failed:', errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
+    // Client credential authentication has been removed - only OAuth login is supported
+    console.log('❌ Client credential login is no longer supported. Use OAuth login instead.');
+    throw new Error('Client credential authentication is disabled. Please use OAuth login.');
   };
 
   const loginWithOAuth = async () => {
@@ -85,19 +71,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       await authService.logoutOAuth();
-      // Update local state immediately since we're not redirecting
-      setIsAuthenticated(false);
-      setError(null);
-      console.log('🔓 Logged out successfully');
+      console.log('🔓 Logged out successfully, auth service will handle redirect...');
+      // Don't reload here - let the auth service handle the redirect to logout completion page
     } catch (err) {
       // Fallback to local logout if server logout fails
       console.warn('⚠️ Server logout failed, falling back to local logout:', err);
       authService.clearToken();
-      setIsAuthenticated(false);
-      setError(null);
-      console.log('🔓 Logged out locally');
-    } finally {
-      setIsLoading(false);
+      console.log('🔓 Logged out locally, redirecting to login...');
+      // Only reload if the auth service logout failed
+      window.location.reload();
     }
   };
 

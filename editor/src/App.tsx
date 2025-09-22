@@ -43,6 +43,7 @@ export default function App() {
   const [showActivityDialog, setShowActivityDialog] = useState(false);
   const [showStepDialog, setShowStepDialog] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('edit');
+  const [authChecked, setAuthChecked] = useState(false);
   
   // Persistence hook for selections
   const { selections, isLoading: isLoadingSelections, saveSelection } = usePersistedSelections();
@@ -57,16 +58,110 @@ export default function App() {
   const { script } = state;
   const { isValid, errors: validationErrors } = state.validation;
 
+  // Immediate authentication check and redirect
+  useEffect(() => {
+    const checkAuthAndRedirect = async () => {
+      // Skip auth check if we're handling OAuth callback
+      if (window.location.pathname === '/account/callback') {
+        setAuthChecked(true);
+        return;
+      }
+
+      // Check if we just came back from logout
+      const urlParams = new URLSearchParams(window.location.search);
+      const loggedOut = urlParams.get('logged_out');
+      const forceLogin = urlParams.get('force_login');
+      const completeLogout = urlParams.get('complete_logout');
+      const logoutComplete = urlParams.get('logout_complete');
+      const promptLogin = urlParams.get('prompt');
+      
+      if (loggedOut || forceLogin || completeLogout || logoutComplete) {
+        // Clear all logout-related parameters from URL
+        window.history.replaceState({}, document.title, '/');
+        console.log('🔄 Returned from logout, forcing fresh login...');
+        
+        // Clear any remaining authentication state to ensure fresh login
+        try {
+          const { authService } = await import('./lib/auth-service');
+          authService.clearToken(); // Make sure all tokens are cleared
+          
+          // Also try to clear localStorage/sessionStorage again
+          localStorage.clear();
+          sessionStorage.clear();
+        } catch (error) {
+          console.warn('Failed to clear tokens:', error);
+        }
+        
+        // If this is the logout completion page, show a brief message then redirect to OAuth
+        if (logoutComplete) {
+          console.log('✅ Logout completed successfully, redirecting to login...');
+          // Add a small delay to show the logout was successful
+          setTimeout(async () => {
+            try {
+              const { authService } = await import('./lib/auth-service');
+              await authService.startOAuthLogin('login'); // Force login screen
+            } catch (error) {
+              console.error('Failed to start OAuth login:', error);
+              window.location.reload(); // Fallback
+            }
+          }, 1000);
+          setAuthChecked(true);
+          return;
+        }
+      }
+
+      try {
+        const { authService } = await import('./lib/auth-service');
+        
+        if (!authService.isAuthenticated() || loggedOut || forceLogin || completeLogout) {
+          console.log('🔐 User not authenticated or logout forced, redirecting to TrackMan login...');
+          
+          // If we have a prompt parameter, pass it to the OAuth login to force login screen
+          if (promptLogin === 'login') {
+            console.log('🔑 Adding prompt=login to force login screen...');
+          }
+          
+          await authService.startOAuthLogin(promptLogin === 'login' ? 'login' : undefined);
+          // This will redirect away, so we won't reach the next line
+          return;
+        }
+        
+        console.log('✅ User is authenticated');
+        setAuthChecked(true);
+      } catch (error) {
+        console.error('❌ Auth check failed:', error);
+        setAuthChecked(true); // Show app anyway if auth check fails
+      }
+    };
+
+    checkAuthAndRedirect();
+  }, []);
+
   // Handle OAuth callback - monitor URL changes
   useEffect(() => {
     const handleOAuthCallback = async () => {
       const currentUrl = window.location.href;
       const urlPath = window.location.pathname;
       
-      // Check if we're on the callback route with an authorization code
-      console.log('🔍 Checking OAuth callback:', { urlPath, hasCode: currentUrl.includes('code=') });
+      // Extract code from URL to create unique processing key
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const callbackKey = `oauth_callback_processed_${code}`;
       
-      if (urlPath === '/account/callback' && currentUrl.includes('code=')) {
+      // Check if we've already processed this specific callback
+      const alreadyProcessed = sessionStorage.getItem(callbackKey);
+      
+      console.log('🔍 Checking OAuth callback:', { 
+        urlPath, 
+        hasCode: currentUrl.includes('code='), 
+        processed: !!alreadyProcessed,
+        codePreview: code?.substring(0, 8) + '...'
+      });
+      
+      if (urlPath === '/account/callback' && code && !alreadyProcessed) {
+        // Mark this specific callback as being processed
+        sessionStorage.setItem(callbackKey, 'true');
+        
         console.log('🔄 OAuth callback detected:', currentUrl);
         try {
           const { authService } = await import('./lib/auth-service');
@@ -79,7 +174,24 @@ export default function App() {
           window.location.reload();
         } catch (error) {
           console.error('❌ OAuth callback failed:', error);
-          alert('Login failed: ' + (error as Error).message);
+          console.error('❌ Full error details:', {
+            name: (error as Error).name,
+            message: (error as Error).message,
+            stack: (error as Error).stack
+          });
+          
+          // Clear the processing flag on error so user can retry
+          sessionStorage.removeItem(callbackKey);
+          
+          // Show a more user-friendly error message
+          const errorMsg = (error as Error).message;
+          if (errorMsg.includes('invalid_grant')) {
+            alert('Login failed: Authorization code has already been used or expired.\n\nThis can happen if the login process runs multiple times. Please try logging in again.');
+          } else if (errorMsg.includes('Failed to fetch')) {
+            alert('Login failed: Unable to connect to authentication server. This may be a network or CORS issue.\n\nPlease check:\n1. Your internet connection\n2. If you are on a corporate network, contact your IT administrator\n3. Try refreshing the page');
+          } else {
+            alert('Login failed: ' + errorMsg);
+          }
           window.history.replaceState({}, document.title, '/');
         }
       }
@@ -442,6 +554,71 @@ export default function App() {
     
     updateStep(step.id, { logic: logicPatch } as any);
   }, [selectedNode]);
+
+  // Don't render anything until auth check is complete
+  if (!authChecked) {
+    // Check if we're on the logout completion page
+    const urlParams = new URLSearchParams(window.location.search);
+    const logoutComplete = urlParams.get('logout_complete');
+    
+    if (logoutComplete) {
+      return (
+        <div style={{ 
+          height: '100vh', 
+          display: 'flex', 
+          flexDirection: 'column',
+          alignItems: 'center', 
+          justifyContent: 'center',
+          backgroundColor: '#f5f5f5',
+          fontFamily: 'system-ui, -apple-system, sans-serif'
+        }}>
+          <div style={{
+            padding: '2rem',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            textAlign: 'center',
+            maxWidth: '400px'
+          }}>
+            <div style={{ fontSize: '48px', marginBottom: '1rem' }}>✅</div>
+            <h2 style={{ margin: '0 0 1rem 0', color: '#333' }}>Logout Successful</h2>
+            <p style={{ margin: '0', color: '#666' }}>
+              You have been logged out successfully.<br/>
+              Redirecting to login page...
+            </p>
+            <div style={{ 
+              marginTop: '1rem', 
+              padding: '0.5rem',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '4px',
+              fontSize: '0.9em',
+              color: '#666'
+            }}>
+              <div className="spinner" style={{
+                display: 'inline-block',
+                width: '16px',
+                height: '16px',
+                border: '2px solid #ddd',
+                borderTop: '2px solid #007acc',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                marginRight: '8px'
+              }}></div>
+              Please wait...
+            </div>
+          </div>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      );
+    }
+    
+    return null; // This prevents any UI from showing during redirect
+  }
 
   return (
     <div className="app-container">

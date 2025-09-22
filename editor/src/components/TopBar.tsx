@@ -22,7 +22,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   selectedFacilityId,
   onFacilitySelect 
 }) => {
-  const { isAuthenticated, isLoading, loginWithOAuth, logout } = useAuth();
+  const { isAuthenticated, isLoading, logout } = useAuth();
   
   const handleFacilitySelect = (facility: Facility | null) => {
     onFacilitySelect(facility);
@@ -59,11 +59,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               <button onClick={logout} className="auth-button logout">
                 🔓 Logout
               </button>
-            ) : (
-              <button onClick={loginWithOAuth} className="auth-button login">
-                🔑 Login
-              </button>
-            )}
+            ) : null}
           </div>
           <BuildVersion />
         </div>

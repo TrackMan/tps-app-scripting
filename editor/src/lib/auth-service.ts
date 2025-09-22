@@ -32,119 +32,22 @@ class AuthService {
   }
 
   /**
-   * Get a valid access token, refreshing if necessary
+   * Get a valid access token (user tokens only - no client credentials)
    */
   public async getAccessToken(): Promise<string> {
     console.log('🎫 getAccessToken() called');
     
-    // If we have a valid token, return it
-    if (this.tokenData && this.isTokenValid()) {
-      console.log('✅ Using existing valid token');
+    // Only return user tokens, never client credential tokens
+    if (this.tokenData && this.isTokenValid() && this.isAuthenticated()) {
+      console.log('✅ Using existing valid user token');
       return this.tokenData.accessToken;
     }
 
-    console.log('🔄 Token invalid or expired, fetching new token...');
-
-    // If there's already a refresh in progress, wait for it
-    if (this.tokenRefreshPromise) {
-      console.log('⏳ Token refresh already in progress, waiting...');
-      const tokenData = await this.tokenRefreshPromise;
-      return tokenData.accessToken;
-    }
-
-    // Start a new token refresh
-    console.log('🚀 Starting new token refresh...');
-    this.tokenRefreshPromise = this.fetchNewToken();
-    
-    try {
-      const tokenData = await this.tokenRefreshPromise;
-      return tokenData.accessToken;
-    } finally {
-      this.tokenRefreshPromise = null;
-    }
+    console.log('❌ No valid user token available - client must authenticate via OAuth');
+    throw new Error('No valid user token available. User must log in via OAuth.');
   }
 
-  /**
-   * Fetch a new access token using client credentials
-   */
-  private async fetchNewToken(): Promise<TokenData> {
-  const { ENV_URLS } = await import('./env');
-  const tokenUrl = ENV_URLS.oauthToken;
-  
-  // Try runtime environment first (for Azure App Service)
-  const runtimeClientId = (window as any)?.env?.VITE_OAUTH_CLIENT_ID;
-  const runtimeClientSecret = (window as any)?.env?.VITE_OAUTH_CLIENT_SECRET;
-  
-  const clientId = (runtimeClientId && runtimeClientId !== '__VITE_OAUTH_CLIENT_ID__') 
-    ? runtimeClientId 
-    : import.meta.env.VITE_OAUTH_CLIENT_ID;
-    
-  const clientSecret = (runtimeClientSecret && runtimeClientSecret !== '__VITE_OAUTH_CLIENT_SECRET__') 
-    ? runtimeClientSecret 
-    : import.meta.env.VITE_OAUTH_CLIENT_SECRET;
 
-    // Debug logging for OAuth configuration
-    console.log('🔍 OAuth Debug Info:');
-    console.log('  Token URL:', tokenUrl);
-    console.log('  Client ID:', clientId ? `${clientId.substring(0, 8)}...` : 'MISSING');
-    console.log('  Client Secret:', clientSecret ? `${clientSecret.substring(0, 4)}...` : 'MISSING');
-
-    if (!tokenUrl || !clientId || !clientSecret) {
-      throw new Error('OAuth configuration missing. Please check your environment variables.');
-    }
-
-    const formData = new URLSearchParams();
-    formData.append('grant_type', 'client_credentials');
-    formData.append('client_id', clientId);
-    formData.append('client_secret', clientSecret);
-
-    console.log('📡 Making OAuth token request to:', tokenUrl);
-    console.log('📋 Request body:', formData.toString());
-
-    try {
-      const response = await fetch(tokenUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formData,
-      });
-
-      console.log('📨 OAuth Response Status:', response.status, response.statusText);
-      console.log('📨 OAuth Response Headers:', Object.fromEntries(response.headers.entries()));
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ OAuth Error Response:', errorText);
-        throw new Error(`OAuth token request failed: ${response.status} ${response.statusText}. ${errorText}`);
-      }
-
-      const tokenResponse: TokenResponse = await response.json();
-      console.log('✅ OAuth Success Response:', tokenResponse);
-      
-      const tokenData: TokenData = {
-        accessToken: tokenResponse.access_token,
-        tokenType: tokenResponse.token_type,
-        expiresAt: new Date(Date.now() + (tokenResponse.expires_in * 1000)),
-        scope: tokenResponse.scope,
-      };
-
-      // Store the new token
-      this.tokenData = tokenData;
-      this.saveTokenToStorage();
-
-      console.log('🔑 New access token obtained:');
-      console.log('  Token (first 20 chars):', tokenData.accessToken.substring(0, 20) + '...');
-      console.log('  Token Type:', tokenData.tokenType);
-      console.log('  Expires At:', tokenData.expiresAt);
-      console.log('  Scope:', tokenData.scope);
-      return tokenData;
-
-    } catch (error) {
-      console.error('Failed to fetch access token:', error);
-      throw error;
-    }
-  }
 
   /**
    * Check if the current token is valid (exists and not expired)
@@ -180,6 +83,11 @@ class AuthService {
    */
   private loadTokenFromStorage(): void {
     const stored = localStorage.getItem('trackman_auth_token');
+    console.log('🔍 Loading token from storage:', {
+      hasStoredToken: !!stored,
+      tokenPreview: stored ? stored.substring(0, 50) + '...' : 'none'
+    });
+    
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
@@ -190,8 +98,17 @@ class AuthService {
           scope: parsed.scope,
         };
 
+        console.log('📦 Loaded token data:', {
+          hasAccessToken: !!this.tokenData.accessToken,
+          tokenType: this.tokenData.tokenType,
+          expiresAt: this.tokenData.expiresAt,
+          scope: this.tokenData.scope,
+          isValid: this.isTokenValid()
+        });
+
         // Clean up if token is expired
         if (!this.isTokenValid()) {
+          console.log('🗑️ Token is expired, clearing...');
           this.clearToken();
         }
       } catch (error) {
@@ -202,49 +119,94 @@ class AuthService {
   }
 
   /**
-   * Clear the current token
+   * Clear the current token and all authentication state
    */
   public clearToken(): void {
+    console.log('🧹 Clearing all authentication tokens and state...');
+    
+    // Clear in-memory token
     this.tokenData = null;
+    
+    // Clear all possible localStorage keys
     localStorage.removeItem('trackman_auth_token');
+    localStorage.removeItem('oauth_token');
+    localStorage.removeItem('access_token');
+    
+    // Clear all sessionStorage OAuth state
+    sessionStorage.removeItem('oauth_code_verifier');
+    sessionStorage.removeItem('oauth_state');
+    sessionStorage.removeItem('oauth_processed');
+    
+    console.log('✅ All authentication state cleared');
+  }
+
+  /**
+   * Force clear all authentication state and reload the page
+   * Use this to completely reset authentication for testing
+   */
+  public forceResetAuthentication(): void {
+    console.log('🔴 Force resetting all authentication...');
+    
+    // Clear all storage
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Clear in-memory state
+    this.tokenData = null;
+    this.tokenRefreshPromise = null;
+    
+    console.log('🔄 Reloading page to complete reset...');
+    window.location.href = window.location.origin;
   }
 
   /**
    * Logout and clear server-side OAuth session
    */
   public async logoutOAuth(): Promise<void> {
-    const { ENV_URLS } = await import('./env');
-    
     console.log('🔓 Starting OAuth logout...');
     
     // Clear local token first
     this.clearToken();
     
-    // For now, let's do a simpler approach: 
-    // 1. Clear local tokens
-    // 2. Open logout URL in a new tab to clear server session
-    // 3. Keep user in the app with clear feedback
-    
+    // Clear all storage to ensure complete logout
     try {
-      // Open logout endpoint in new tab to clear server session silently
-      const logoutUrl = `${ENV_URLS.loginBase}/connect/endsession`;
-      console.log('🌐 Opening logout URL in background:', logoutUrl);
+      localStorage.clear();
+      sessionStorage.clear();
+      console.log('🧹 Cleared all browser storage');
+    } catch (error) {
+      console.warn('Failed to clear storage:', error);
+    }
+    
+    // Use TrackMan portal approach: redirect directly to server logout endpoint
+    // This lets the OAuth server handle session clearing and proper logout flow
+    try {
+      const { ENV_URLS, OAUTH_CONFIG } = await import('./env');
       
-      // Open in a new tab that will close itself
-      const logoutTab = window.open(logoutUrl, '_blank', 'width=1,height=1');
+      // Build logout URL with returnUrl parameter (exactly like portal approach)
+      const returnUrl = `${window.location.origin}/?logout_complete=true&t=${Date.now()}`;
+      const logoutUrl = new URL(`${ENV_URLS.loginBase}/connect/endsession`);
       
-      // Close the logout tab after a brief delay
-      setTimeout(() => {
-        if (logoutTab) {
-          logoutTab.close();
-        }
-      }, 2000);
+      // Add required parameters for proper logout
+      if (OAUTH_CONFIG.webClientId) {
+        logoutUrl.searchParams.set('client_id', OAUTH_CONFIG.webClientId);
+      }
       
-      console.log('✅ Local logout completed. Server session cleared in background.');
+      // Use both standard OAuth parameter and portal-style returnUrl
+      logoutUrl.searchParams.set('post_logout_redirect_uri', returnUrl);
+      logoutUrl.searchParams.set('returnUrl', encodeURIComponent(returnUrl)); // Portal style
+      
+      console.log('🔄 Redirecting to TrackMan logout endpoint:', logoutUrl.toString());
+      console.log('🔍 Return URL after logout:', returnUrl);
+      
+      // Direct redirect to OAuth server logout (like portal does)
+      window.location.href = logoutUrl.toString();
       
     } catch (error) {
-      console.warn('⚠️ Could not clear server session:', error);
-      console.log('✅ Local logout completed (server session may still be active)');
+      console.error('❌ Failed to build logout URL:', error);
+      // Fallback to simple logout completion page
+      const fallbackUrl = `${window.location.origin}/?logout_complete=true&t=${Date.now()}`;
+      console.log('🔄 Fallback: Redirecting to logout completion page:', fallbackUrl);
+      window.location.href = fallbackUrl;
     }
   }
 
@@ -281,11 +243,17 @@ class AuthService {
   /**
    * Start OAuth2 Authorization Code flow - redirects to login server
    */
-  public async startOAuthLogin(): Promise<void> {
+  public async startOAuthLogin(prompt?: string): Promise<void> {
     const { buildAuthorizationUrl, generateCodeVerifier, generateState } = await import('./oauth2-utils');
     const { ENV_URLS, OAUTH_CONFIG } = await import('./env');
 
     console.log('🚀 Starting OAuth login flow...');
+    console.log('🔍 startOAuthLogin called with prompt parameter:', prompt);
+    if (prompt) {
+      console.log('🔑 Using prompt parameter:', prompt, '- This will force login screen');
+    } else {
+      console.log('⚠️ No prompt parameter provided - may auto-login if server session exists');
+    }
     console.log('OAuth Config:', {
       webClientId: OAUTH_CONFIG.webClientId,
       redirectUri: OAUTH_CONFIG.redirectUri,
@@ -329,7 +297,8 @@ class AuthService {
         scopes: OAUTH_CONFIG.scopes
       },
       codeVerifier,
-      state
+      state,
+      prompt
     );
 
     console.log('🔗 Authorization URL:', authUrl);
@@ -422,4 +391,8 @@ class AuthService {
 }
 
 export const authService = AuthService.getInstance();
+
+// Make auth service available globally for debugging
+(window as any).authService = authService;
+
 export default authService;
