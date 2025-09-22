@@ -1,0 +1,230 @@
+{
+  "id": "script1",
+  "activities": [
+    {
+      "nodeType": "RangeAnalysisScriptedActivity",
+      "id": "initial-assessment-sample",
+      "introMessage": {
+        "header": "Initial assessment",
+        "description": "You will be hitting 3 shots with 4 different clubs",
+        "seconds": 5
+      },
+      "endMessage": {
+        "header": "Great!",
+        "description": "We will generate a custom shot test for you!",
+        "seconds": 3
+      },
+      "steps": [
+        {
+          "nodeType": "RangeAnalysisScriptedStep",
+          "id": "sample-step-1",
+          "introMessage": {
+            "header": "Task 1",
+            "description": "Hit 3 Drivers",
+            "seconds": 10
+          },
+          "successMessage": {
+            "header": "Great!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Try again",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "RangeAnalysisScriptedLogic",
+            "setup": {
+              "nodeType": "RangeAnalysisScriptedSetup",
+              "club": "Drv",
+              "distance": 220
+            },
+            "successCondition": {
+              "nodeType": "RangeAnalysisScriptedConditions",
+              "shots": 3
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "RangeAnalysisScriptedUI",
+            "targetAvailable": false,
+            "activeDataTiles": [ "Total", "Carry", "ClubSpeed", "BallSpeed", "AttackAngle" ],
+            "shotListParameters": [ "Total", "Carry", "ClubSpeed", "BallSpeed" ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [ "Player", "Markers", "GoToSetup" ],
+              "disableFrames": [ "Tiles", "ShotList", "GoToSetup", "Minimap" ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "Markers",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "RangeAnalysisScriptedStep",
+          "id": "sample-step-2",
+          "greenTarget": false,
+          "introMessage": {
+            "header": "Task 2",
+            "description": "Hit 3 shots with a 3 Hybrid",
+            "seconds": 10
+          },
+          "successMessage": {
+            "header": "Great!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Try again",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "RangeAnalysisScriptedLogic",
+            "setup": {
+              "nodeType": "RangeAnalysisScriptedSetup",
+              "club": "_3H",
+              "distance": 190
+            },
+            "successCondition": {
+              "nodeType": "RangeAnalysisScriptedConditions",
+              "shots": 3
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "RangeAnalysisScriptedUI",
+            "targetAvailable": false,
+            "activeDataTiles": [ "Total", "Carry", "ClubSpeed", "BallSpeed", "AttackAngle" ],
+            "shotListParameters": [ "Total", "Carry", "ClubSpeed", "BallSpeed" ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [ "Player", "Markers", "GoToSetup" ],
+              "disableFrames": [ "Tiles", "ShotList", "GoToSetup", "Minimap" ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "Markers",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "RangeAnalysisScriptedStep",
+          "id": "sample-step-3",
+          "introMessage": {
+            "header": "Task 3",
+            "description": "Hit 3 shots with a 7-Irons",
+            "seconds": 10
+          },
+          "successMessage": {
+            "header": "Great!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Try again",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "RangeAnalysisScriptedLogic",
+            "setup": {
+              "nodeType": "RangeAnalysisScriptedSetup",
+              "club": "_7I",
+              "distance": 150
+            },
+            "successCondition": {
+              "nodeType": "RangeAnalysisScriptedConditions",
+              "shots": 3
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "RangeAnalysisScriptedUI",
+            "targetAvailable": false,
+            "activeDataTiles": [ "Total", "Carry", "ClubSpeed", "BallSpeed", "AttackAngle" ],
+            "shotListParameters": [ "Total", "Carry", "ClubSpeed", "BallSpeed" ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [ "Player", "Markers", "GoToSetup" ],
+              "disableFrames": [ "Tiles", "ShotList", "GoToSetup", "Minimap" ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "Markers",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery"
+              ]
+            }
+          },
+          "greenTarget": false
+        },
+        {
+          "nodeType": "RangeAnalysisScriptedStep",
+          "id": "sample-step-4",
+          "greenTarget": false,
+          "introMessage": {
+            "header": "Task 4",
+            "description": "Hit 3 Wedges",
+            "seconds": 10
+          },
+          "successMessage": {
+            "header": "Great!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Try again",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "RangeAnalysisScriptedLogic",
+            "setup": {
+              "nodeType": "RangeAnalysisScriptedSetup",
+              "club": "_PW",
+              "distance": 110
+            },
+            "successCondition": {
+              "nodeType": "RangeAnalysisScriptedConditions",
+              "shots": 3
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "RangeAnalysisScriptedUI",
+            "targetAvailable": false,
+            "activeDataTiles": [ "Total", "Carry", "ClubSpeed", "BallSpeed", "AttackAngle" ],
+            "shotListParameters": [ "Total", "Carry", "ClubSpeed", "BallSpeed" ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [ "Player", "Markers", "GoToSetup" ],
+              "disableFrames": [ "Tiles", "ShotList", "GoToSetup", "Minimap" ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "Markers",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "startMode": "Overwrite",
+  "endMode": "Wait"
+}

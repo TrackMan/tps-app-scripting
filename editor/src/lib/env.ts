@@ -20,13 +20,6 @@ function stripTrailingSlash(url: string): string {
 }
 
 const backendBase = (() => {
-  // Try runtime environment first (for Azure App Service)
-  const runtimeBase = (window as any)?.env?.VITE_BACKEND_BASE_URL;
-  if (runtimeBase && runtimeBase !== '__VITE_BACKEND_BASE_URL__') {
-    return stripTrailingSlash(runtimeBase);
-  }
-  
-  // Fall back to build-time environment
   const base = import.meta.env.VITE_BACKEND_BASE_URL?.trim();
   if (base) return stripTrailingSlash(base);
   
@@ -34,20 +27,12 @@ const backendBase = (() => {
   const legacyGraphql = import.meta.env.VITE_GRAPHQL_URL?.trim();
   if (legacyGraphql) {
     console.warn('[env] Using legacy VITE_GRAPHQL_URL as backend base fallback');
-    // Remove /graphql suffix if present
     return stripTrailingSlash(legacyGraphql.replace(/\/graphql$/, ''));
   }
   return '';
 })();
 
 const loginBase = (() => {
-  // Try runtime environment first (for Azure App Service)
-  const runtimeBase = (window as any)?.env?.VITE_LOGIN_BASE_URL;
-  if (runtimeBase && runtimeBase !== '__VITE_LOGIN_BASE_URL__') {
-    return stripTrailingSlash(runtimeBase);
-  }
-  
-  // Fall back to build-time environment
   const base = import.meta.env.VITE_LOGIN_BASE_URL?.trim();
   if (base) return stripTrailingSlash(base);
   
@@ -69,25 +54,17 @@ export const ENV_URLS = {
 };
 
 // OAuth Web Client Configuration (for authorization code flow)
-// Function to get OAuth client ID with proper runtime support
+// Function to get OAuth client ID - simplified approach
 function getOAuthClientId(): string {
-  // Try runtime environment first (for Azure App Service)
-  const runtimeClientId = (window as any)?.env?.VITE_OAUTH_WEB_CLIENT_ID;
-  if (runtimeClientId && runtimeClientId !== '__VITE_OAUTH_WEB_CLIENT_ID__') {
-    return runtimeClientId;
-  }
-  // Fallback to build-time environment variable
+  // Use build-time environment variable directly
+  // This will be set during the Docker build process in Azure
   return import.meta.env.VITE_OAUTH_WEB_CLIENT_ID || '';
 }
 
-// Function to get OAuth client secret with proper runtime support  
+// Function to get OAuth client secret - simplified approach
 function getOAuthClientSecret(): string {
-  // Try runtime environment first (for Azure App Service)
-  const runtimeClientSecret = (window as any)?.env?.VITE_OAUTH_WEB_CLIENT_SECRET;
-  if (runtimeClientSecret && runtimeClientSecret !== '__VITE_OAUTH_WEB_CLIENT_SECRET__') {
-    return runtimeClientSecret;
-  }
-  // Fallback to build-time environment variable
+  // Use build-time environment variable directly
+  // This will be set during the Docker build process in Azure
   return import.meta.env.VITE_OAUTH_WEB_CLIENT_SECRET || '';
 }
 

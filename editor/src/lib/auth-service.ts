@@ -219,8 +219,6 @@ class AuthService {
     const { buildAuthorizationUrl, generateCodeVerifier, generateState } = await import('./oauth2-utils');
     const { ENV_URLS, OAUTH_CONFIG } = await import('./env');
 
-
-
     // Check for required configuration
     if (!OAUTH_CONFIG.webClientId) {
       console.error('❌ Missing OAuth client ID');
