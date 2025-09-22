@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # Azure App Service startup script
 # This script creates a runtime configuration file from environment variables
 
@@ -16,31 +17,48 @@ echo "VITE_OAUTH_WEB_CLIENT_ID='${VITE_OAUTH_WEB_CLIENT_ID:-NOT SET}'"
 echo "VITE_OAUTH_WEB_CLIENT_SECRET='${VITE_OAUTH_WEB_CLIENT_SECRET:+SET}'"
 echo "VITE_NODE_ENV='${VITE_NODE_ENV:-NOT SET}'"
 
+# DEBUG: Check if file exists before writing
+echo "🔍 Checking if runtime-config.js exists before writing..."
+ls -la /usr/share/nginx/html/runtime-config.js 2>/dev/null || echo "File doesn't exist yet"
+
+# Check directory permissions
+echo "🔍 Directory permissions:"
+ls -la /usr/share/nginx/html/
+
 # Create runtime configuration file
 echo "📄 Creating runtime configuration..."
+TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 cat > /usr/share/nginx/html/runtime-config.js << EOF
-// Runtime configuration for Azure App Service
+// Runtime configuration for Azure App Service - Generated: ${TIMESTAMP}
 window.runtimeConfig = {
   VITE_BACKEND_BASE_URL: '${VITE_BACKEND_BASE_URL}',
   VITE_LOGIN_BASE_URL: '${VITE_LOGIN_BASE_URL}',
   VITE_OAUTH_WEB_CLIENT_ID: '${VITE_OAUTH_WEB_CLIENT_ID}',
   VITE_OAUTH_WEB_CLIENT_SECRET: '${VITE_OAUTH_WEB_CLIENT_SECRET}',
-  VITE_NODE_ENV: '${VITE_NODE_ENV}'
+  VITE_NODE_ENV: '${VITE_NODE_ENV}',
+  _generated: '${TIMESTAMP}'
 };
 
 console.log('🔧 Runtime configuration loaded for Azure App Service');
 console.log('📊 Config values:', window.runtimeConfig);
+console.log('🕐 Generated at: ${TIMESTAMP}');
 EOF
 
 echo "✅ Runtime configuration created at /usr/share/nginx/html/runtime-config.js"
 
-# Verify the file was created and show its content
-if [ -f "/usr/share/nginx/html/runtime-config.js" ]; then
-    echo "📄 Runtime config file content:"
-    head -15 /usr/share/nginx/html/runtime-config.js
-else
-    echo "❌ Failed to create runtime config file!"
-fi
+# DEBUG: Verify what was actually written
+echo "📄 Runtime config file content after writing:"
+cat /usr/share/nginx/html/runtime-config.js
+
+# DEBUG: Check file permissions after writing
+echo "� File permissions after writing:"
+ls -la /usr/share/nginx/html/runtime-config.js
+
+# DEBUG: Test file can be read by nginx user
+echo "🔍 Testing nginx config:"
+nginx -t 2>/dev/null && echo "✅ Nginx config valid" || echo "❌ Nginx config error"
+
+echo "✅ Runtime configuration setup complete!"
 
 # Start nginx
 echo "🌐 Starting nginx..."
