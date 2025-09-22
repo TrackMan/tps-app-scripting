@@ -20,6 +20,13 @@ function stripTrailingSlash(url: string): string {
 }
 
 const backendBase = (() => {
+  // Try runtime configuration first (for Azure App Service)
+  const runtimeBase = (window as any)?.runtimeConfig?.VITE_BACKEND_BASE_URL;
+  if (runtimeBase && runtimeBase.startsWith('http')) {
+    return stripTrailingSlash(runtimeBase);
+  }
+  
+  // Fall back to build-time environment
   const base = import.meta.env.VITE_BACKEND_BASE_URL?.trim();
   if (base) return stripTrailingSlash(base);
   
@@ -33,6 +40,13 @@ const backendBase = (() => {
 })();
 
 const loginBase = (() => {
+  // Try runtime configuration first (for Azure App Service)
+  const runtimeBase = (window as any)?.runtimeConfig?.VITE_LOGIN_BASE_URL;
+  if (runtimeBase && runtimeBase.startsWith('http')) {
+    return stripTrailingSlash(runtimeBase);
+  }
+  
+  // Fall back to build-time environment
   const base = import.meta.env.VITE_LOGIN_BASE_URL?.trim();
   if (base) return stripTrailingSlash(base);
   
@@ -53,18 +67,38 @@ export const ENV_URLS = {
   oauthToken: loginBase ? `${loginBase}/connect/token` : import.meta.env.VITE_OAUTH_TOKEN_URL || '',
 };
 
+// Debug environment loading
+console.log('🔍 Environment Debug:', {
+  backendBase,
+  loginBase,
+  'import.meta.env.VITE_BACKEND_BASE_URL': import.meta.env.VITE_BACKEND_BASE_URL,
+  'import.meta.env.VITE_LOGIN_BASE_URL': import.meta.env.VITE_LOGIN_BASE_URL,
+  'import.meta.env.VITE_OAUTH_WEB_CLIENT_ID': import.meta.env.VITE_OAUTH_WEB_CLIENT_ID ? 'SET' : 'NOT SET',
+  ENV_URLS
+});
+
 // OAuth Web Client Configuration (for authorization code flow)
-// Function to get OAuth client ID - simplified approach
+// Function to get OAuth client ID - with runtime support
 function getOAuthClientId(): string {
-  // Use build-time environment variable directly
-  // This will be set during the Docker build process in Azure
+  // Try runtime configuration first (for Azure App Service)
+  const runtimeClientId = (window as any)?.runtimeConfig?.VITE_OAUTH_WEB_CLIENT_ID;
+  if (runtimeClientId && runtimeClientId.length > 10) {
+    return runtimeClientId;
+  }
+  
+  // Fall back to build-time environment variable
   return import.meta.env.VITE_OAUTH_WEB_CLIENT_ID || '';
 }
 
-// Function to get OAuth client secret - simplified approach
+// Function to get OAuth client secret - with runtime support
 function getOAuthClientSecret(): string {
-  // Use build-time environment variable directly
-  // This will be set during the Docker build process in Azure
+  // Try runtime configuration first (for Azure App Service)
+  const runtimeClientSecret = (window as any)?.runtimeConfig?.VITE_OAUTH_WEB_CLIENT_SECRET;
+  if (runtimeClientSecret && runtimeClientSecret.length > 10) {
+    return runtimeClientSecret;
+  }
+  
+  // Fall back to build-time environment variable
   return import.meta.env.VITE_OAUTH_WEB_CLIENT_SECRET || '';
 }
 
@@ -92,10 +126,22 @@ export const OAUTH_CONFIG = {
 };
 
 export function assertRequiredUrls() {
+  console.log('🔍 Asserting required URLs:', ENV_URLS);
+  
   if (!ENV_URLS.graphql) {
+    console.error('❌ GraphQL endpoint is not configured:', {
+      backendBase,
+      'VITE_BACKEND_BASE_URL': import.meta.env.VITE_BACKEND_BASE_URL,
+      'VITE_GRAPHQL_URL': import.meta.env.VITE_GRAPHQL_URL
+    });
     throw new Error('GraphQL endpoint is not configured. Set VITE_BACKEND_BASE_URL or VITE_GRAPHQL_URL.');
   }
   if (!ENV_URLS.oauthToken) {
+    console.error('❌ OAuth token endpoint is not configured:', {
+      loginBase,
+      'VITE_LOGIN_BASE_URL': import.meta.env.VITE_LOGIN_BASE_URL,
+      'VITE_OAUTH_TOKEN_URL': import.meta.env.VITE_OAUTH_TOKEN_URL
+    });
     throw new Error('OAuth token endpoint is not configured. Set VITE_LOGIN_BASE_URL or VITE_OAUTH_TOKEN_URL.');
   }
 }

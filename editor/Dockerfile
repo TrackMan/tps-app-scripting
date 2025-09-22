@@ -24,6 +24,14 @@ ENV VITE_OAUTH_WEB_CLIENT_ID=$VITE_OAUTH_WEB_CLIENT_ID
 ENV VITE_OAUTH_WEB_CLIENT_SECRET=$VITE_OAUTH_WEB_CLIENT_SECRET
 ENV VITE_NODE_ENV=$VITE_NODE_ENV
 
+# Debug: Show what environment variables are available during build
+RUN echo "🔍 Build Environment Debug:" && \
+    echo "VITE_BACKEND_BASE_URL=$VITE_BACKEND_BASE_URL" && \
+    echo "VITE_LOGIN_BASE_URL=$VITE_LOGIN_BASE_URL" && \
+    echo "VITE_OAUTH_WEB_CLIENT_ID=$VITE_OAUTH_WEB_CLIENT_ID" && \
+    echo "VITE_OAUTH_WEB_CLIENT_SECRET=$(echo $VITE_OAUTH_WEB_CLIENT_SECRET | sed 's/./*/g')" && \
+    echo "VITE_NODE_ENV=$VITE_NODE_ENV"
+
 # Copy package files first for better Docker layer caching
 COPY package.json package-lock.json ./
 
@@ -39,6 +47,10 @@ RUN npm run build
 
 # Production stage
 FROM nginx:alpine
+
+# Copy startup script
+COPY startup.sh /startup.sh
+RUN chmod +x /startup.sh
 
 # Install required tools for runtime environment injection
 RUN apk add --no-cache bash
