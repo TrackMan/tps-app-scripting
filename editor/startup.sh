@@ -4,13 +4,17 @@
 
 echo "🚀 Starting Azure App Service configuration..."
 
-# Debug: Show environment variables
-echo "🔍 Environment Variables:"
-echo "VITE_BACKEND_BASE_URL=${VITE_BACKEND_BASE_URL:-'NOT SET'}"
-echo "VITE_LOGIN_BASE_URL=${VITE_LOGIN_BASE_URL:-'NOT SET'}"
-echo "VITE_OAUTH_WEB_CLIENT_ID=${VITE_OAUTH_WEB_CLIENT_ID:-'NOT SET'}"
-echo "VITE_OAUTH_WEB_CLIENT_SECRET=${VITE_OAUTH_WEB_CLIENT_SECRET:+SET}"
-echo "VITE_NODE_ENV=${VITE_NODE_ENV:-'NOT SET'}"
+# Debug: Show ALL environment variables that start with VITE_
+echo "🔍 All VITE_ Environment Variables:"
+env | grep "^VITE_" | sort
+
+# Debug: Show specific environment variables
+echo "🔍 Key Environment Variables:"
+echo "VITE_BACKEND_BASE_URL='${VITE_BACKEND_BASE_URL:-NOT SET}'"
+echo "VITE_LOGIN_BASE_URL='${VITE_LOGIN_BASE_URL:-NOT SET}'"
+echo "VITE_OAUTH_WEB_CLIENT_ID='${VITE_OAUTH_WEB_CLIENT_ID:-NOT SET}'"
+echo "VITE_OAUTH_WEB_CLIENT_SECRET='${VITE_OAUTH_WEB_CLIENT_SECRET:+SET}'"
+echo "VITE_NODE_ENV='${VITE_NODE_ENV:-NOT SET}'"
 
 # Create runtime configuration file
 echo "📄 Creating runtime configuration..."
