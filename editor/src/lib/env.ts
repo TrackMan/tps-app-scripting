@@ -83,6 +83,8 @@ export const ENV_URLS = {
 console.log('🔍 Environment Debug:', {
   backendBase,
   loginBase,
+  'runtimeConfig.VITE_NODE_ENV': (window as any)?.runtimeConfig?.VITE_NODE_ENV || 'NOT SET',
+  'import.meta.env.VITE_NODE_ENV': import.meta.env.VITE_NODE_ENV || 'NOT SET',
   'import.meta.env.VITE_BACKEND_BASE_URL': import.meta.env.VITE_BACKEND_BASE_URL,
   'import.meta.env.VITE_LOGIN_BASE_URL': import.meta.env.VITE_LOGIN_BASE_URL,
   'import.meta.env.VITE_OAUTH_WEB_CLIENT_ID': import.meta.env.VITE_OAUTH_WEB_CLIENT_ID ? 'SET' : 'NOT SET',
