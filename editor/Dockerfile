@@ -61,12 +61,8 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Copy custom nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Copy runtime environment injection script
-COPY inject-env.sh /usr/local/bin/inject-env.sh
-RUN chmod +x /usr/local/bin/inject-env.sh
-
 # Expose port 80
 EXPOSE 80
 
-# Use the injection script as the entrypoint
-CMD ["/usr/local/bin/inject-env.sh"]
+# Use the startup script as the entrypoint
+CMD ["/startup.sh"]

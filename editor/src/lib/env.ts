@@ -36,6 +36,12 @@ const backendBase = (() => {
     console.warn('[env] Using legacy VITE_GRAPHQL_URL as backend base fallback');
     return stripTrailingSlash(legacyGraphql.replace(/\/graphql$/, ''));
   }
+  
+  // Production fallback for Azure App Service
+  if (typeof window !== 'undefined' && window.location.hostname.includes('trackmangolfdev.com')) {
+    return 'https://dr-cloud-api-dev.trackmangolfdev.com';
+  }
+  
   return '';
 })();
 
@@ -56,6 +62,12 @@ const loginBase = (() => {
     console.warn('[env] Using legacy VITE_OAUTH_TOKEN_URL as login base fallback');
     return stripTrailingSlash(legacyToken.replace(/\/connect\/token$/, ''));
   }
+  
+  // Production fallback for Azure App Service
+  if (typeof window !== 'undefined' && window.location.hostname.includes('trackmangolfdev.com')) {
+    return 'https://tm-login-dev.trackmangolfdev.com';
+  }
+  
   return '';
 })();
 
@@ -87,7 +99,17 @@ function getOAuthClientId(): string {
   }
   
   // Fall back to build-time environment variable
-  return import.meta.env.VITE_OAUTH_WEB_CLIENT_ID || '';
+  const buildTimeClientId = import.meta.env.VITE_OAUTH_WEB_CLIENT_ID;
+  if (buildTimeClientId) {
+    return buildTimeClientId;
+  }
+  
+  // Production fallback for Azure App Service
+  if (typeof window !== 'undefined' && window.location.hostname.includes('trackmangolfdev.com')) {
+    return 'dr-web.4633fada-3b16-490f-8de7-2aa67158a1d6';
+  }
+  
+  return '';
 }
 
 // Function to get OAuth client secret - with runtime support
@@ -99,7 +121,17 @@ function getOAuthClientSecret(): string {
   }
   
   // Fall back to build-time environment variable
-  return import.meta.env.VITE_OAUTH_WEB_CLIENT_SECRET || '';
+  const buildTimeClientSecret = import.meta.env.VITE_OAUTH_WEB_CLIENT_SECRET;
+  if (buildTimeClientSecret) {
+    return buildTimeClientSecret;
+  }
+  
+  // Production fallback for Azure App Service
+  if (typeof window !== 'undefined' && window.location.hostname.includes('trackmangolfdev.com')) {
+    return '7c870264-3703-4ec2-add8-5f8e57251d0e';
+  }
+  
+  return '';
 }
 
 export const OAUTH_CONFIG = {
