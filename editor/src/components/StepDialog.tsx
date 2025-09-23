@@ -81,7 +81,7 @@ export const StepDialog: React.FC<StepDialogProps> = ({ open, onClose, onAdd, pa
                 return;
               }
               const step: Step = createStep({
-                parentActivityType,
+                nodeType,
                 id,
                 introHeader: header,
                 introDescription: description,
