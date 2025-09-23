@@ -4,13 +4,8 @@ import { TreeView } from './TreeView';
 import { BaySelector } from './BaySelector';
 import { LocationSelector } from './LocationSelector';
 import { CollapsibleSection } from './CollapsibleSection';
-import { 
-  LoadScriptButton, 
-  DownloadButton, 
-  CloneSelectedButton, 
-  AddActivityButton, 
-  AddStepButton 
-} from './buttons';
+import { NodeEditor } from './NodeEditor';
+import { LoadScriptButton, DownloadButton, CloneSelectedButton, AddActivityButton, AddStepButton } from './buttons';
 
 interface Bay {
   id: string;
@@ -75,9 +70,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onDeleteActivity,
   onDeleteStep,
   parentActivityForAdd,
+  onUpdateActivity,
+  onUpdateStep,
 }) => {
   const [executing, setExecuting] = React.useState(false);
   const [execMessage, setExecMessage] = React.useState<string | null>(null);
+  // Track selection locally to avoid deselection after ID change
+  const [localSelectedRef, setLocalSelectedRef] = React.useState(selectedRef);
+
+  React.useEffect(() => {
+    setLocalSelectedRef(selectedRef);
+  }, [selectedRef]);
+
+  // Track last selected node ID for reselection after ID change
+  const lastSelectedRef = React.useRef(selectedRef);
+
+  React.useEffect(() => {
+    lastSelectedRef.current = selectedRef;
+  }, [selectedRef]);
+
+  // Handler to reselect node after ID change
+  function handleNodeIdChange(oldId: string, newId: string, kind: 'activity' | 'step', parentActivityId?: string) {
+    if (kind === 'activity') {
+      setLocalSelectedRef({ kind: 'activity', activityId: newId });
+      onSelectActivity(newId);
+    } else if (kind === 'step' && parentActivityId) {
+      setLocalSelectedRef({ kind: 'step', activityId: parentActivityId, stepId: newId });
+      onSelectStep(parentActivityId, newId);
+    }
+  }
 
   const canExecute = isValid && !!selectedBayObj?.dbId;
 
@@ -185,15 +206,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
             parentActivityForAdd={parentActivityForAdd} 
             onShowStepDialog={onShowStepDialog} 
           />
+          {/* Pass handleNodeIdChange to NodeEditor below */}
           <TreeView
             script={script}
-            selectedRef={selectedRef}
+            selectedRef={localSelectedRef}
             onSelectScript={onSelectScript}
             onSelectActivity={onSelectActivity}
             onSelectStep={onSelectStep}
             onDeleteActivity={onDeleteActivity}
             onDeleteStep={onDeleteStep}
           />
+          {selectedNode && (
+            <NodeEditor
+              node={selectedNode}
+              onUpdateActivity={(activityId: string, patch: Partial<Activity>) => {
+                if (patch.id && patch.id !== activityId) {
+                  handleNodeIdChange(activityId, patch.id, 'activity');
+                }
+                onUpdateActivity(activityId, patch);
+              }}
+              onUpdateStep={(stepId: string, patch: Partial<Step>) => {
+                if (patch.id && patch.id !== stepId) {
+                  let parentId = null;
+                  if (selectedRef && selectedRef.kind === 'step') {
+                    parentId = selectedRef.activityId;
+                  }
+                  handleNodeIdChange(stepId, patch.id, 'step', parentId || undefined);
+                }
+                onUpdateStep(stepId, patch);
+              }}
+            />
+          )}
         </CollapsibleSection>
       </div>
       

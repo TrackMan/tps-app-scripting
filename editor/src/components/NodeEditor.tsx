@@ -22,17 +22,35 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdateActivity, 
   // Activity editing
   if (isActivity(node)) {
     return (
-  <div className="node-editor">
+      <div className="node-editor">
         <div className="tab-bar-wrapper">
-            <SubTabBar tabs={ACTIVITY_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+          <SubTabBar tabs={ACTIVITY_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
-  <div className="tab-panel">
+        <div className="tab-panel">
           {activeTab === 'Meta Data' && (
-            <MessageEditor
-              title="Intro Message"
-              message={node.introMessage}
-              onChange={msg => onUpdateActivity?.(node.id!, { introMessage: msg })}
-            />
+            <>
+              <div className="edit-field">
+                <label>
+                  ID
+                  <input
+                    type="text"
+                    defaultValue={node.id || ''}
+                    onBlur={e => {
+                      const newId = e.target.value;
+                      if (newId !== node.id) {
+                        onUpdateActivity?.(node.id!, { id: newId });
+                      }
+                    }}
+                    placeholder="Enter activity ID..."
+                  />
+                </label>
+              </div>
+              <MessageEditor
+                title="Intro Message"
+                message={node.introMessage}
+                onChange={msg => onUpdateActivity?.(node.id!, { introMessage: msg })}
+              />
+            </>
           )}
           {activeTab === 'Script' && (
             <pre>{JSON.stringify(node, null, 2)}</pre>
@@ -47,11 +65,27 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({ node, onUpdateActivity, 
     return (
       <div className="node-editor" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div className="tab-bar-wrapper">
-            <SubTabBar tabs={STEP_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+          <SubTabBar tabs={STEP_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
         <div className="tab-panel" style={{ flex: 1, overflowY: 'auto' }}>
           {activeTab === 'Meta Data' && (
             <>
+              <div className="edit-field">
+                <label>
+                  ID
+                  <input
+                    type="text"
+                    defaultValue={node.id || ''}
+                    onBlur={e => {
+                      const newId = e.target.value;
+                      if (newId !== node.id) {
+                        onUpdateStep?.(node.id!, { id: newId });
+                      }
+                    }}
+                    placeholder="Enter step ID..."
+                  />
+                </label>
+              </div>
               <MessageEditor
                 title="Intro Message"
                 message={node.introMessage}
