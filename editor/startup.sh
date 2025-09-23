@@ -21,6 +21,10 @@ echo "VITE_NODE_ENV='${VITE_NODE_ENV:-NOT SET}'"
 echo "🔍 Checking if runtime-config.js exists before writing..."
 ls -la /usr/share/nginx/html/runtime-config.js 2>/dev/null || echo "File doesn't exist yet"
 
+# Force remove any existing runtime-config.js file
+echo "🗑️ Removing any existing runtime-config.js..."
+rm -f /usr/share/nginx/html/runtime-config.js
+
 # Check directory permissions
 echo "🔍 Directory permissions:"
 ls -la /usr/share/nginx/html/
@@ -57,6 +61,21 @@ ls -la /usr/share/nginx/html/runtime-config.js
 # DEBUG: Test file can be read by nginx user
 echo "🔍 Testing nginx config:"
 nginx -t 2>/dev/null && echo "✅ Nginx config valid" || echo "❌ Nginx config error"
+
+# CRITICAL: Verify the VITE_NODE_ENV was written correctly
+echo "🔍 CRITICAL CHECK - Verifying VITE_NODE_ENV in file:"
+grep "VITE_NODE_ENV" /usr/share/nginx/html/runtime-config.js || echo "❌ VITE_NODE_ENV not found in file!"
+
+# Double-check our environment variable is still correct
+echo "🔍 Double-checking environment variable:"
+echo "Current VITE_NODE_ENV='${VITE_NODE_ENV}'"
+
+if grep -q "VITE_NODE_ENV: 'production'" /usr/share/nginx/html/runtime-config.js; then
+    echo "✅ SUCCESS: File contains production mode!"
+else
+    echo "❌ FAILURE: File does not contain production mode!"
+    echo "🚨 This indicates a serious problem with file writing!"
+fi
 
 echo "✅ Runtime configuration setup complete!"
 
