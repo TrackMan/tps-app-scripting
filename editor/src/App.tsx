@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer, useRef } from 'react';
 import './treeview.css';
 import { TopBar } from './components/TopBar';
 import { TabBar } from './components/TabBar';
@@ -54,6 +54,9 @@ export default function App() {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [selectedBayId, setSelectedBayId] = useState<string | null>(null);
   const [selectedBayObj, setSelectedBayObj] = useState<Bay | null>(null);
+  
+  // Track if we've initialized from persistence to prevent re-initialization
+  const hasInitializedFromPersistence = useRef(false);
   
   const { script } = state;
   const { isValid, errors: validationErrors } = state.validation;
@@ -278,10 +281,11 @@ export default function App() {
     dispatch({ type: 'SET_VALIDATION', isValid: valid, errors: formatErrors(errors) });
   }, [script]);
 
-  // Initialize selections from persisted data on startup
+  // Initialize selections from persisted data on startup (only once)
   useEffect(() => {
-    if (!isLoadingSelections && selections) {
-      if (selections.facilityId && selections.facilityId !== selectedFacilityId) {
+    if (!isLoadingSelections && selections && !hasInitializedFromPersistence.current) {
+      // Only restore facility if we don't already have one selected
+      if (selections.facilityId && !selectedFacilityId) {
         setSelectedFacilityId(selections.facilityId);
         console.log('Restored facility ID from persistence:', selections.facilityId);
         // Note: The facility object will be restored by the FacilitySelectorPortal 
@@ -294,6 +298,9 @@ export default function App() {
       if (selections.bayId) {
         console.log('Will restore bay ID from persistence:', selections.bayId);
       }
+      
+      // Mark as initialized to prevent re-running
+      hasInitializedFromPersistence.current = true;
     }
   }, [isLoadingSelections, selections, selectedFacilityId]);
 

@@ -79,17 +79,20 @@ export const ENV_URLS = {
   oauthToken: loginBase ? `${loginBase}/connect/token` : import.meta.env.VITE_OAUTH_TOKEN_URL || '',
 };
 
-// Debug environment loading
-console.log('🔍 Environment Debug:', {
-  backendBase,
-  loginBase,
-  'runtimeConfig.VITE_NODE_ENV': (window as any)?.runtimeConfig?.VITE_NODE_ENV || 'NOT SET',
-  'import.meta.env.VITE_NODE_ENV': import.meta.env.VITE_NODE_ENV || 'NOT SET',
-  'import.meta.env.VITE_BACKEND_BASE_URL': import.meta.env.VITE_BACKEND_BASE_URL,
-  'import.meta.env.VITE_LOGIN_BASE_URL': import.meta.env.VITE_LOGIN_BASE_URL,
-  'import.meta.env.VITE_OAUTH_WEB_CLIENT_ID': import.meta.env.VITE_OAUTH_WEB_CLIENT_ID ? 'SET' : 'NOT SET',
-  ENV_URLS
-});
+// Debug environment loading (only in development)
+const isProduction = (window as any)?.runtimeConfig?.VITE_NODE_ENV === 'production';
+if (!isProduction) {
+  console.log('🔍 Environment Debug:', {
+    backendBase,
+    loginBase,
+    'runtimeConfig.VITE_NODE_ENV': (window as any)?.runtimeConfig?.VITE_NODE_ENV || 'NOT SET',
+    'import.meta.env.VITE_NODE_ENV': import.meta.env.VITE_NODE_ENV || 'NOT SET',
+    'import.meta.env.VITE_BACKEND_BASE_URL': import.meta.env.VITE_BACKEND_BASE_URL,
+    'import.meta.env.VITE_LOGIN_BASE_URL': import.meta.env.VITE_LOGIN_BASE_URL,
+    'import.meta.env.VITE_OAUTH_WEB_CLIENT_ID': import.meta.env.VITE_OAUTH_WEB_CLIENT_ID ? 'SET' : 'NOT SET',
+    ENV_URLS
+  });
+}
 
 // OAuth Web Client Configuration (for authorization code flow)
 // Function to get OAuth client ID - with runtime support
@@ -160,7 +163,10 @@ export const OAUTH_CONFIG = {
 };
 
 export function assertRequiredUrls() {
-  console.log('🔍 Asserting required URLs:', ENV_URLS);
+  const isProduction = (window as any)?.runtimeConfig?.VITE_NODE_ENV === 'production';
+  if (!isProduction) {
+    console.log('🔍 Asserting required URLs:', ENV_URLS);
+  }
   
   if (!ENV_URLS.graphql) {
     console.error('❌ GraphQL endpoint is not configured:', {

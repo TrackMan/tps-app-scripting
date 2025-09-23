@@ -6,9 +6,13 @@ export const EnvironmentDebug: React.FC = () => {
   const loginBase = import.meta.env.VITE_LOGIN_BASE_URL;
   const nodeEnv = import.meta.env.VITE_NODE_ENV;
   const mode = import.meta.env.MODE;
+  
+  // Check runtime configuration for production mode
+  const runtimeNodeEnv = (window as any)?.runtimeConfig?.VITE_NODE_ENV;
+  const isProduction = runtimeNodeEnv === 'production';
 
-  // Only show in development or when there are issues
-  if (!isDevelopment && backendBase && loginBase) {
+  // Only show in development or when there are issues, hide in production
+  if (isProduction || (!isDevelopment && backendBase && loginBase)) {
     return null;
   }
 
