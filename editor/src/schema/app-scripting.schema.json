@@ -77,7 +77,6 @@
       "properties": {
         "header": {
           "type": "string",
-          "minLength": 1,
           "description": "Primary message header text displayed to the user."
         },
         "description": {
@@ -87,7 +86,7 @@
         },
         "seconds": {
           "type": "integer",
-          "minimum": 0,
+          "minimum": -1,
           "default": 3,
           "description": "Seconds to display message on screen. Use -1 to require user to click button to dismiss message."
         }

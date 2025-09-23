@@ -2,7 +2,8 @@ import React from 'react';
 import { ScriptData, Activity, Step } from '../types';
 
 // Convert PascalCase to readable title (e.g., "RangeAnalysisScriptedStep" -> "Range Analysis Scripted Step")
-const formatNodeType = (nodeType: string): string => {
+const formatNodeType = (nodeType: string | undefined): string => {
+  if (!nodeType) return 'Unknown Type';
   return nodeType
     .replace(/([A-Z])/g, ' $1') // Add space before capital letters
     .trim(); // Remove leading space

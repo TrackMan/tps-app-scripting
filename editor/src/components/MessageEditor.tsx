@@ -3,13 +3,16 @@ import { Message } from '../types';
 
 interface MessageEditorProps {
   title: string;
-  message: Message;
+  message: Message | undefined;
   onChange: (message: Message) => void;
 }
 
 export const MessageEditor: React.FC<MessageEditorProps> = ({ title, message, onChange }) => {
+  // Provide default empty message if undefined
+  const currentMessage: Message = message || { header: '', description: '', seconds: -1 };
+  
   const update = (patch: Partial<Message>) => {
-    onChange({ ...message, ...patch });
+    onChange({ ...currentMessage, ...patch });
   };
 
   return (
@@ -21,7 +24,7 @@ export const MessageEditor: React.FC<MessageEditorProps> = ({ title, message, on
           Header
           <input 
             type="text" 
-            value={message.header} 
+            value={currentMessage.header} 
             onChange={e => update({ header: e.target.value })}
             placeholder="Enter message header..."
           />
@@ -33,7 +36,7 @@ export const MessageEditor: React.FC<MessageEditorProps> = ({ title, message, on
           Description
           <input 
             type="text" 
-            value={message.description || ''} 
+            value={currentMessage.description || ''} 
             onChange={e => update({ description: e.target.value })}
             placeholder="Optional supporting text..."
           />
@@ -45,7 +48,7 @@ export const MessageEditor: React.FC<MessageEditorProps> = ({ title, message, on
           Display Duration
           <select 
             className="cond-input"
-            value={message.seconds || 0} 
+            value={currentMessage.seconds || 0} 
             onChange={e => update({ seconds: Number(e.target.value) })}
           >
             <option value={0}>Hidden</option>

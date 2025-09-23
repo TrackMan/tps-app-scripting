@@ -8,10 +8,15 @@
     <link rel="stylesheet" href="/src/index.css" />
     <!-- Runtime configuration for Azure App Service -->  
     <script>
-      // Load runtime config with cache-busting timestamp
-      const script = document.createElement('script');
-      script.src = '/runtime-config.js?v=' + Date.now();
-      document.head.appendChild(script);
+      // Load runtime config with cache-busting timestamp (only in production)
+      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        const script = document.createElement('script');
+        script.src = '/runtime-config.js?v=' + Date.now();
+        script.onerror = function() {
+          console.warn('Runtime config not available - using build-time environment variables');
+        };
+        document.head.appendChild(script);
+      }
     </script>
   </head>
   <body>
