@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.trackman.com/app-scripting/1-0-0/activity-range-analysis.json",
+  "title": "Range Analysis Activity",
+  "$defs": {
+    "RangeAnalysisScriptedConditions": {
+      "type": "object",
+      "description": "Success/fail condition for Range Analysis steps. Counts shots that pass the per-shot clauses (if provided).",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "RangeAnalysisScriptedConditions", "description": "Discriminator. Must be exactly this value." },
+        "shots": { "type": "integer", "minimum": 1, "description": "Threshold count." },
+        "conditionType": { "$ref": "shared.schema.json#/$defs/ConditionType" },
+        "conditions": { "type": "array", "minItems": 0, "items": { "$ref": "shared.schema.json#/$defs/ConditionClause" }, "default": [] }
+      },
+      "required": ["nodeType", "shots"]
+    },
+    "RangeAnalysisScriptedSetup": {
+      "type": "object",
+      "description": "Environment for a Range Analysis step.",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "RangeAnalysisScriptedSetup", "description": "Discriminator. Must be exactly this value." },
+        "club": {
+          "type": "string",
+          "minLength": 1,
+          "enum": [
+            "None", "Drv", "_2W", "_3W", "_4W", "_5W", "_6W", "_7W", "_8W", "_9W",
+            "_1H", "_2H", "_3H", "_4H", "_5H", "_6H", "_7H", "_8H", "_9H",
+            "_1I", "_2I", "_3I", "_4I", "_5I", "_6I", "_7I", "_8I", "_9I",
+            "_PW", "_SW", "_LW", "_50W", "_52W", "_54W", "_56W", "_58W", "_60W", "Putt"
+          ],
+          "description": "Club specification for the range analysis shot.",
+          "default": "Drv"
+        },
+        "distance": { "type": "number", "minimum": 0, "description": "Required distance to the target in meters." }
+      },
+      "required": ["nodeType", "club", "distance"]
+    },
+    "RangeAnalysisScriptedUI": {
+      "type": "object",
+      "description": "UI hints/overrides for Range Analysis. Empty object means defaults.",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "RangeAnalysisScriptedUI" },
+        "targetAvailable": { "type": "boolean", "default": true },
+        "activeDataTiles": { "type": "array", "items": { "$ref": "shared.schema.json#/$defs/ParameterName" }, "maxItems": 8, "default": [] },
+        "shotListParameters": { "type": "array", "items": { "$ref": "shared.schema.json#/$defs/ParameterName" }, "default": ["Total", "Carry", "BallSpeed"] },
+        "defaultShotListParameter": { "$ref": "shared.schema.json#/$defs/ParameterName", "default": "Carry" },
+        "beforeShot": { "$ref": "shared.schema.json#/$defs/UIFrameAction" },
+        "duringShot": { "$ref": "shared.schema.json#/$defs/UIFrameAction" },
+        "afterShot": { "$ref": "shared.schema.json#/$defs/UIFrameAction" }
+      },
+      "required": ["nodeType"]
+    },
+    "RangeAnalysisScriptedLogic": {
+      "type": "object",
+      "description": "Evaluation logic for a Range Analysis step: setup + success/fail conditions + flow flags.",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "RangeAnalysisScriptedLogic" },
+        "setup": { "$ref": "#/$defs/RangeAnalysisScriptedSetup" },
+        "successCondition": { "$ref": "#/$defs/RangeAnalysisScriptedConditions" },
+        "failCondition": { "$ref": "#/$defs/RangeAnalysisScriptedConditions" },
+        "canRetry": { "type": "boolean", "default": false },
+        "skipOnSuccess": { "type": "boolean", "default": false }
+      },
+      "required": ["nodeType", "setup", "successCondition", "skipOnSuccess"]
+    },
+    "RangeAnalysisScriptedStep": {
+      "type": "object",
+      "description": "One step in a Range Analysis activity.",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "RangeAnalysisScriptedStep" },
+        "id": { "$ref": "shared.schema.json#/$defs/IdString" },
+        "introMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "successMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "failMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "logic": { "$ref": "#/$defs/RangeAnalysisScriptedLogic" },
+        "ui": { "$ref": "#/$defs/RangeAnalysisScriptedUI" },
+        "greenTarget": { "type": "boolean", "default": false },
+        "targetWidthHCP": { "type": "number", "minimum": 0 },
+        "targetWidthPro": { "type": "number", "minimum": 0 }
+      },
+      "required": ["nodeType", "id", "introMessage", "successMessage", "failMessage", "logic", "ui"]
+    },
+    "RangeAnalysisScriptedActivity": {
+      "$anchor": "Activity",
+      "type": "object",
+      "description": "Activity targeting the Range Analysis app. Steps run in order.",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "RangeAnalysisScriptedActivity" },
+        "id": { "$ref": "shared.schema.json#/$defs/IdString" },
+        "introMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "endMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "steps": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/RangeAnalysisScriptedStep" } }
+      },
+      "required": ["nodeType", "id", "introMessage", "endMessage", "steps"]
+    }
+  }
+}

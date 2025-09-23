@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.trackman.com/app-scripting/1-0-0/activity-performance-center.schema.json",
+  "title": "Performance Center Activity",
+  "$defs": {
+    "PerformanceCenterScriptedSetupTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterScriptedSetupTarget" },
+        "targetId": { "type": "string" },
+        "distance": { "type": "number", "minimum": 0 }
+      },
+      "required": ["nodeType", "targetId", "distance"]
+    },
+    "PerformanceCenterScriptedSetupUsingTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterScriptedSetupUsingTarget" },
+        "target": { "$ref": "#/$defs/PerformanceCenterScriptedSetupTarget" },
+        "club": { "type": "string", "default": "Drv" }
+      },
+      "required": ["nodeType", "target"]
+    },
+    "PerformanceCenterScriptedSetupUsingDistance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterScriptedSetupUsingDistance" },
+        "distance": { "type": "number", "minimum": 0 },
+        "club": { "type": "string", "default": "Drv" }
+      },
+      "required": ["nodeType", "distance"]
+    },
+    "PerformanceCenterScriptedUI": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterScriptedUI" },
+        "perHoleMode": { "type": "boolean", "default": false },
+        "activeDataTiles": { "type": "array", "items": { "$ref": "shared.schema.json#/$defs/ParameterName" }, "default": [] },
+        "holeSelector": { "$ref": "shared.schema.json#/$defs/ParameterName" }
+      },
+      "required": ["nodeType"]
+    },
+    "PerformanceCenterScriptedLogic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterScriptedLogic" },
+        "setup": { "oneOf": [ { "$ref": "#/$defs/PerformanceCenterScriptedSetupUsingTarget" }, { "$ref": "#/$defs/PerformanceCenterScriptedSetupUsingDistance" } ] },
+        "successCondition": { "$ref": "shared.schema.json#/$defs/ConditionClause" },
+        "failCondition": { "$ref": "shared.schema.json#/$defs/ConditionClause" }
+      },
+      "required": ["nodeType", "setup", "successCondition"]
+    },
+    "PerformanceCenterScriptedStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterScriptedStep" },
+        "id": { "$ref": "shared.schema.json#/$defs/IdString" },
+        "introMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "successMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "failMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "logic": { "$ref": "#/$defs/PerformanceCenterScriptedLogic" },
+        "ui": { "$ref": "#/$defs/PerformanceCenterScriptedUI" }
+      },
+      "required": ["nodeType", "id", "introMessage", "successMessage", "failMessage", "logic", "ui"]
+    },
+    "PerformanceCenterScriptedActivity": {
+      "$anchor": "Activity",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterScriptedActivity" },
+        "id": { "$ref": "shared.schema.json#/$defs/IdString" },
+        "introMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "endMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "steps": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/PerformanceCenterScriptedStep" } }
+      },
+      "required": ["nodeType", "id", "introMessage", "endMessage", "steps"]
+    }
+  }
+}

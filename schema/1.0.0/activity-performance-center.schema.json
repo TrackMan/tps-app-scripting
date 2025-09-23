@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.trackman.com/app-scripting/1-0-0/activity-performance-center.json",
+  "title": "Performance Center Activity",
+  "$defs": {
+    "PerformanceCenterScriptedConditions": {
+      "type": "object",
+      "description": "Success/fail condition for Performance Center steps. Same semantics as Range Analysis conditions.",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterScriptedConditions", "description": "Discriminator. Must be exactly this value." },
+        "shots": { "type": "integer", "minimum": 1, "description": "Threshold count." },
+        "conditionType": { "$ref": "shared.schema.json#/$defs/ConditionType" },
+        "conditions": { "type": "array", "minItems": 0, "items": { "$ref": "shared.schema.json#/$defs/ConditionClause" }, "default": [] }
+      },
+      "required": ["nodeType", "shots"]
+    },
+    "PerformanceCenterApproachScriptedSetup": {
+      "type": "object",
+      "description": "Approach-shot scenario configuration in Performance Center.",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterApproachScriptedSetup", "description": "Discriminator. Must be exactly this value." },
+        "hole": { "type": "integer", "minimum": 1, "description": "Hole number (1-based)." },
+        "pin": { "type": "integer", "minimum": 1, "description": "Pin index on the selected hole (1-based)." },
+        "playerCategory": { "type": "string", "enum": ["Handicap", "PGA", "LPGA"], "default": "Handicap", "description": "Baseline cohort for strokes-gained and contours." },
+        "hcp": { "type": "integer", "minimum": 0, "maximum": 15, "description": "Player handicap used for baselines." },
+        "gender": { "type": "string", "enum": ["Male", "Female", "Unspecified"], "default": "Unspecified", "description": "Baseline cohort dimension." },
+        "minDistance": { "type": "number", "minimum": 0, "description": "Minimum approach distance in meters.", "default": 30.0 },
+        "maxDistance": { "type": "number", "minimum": 0, "description": "Maximum approach distance in meters.", "default": 220.0 },
+        "club": { "type": "string", "description": "Club specification for the approach shot.", "default": "Drv" }
+      },
+      "required": ["nodeType", "hole", "pin", "playerCategory", "hcp", "gender", "minDistance", "maxDistance"]
+    },
+    "PerformanceCenterTeeShotsScriptedSetup": {
+      "type": "object",
+      "description": "Tee-shot scenario configuration in Performance Center.",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterTeeShotsScriptedSetup", "description": "Discriminator. Must be exactly this value." },
+        "hole": { "type": "integer", "minimum": 1, "description": "Hole number (1-based)." },
+        "playerCategory": { "type": "string", "enum": ["Handicap", "PGA", "LPGA"], "default": "Handicap", "description": "Baseline cohort for strokes-gained and contours." },
+        "hcp": { "type": "integer", "minimum": 0, "maximum": 15, "description": "Player handicap used for baselines. Required only when playerCategory is 'Handicap'." },
+        "gender": { "type": "string", "enum": ["Male", "Female", "Unspecified"], "default": "Unspecified", "description": "Baseline cohort dimension." },
+        "courseDistance": { "type": "integer", "minimum": 1000, "maximum": 9000, "description": "Total course distance in meters (context for tee-shot modeling).", "default": 6900 },
+        "club": { "type": "string", "description": "Club specification for the tee shot.", "default": "Drv" }
+      },
+      "required": ["nodeType", "hole", "playerCategory", "gender", "courseDistance"],
+      "allOf": [
+        {
+          "if": { "properties": { "playerCategory": { "const": "Handicap" } } },
+          "then": { "required": ["hcp"] }
+        }
+      ]
+    },
+    "PerformanceCenterScriptedUI": {
+      "type": "object",
+      "description": "UI hints/overrides for Performance Center. Empty object means defaults.",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterScriptedUI" },
+        "targetAvailable": { "type": "boolean", "default": true },
+        "activeDataTiles": { "type": "array", "items": { "$ref": "shared.schema.json#/$defs/ParameterName" }, "maxItems": 8, "default": [] },
+        "shotListParameters": { "type": "array", "items": { "$ref": "shared.schema.json#/$defs/ParameterName" }, "default": ["Total", "Carry", "BallSpeed"] },
+        "defaultShotListParameter": { "$ref": "shared.schema.json#/$defs/ParameterName", "default": "Carry" },
+        "beforeShot": { "$ref": "shared.schema.json#/$defs/UIFrameAction" },
+        "duringShot": { "$ref": "shared.schema.json#/$defs/UIFrameAction" },
+        "afterShot": { "$ref": "shared.schema.json#/$defs/UIFrameAction" }
+      },
+      "required": ["nodeType"]
+    },
+    "PerformanceCenterScriptedLogic": {
+      "type": "object",
+      "description": "Evaluation logic for a Performance Center step: setup + success/fail conditions + flow flags.",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterScriptedLogic" },
+        "setup": {
+          "oneOf": [
+            { "$ref": "#/$defs/PerformanceCenterApproachScriptedSetup" },
+            { "$ref": "#/$defs/PerformanceCenterTeeShotsScriptedSetup" }
+          ],
+          "description": "Pick exactly one setup variant matching the step scenario."
+        },
+        "successCondition": { "$ref": "#/$defs/PerformanceCenterScriptedConditions" },
+        "failCondition": { "$ref": "#/$defs/PerformanceCenterScriptedConditions" },
+        "canRetry": { "type": "boolean", "default": false },
+        "skipOnSuccess": { "type": "boolean", "default": false }
+      },
+      "required": ["nodeType", "setup", "successCondition"]
+    },
+    "PerformanceCenterScriptedStep": {
+      "type": "object",
+      "description": "One step in a Performance Center activity.",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterScriptedStep" },
+        "id": { "$ref": "shared.schema.json#/$defs/IdString" },
+        "introMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "successMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "failMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "logic": { "$ref": "#/$defs/PerformanceCenterScriptedLogic" },
+        "ui": { "$ref": "#/$defs/PerformanceCenterScriptedUI" }
+      },
+      "required": ["nodeType", "id", "introMessage", "successMessage", "failMessage", "logic", "ui"]
+    },
+    "PerformanceCenterScriptedActivity": {
+      "$anchor": "Activity",
+      "type": "object",
+      "description": "Activity targeting the Performance Center app. Steps run in order.",
+      "additionalProperties": false,
+      "properties": {
+        "nodeType": { "const": "PerformanceCenterScriptedActivity" },
+        "id": { "$ref": "shared.schema.json#/$defs/IdString" },
+        "introMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "endMessage": { "$ref": "shared.schema.json#/$defs/Message" },
+        "steps": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/PerformanceCenterScriptedStep" } }
+      },
+      "required": ["nodeType", "id", "introMessage", "endMessage", "steps"]
+    }
+  }
+}

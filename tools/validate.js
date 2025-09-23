@@ -32,8 +32,83 @@ const ajv = new Ajv2020({
 });
 addFormats(ajv);
 
+// Pre-load and register all schemas under schema/latest so relative $ref's
+// such as "shared.schema.json#/$defs/..." can be resolved by Ajv.
+const schemaFiles = await glob("schema/latest/**/*.json", { cwd: root, nodir: true });
+// Load the main schema early so we can compute the expected base URL for
+// relative filename-based refs (e.g. shared.schema.json -> https://.../shared.schema.json).
+const mainSchemaRaw = loadSchema(latestSchemaPath);
+const mainSchemaBase = (mainSchemaRaw && mainSchemaRaw.$id)
+  ? mainSchemaRaw.$id.replace(/\/[^\/]*$/, "")
+  : "https://schemas.trackman.com/app-scripting/1-0-0";
+for (const rel of schemaFiles) {
+  const p = path.join(root, rel);
+  try {
+    const s = loadSchema(p);
+    // Register using the schema $id if present so Ajv can resolve absolute refs.
+    // Avoid registering the main schema twice. We'll compile it separately below.
+    if (path.resolve(p) === path.resolve(latestSchemaPath)) continue;
+    if (s && typeof s === "object") {
+      if (s.$id) {
+        // If Ajv already has this schema registered, skip it.
+        if (ajv.getSchema(s.$id)) continue;
+        ajv.addSchema(s, s.$id);
+        // Also register the schema under a filename-based URL so relative refs
+        // like "shared.schema.json" (resolved against the main schema $id) can be found.
+        try {
+          const filenameId = `${mainSchemaBase}/${path.basename(p)}`;
+          if (!ajv.getSchema(filenameId)) {
+            // If the schema's internal $id differs from the filename-based id,
+            // register a copy with the filename-based $id so anchors/fragments
+            // are available under that URI.
+            if (s.$id && s.$id !== filenameId) {
+              try {
+                const sCopy = JSON.parse(JSON.stringify(s));
+                sCopy.$id = filenameId;
+                ajv.addSchema(sCopy, filenameId);
+              } catch (_) {
+                ajv.addSchema(s, filenameId);
+              }
+            } else {
+              ajv.addSchema(s, filenameId);
+            }
+          }
+        } catch (_) {
+          // ignore filename-based registration failures
+        }
+      } else {
+        // Add unnamed schema (Ajv will assign an internal key).
+        ajv.addSchema(s);
+      }
+    }
+  } catch (e) {
+    console.error(`Failed to load schema ${p}: ${e.message}`);
+    process.exit(2);
+  }
+}
+
+// Diagnostic: report whether Ajv has schema entries for the filename-based URLs
+const expectedFiles = [
+  "activity-range-analysis.schema.json",
+  "activity-performance-center.schema.json",
+  "shared.schema.json",
+  "app-scripting.schema.json",
+];
+for (const fn of expectedFiles) {
+  const id = `${mainSchemaBase}/${fn}`;
+  const has = !!ajv.getSchema(id);
+  console.error(`DEBUG: ajv has schema ${id}: ${has}`);
+}
+
 const schema = loadSchema(latestSchemaPath);
-const validate = ajv.compile(schema);
+let validate;
+try {
+  validate = ajv.compile(schema);
+} catch (e) {
+  console.error("Failed to compile main schema:", e.message || e);
+  // Re-throw so CI shows the full stack if needed
+  throw e;
+}
 
 const files = await glob("examples/**/*.json", { cwd: root, nodir: true });
 

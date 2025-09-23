@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.trackman.com/app-scripting/1-0-0/shared.json",
+  "title": "TrackMan App Scripting — Shared",
+  "type": "object",
+  "$defs": {
+    "StartMode": {
+      "type": "string",
+      "enum": ["Append", "Overwrite"],
+      "default": "Overwrite",
+      "description": "Defines how the script should start."
+    },
+    "EndMode": {
+      "type": "string",
+      "enum": ["Wait", "Exit"],
+      "default": "Exit",
+      "description": "Defines how the script should end."
+    },
+    "IdString": {
+      "type": "string",
+      "description": "Stable identifier for activities/steps. Lowercase, kebab/number friendly for logs and selectors.",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "Message": {
+      "type": "object",
+      "description": "Timed banner/message shown by the host app (intro/success/fail/end).",
+      "additionalProperties": false,
+      "properties": {
+        "header": { "type": "string" },
+        "description": { "type": "string", "default": "" },
+        "seconds": { "type": "integer", "minimum": -1, "default": 3 }
+      },
+      "required": ["header", "seconds"]
+    },
+    "ConditionType": {
+      "type": "string",
+      "enum": ["", "And", "Or"],
+      "default": "",
+      "description": "How to combine multiple per-shot condition clauses for a single shot."
+    },
+    "ParameterName": {
+      "description": "Parameter against which shots are checked for conditions or displayed in UI. Values are expressed in meters for distance parameters, meters per second for speeds, and degrees for angles.",
+      "type": "string",
+      "enum": [
+        "ClubSpeed", "AttackAngle", "ClubPath", "DynamicLoft", "FaceAngle", "DynamicLie", "ImpactHeight", "SpinLoft", "FaceToPath", "SwingPlane", "SwingDirection", "LowPoint", "ImpactOffset",
+        "Curve", "Height", "Carry", "Total", "Side", "SideTotal", "LandingAngle", "FromPin", "BallSpeed", "SmashFactor", "LaunchAngle", "LaunchDirection", "SpinRate", "SpinAxis", "StrokesGained"
+      ]
+    },
+    "ConditionClause": {
+      "type": "object",
+      "description": "Single per-shot check. Bounds are inclusive. If both min and max are set and equal → exact match.",
+      "additionalProperties": false,
+      "properties": {
+        "parameter": { "$ref": "#/$defs/ParameterName" },
+        "min": { "type": "number" },
+        "max": { "type": "number" }
+      },
+      "required": ["parameter"],
+      "anyOf": [ { "required": ["min"] }, { "required": ["max"] } ]
+    },
+    "UIFrameName": {
+      "type": "string",
+      "description": "Names of UI frames that can be manipulated during different shot phases.",
+      "enum": [
+        "Player", "Markers", "Tiles", "ShotList", "GoToSetup", "Minimap", "BroadcastTiles", "ClubDelivery", "AllTiles", "LandingCamera", "StrokesGainedSummaryTile", "StrokesGainedShotResult", "TargetCarry"
+      ]
+    },
+    "UIFrameAction": {
+      "type": "object",
+      "description": "UI frame management actions for different shot phases.",
+      "additionalProperties": false,
+      "properties": {
+        "addFrames":    { "type": "array", "items": { "$ref": "#/$defs/UIFrameName" }, "default": [] },
+        "removeFrames": { "type": "array", "items": { "$ref": "#/$defs/UIFrameName" }, "default": [] },
+        "disableFrames":{ "type": "array", "items": { "$ref": "#/$defs/UIFrameName" }, "default": [] }
+      }
+    }
+  }
+}

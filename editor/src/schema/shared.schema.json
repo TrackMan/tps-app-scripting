@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.trackman.com/app-scripting/1-0-0/shared.schema.json",
+  "title": "Shared App Scripting definitions",
+  "$defs": {
+    "IdString": { "type": "string", "pattern": "^[a-zA-Z0-9_-]+$" },
+    "Message": { "type": "object", "additionalProperties": false, "properties": { "text": { "type": "string" }, "language": { "type": "string" } }, "required": ["text"] },
+    "StartMode": { "type": "string", "enum": ["Manual", "Auto"] },
+    "EndMode": { "type": "string", "enum": ["Manual", "Auto"] },
+    "ParameterName": { "type": "string", "enum": ["Total", "Carry", "BallSpeed", "ClubHeadSpeed"] },
+    "ConditionType": { "type": "string", "enum": ["AtLeast", "AtMost", "Exact"] },
+    "ConditionClause": { "type": "object", "additionalProperties": false, "properties": { "parameter": { "$ref": "#/ $defs/ParameterName" }, "operator": { "$ref": "#/ $defs/ConditionType" }, "value": { "type": "number" } }, "required": ["parameter", "operator", "value"] },
+    "UIFrameAction": { "type": "object", "additionalProperties": false, "properties": { "action": { "type": "string" }, "params": { "type": "object" }, "delayMs": { "type": "integer", "minimum": 0 } }, "required": ["action"] }
+  }
+}
