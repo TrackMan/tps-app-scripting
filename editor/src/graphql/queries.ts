@@ -1,3 +1,16 @@
+// Query to get current user profile after login
+export const GET_ME = gql`
+  query getMe {
+    me {
+      profile {
+        id
+        dbId
+        fullName
+        picture
+      }
+    }
+  }
+`;
 import { gql } from 'urql';
 
 // =============================================================================

@@ -6,10 +6,10 @@ import { AuthProvider } from './lib/AuthProvider';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <AuthProvider>
-      <GraphQLProvider>
+    <GraphQLProvider>
+      <AuthProvider>
         <App />
-      </GraphQLProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </GraphQLProvider>
   </React.StrictMode>
 );

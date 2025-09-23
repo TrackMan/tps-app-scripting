@@ -1,5 +1,10 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { authService } from './auth-service';
+import { GET_ME } from '../graphql/queries';
+import { useQuery } from 'urql';
+
+// Dummy usage to trigger codegen
+const _dummy = GET_ME;
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -10,6 +15,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   refreshAuth: () => Promise<void>;
   tokenInfo: { isValid: boolean; expiresAt?: Date; scope?: string };
+  profile: Profile | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,10 +24,17 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+interface Profile {
+  id: string;
+  dbId: number;
+  fullName: string;
+  picture?: string;
+}
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   // Check authentication status on mount
   useEffect(() => {
@@ -97,6 +110,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const tokenInfo = authService.getTokenInfo();
+  // Fetch user profile after authentication
+  const [{ data, fetching }] = useQuery({ query: GET_ME, pause: !isAuthenticated });
+  React.useEffect(() => {
+    if (data?.me?.profile) {
+      setProfile(data.me.profile);
+    }
+  }, [data]);
 
   const value: AuthContextType = {
     isAuthenticated,
@@ -107,6 +127,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     refreshAuth,
     tokenInfo,
+    profile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

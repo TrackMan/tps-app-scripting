@@ -1,3 +1,131 @@
+/* Menu item icon + label row */
+.top-bar-user-menu-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Menu link styling */
+.top-bar-user-menu-link {
+  text-decoration: none;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  padding: 0;
+}
+/* Top bar app icon styling */
+.top-bar-app-icon {
+  height: 32px;
+  width: 32px;
+  display: inline-block;
+  margin-right: 8px;
+}
+ .top-bar-user-menu {
+  position: absolute;
+  top: 56px;
+  right: 0;
+  margin-top: -16px;
+  background-color: rgb(255, 255, 255);
+  color: rgba(0, 0, 0, 0.87);
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 5px -3px, rgba(0, 0, 0, 0.14) 0px 8px 10px 1px, rgba(0, 0, 0, 0.12) 0px 3px 14px 2px;
+  overflow: visible;
+  min-width: 240px;
+  max-width: 320px;
+  border-radius: 18px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: none;
+}
+
+
+.top-bar-user-menu-title {
+  margin: 0px;
+  --base: 1rem;
+  /* font-family removed */
+  font-size: calc(var(--base) * 0.8125);
+  font-weight: 700;
+  line-height: 1.4;
+  padding: 10px;
+  font-size: 14px;
+  text-align: left;
+}
+.top-bar-user-menu-divider {
+  display: block;
+  margin-block-start: 0.5em;
+  margin-block-end: 0.5em;
+  margin-inline-start: auto;
+  margin-inline-end: auto;
+  color: gray;
+  unicode-bidi: isolate;
+  overflow: hidden;
+  border-style: inset;
+  border-width: 1px;
+  width: -webkit-fill-available;
+}
+.top-bar-user-menu-item {
+  margin: 0px;
+  color: rgb(65, 65, 65);
+  --base: 1rem;
+  /* font-family removed */
+  font-size: calc(var(--base) * 0.8125);
+  font-weight: 400;
+  line-height: 1.4;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+}
+.top-bar-user-menu-item:hover {
+  background: #f8f8f8;
+}
+.top-bar-user-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Top bar user image styling */
+ .top-bar-user-image {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  /* font-family removed */
+  font-size: 1.25rem;
+  line-height: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  width: 32px;
+  height: 32px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* Remove incorrect width/height from menu, keep only for avatar */
+.top-bar-user-menu {
+  overflow: visible;
+}
+.top-bar-user-image-clickable {
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-color: #fff;
+  margin-left: 12px;
+}
+/* Top bar user name styling */
+.top-bar-user {
+  margin-left: 16px;
+  font-weight: 500;
+  color: #3b82f6;
+}
 .node-editor {
   display: flex;
   flex-direction: column;
@@ -49,6 +177,8 @@ html, body, #root { height:100%; font-family: system-ui, 'Segoe UI', Roboto, Oxy
   display: flex;
   align-items: center;
   gap: 12px;
+  position: relative;
+  overflow: visible;
 }
 
 .top-bar-auth {

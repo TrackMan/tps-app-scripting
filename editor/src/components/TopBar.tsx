@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FacilitySelectorPortal } from './FacilitySelectorPortal';
 import { BuildVersion } from './BuildVersion';
 import { useAuth } from '../lib/AuthProvider';
@@ -22,7 +22,27 @@ export const TopBar: React.FC<TopBarProps> = ({
   selectedFacilityId,
   onFacilitySelect 
 }) => {
-  const { isAuthenticated, isLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading, logout, profile } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const avatarRef = useRef<HTMLDivElement>(null);
+
+  // Close menu on outside click for avatar menu
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [menuOpen]);
+
+  const handleLogoutClick = () => {
+    console.log('Logging out user');
+    logout();
+    setMenuOpen(false);
+  };
   
   const handleFacilitySelect = (facility: Facility | null) => {
     onFacilitySelect(facility);
@@ -55,13 +75,49 @@ export const TopBar: React.FC<TopBarProps> = ({
           <div className="top-bar-auth">
             {isLoading ? (
               <span className="auth-loading">🔄</span>
-            ) : isAuthenticated ? (
-              <button onClick={logout} className="auth-button logout">
-                🔓 Logout
-              </button>
             ) : null}
           </div>
           <BuildVersion />
+          {profile && (
+            <>
+              <div
+                ref={avatarRef}
+                className="top-bar-user-image top-bar-user-image-clickable"
+                onClick={() => {
+                  setMenuOpen((v) => !v);
+                }}
+                style={{ display: 'inline-block', position: 'relative' }}
+              >
+                {profile.picture && (
+                  <img src={profile.picture} alt={profile.fullName || ''} />
+                )}
+              </div>
+              {menuOpen && (
+                <div
+                  className="top-bar-user-menu"
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: '56px',
+                    zIndex: 1000
+                  }}
+                >
+                  <div className="top-bar-user-menu-title">{profile.fullName || ''}</div>
+                  <hr className="top-bar-user-menu-divider" />
+                  <button
+                    className="top-bar-user-menu-item top-bar-user-menu-link"
+                    onMouseDown={handleLogoutClick}
+                  >
+                    <span className="top-bar-user-menu-row">
+                      {/* Logout SVG */}
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M1.404 1.985a1 1 0 0 1 1-1H8.9a1 1 0 0 1 1 1v3.143a.5.5 0 0 1-1 0V1.985H2.404v12.03H8.9v-3.003a.5.5 0 0 1 1 0v3.003a1 1 0 0 1-1 1H2.404a1 1 0 0 1-1-1V1.985Z" fill="#414141"/><path fillRule="evenodd" clipRule="evenodd" d="M11.721 5.533a.5.5 0 0 1 .707.024l1.967 2.102a.6.6 0 0 1-.007.827l-1.966 2.033a.5.5 0 0 1-.719-.695l1.213-1.254H5.897a.5.5 0 1 1 0-1h7.045l-1.244-1.33a.5.5 0 0 1 .023-.707Z" fill="#414141"/></svg>
+                      Log Out
+                    </span>
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
