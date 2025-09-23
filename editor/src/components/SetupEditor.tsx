@@ -8,7 +8,7 @@ interface SetupEditorProps {
 }
 
 export const SetupEditor: React.FC<SetupEditorProps> = ({ step, onUpdateStep }) => {
-  const setup = step.logic?.setup || {};
+  const setup = step.logic?.setup as any || {};
   const nodeType = setup.nodeType || '';
 
   // Check if this is a Performance Center step that can have different setup types
@@ -25,7 +25,7 @@ export const SetupEditor: React.FC<SetupEditorProps> = ({ step, onUpdateStep }) 
         ...setupPatch
       }
     };
-    onUpdateStep(step.id, { logic: newLogic });
+    onUpdateStep(step.id!, { logic: newLogic } as any);
   };
 
   const switchSetupType = (newNodeType: string) => {
@@ -153,14 +153,27 @@ export const SetupEditor: React.FC<SetupEditorProps> = ({ step, onUpdateStep }) 
           </div>
         </div>
 
-        {/* Common Fields */}
+        {/* Hole Field - Different UI for Approach vs Tee shots */}
         <div className="edit-field">
           <label>Hole</label>
-          <HoleSelector
-            selectedHole={setup.hole || 1}
-            onHoleSelect={(holeNumber) => updateSetup({ hole: holeNumber })}
-            setupType={isTeeShotsSetup ? 'tee' : 'approach'}
-          />
+          {isApproachSetup ? (
+            // Simple dropdown for Approach shots
+            <select 
+              className="cond-input"
+              value={setup.hole || 1}
+              onChange={e => updateSetup({ hole: parseInt(e.target.value) || 1 })}
+            >
+              {Array.from({ length: 9 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>Hole {i + 1}</option>
+              ))}
+            </select>
+          ) : (
+            // Full hole layout selector for Tee shots
+            <HoleSelector
+              selectedHole={setup.hole || 1}
+              onHoleSelect={(holeNumber) => updateSetup({ hole: holeNumber })}
+            />
+          )}
         </div>
 
         <div className="edit-field">

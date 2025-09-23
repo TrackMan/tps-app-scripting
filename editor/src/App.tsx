@@ -3,8 +3,9 @@ import './treeview.css';
 import { TopBar } from './components/TopBar';
 import { TabBar } from './components/TabBar';
 import { Sidebar } from './components/Sidebar';
-import { NodeDetailsPanel } from './components/NodeDetailsPanel';
+// ...existing code...
 import { ScriptEditor } from './components/ScriptEditor';
+import { NodeEditor } from './components/NodeEditor';
 import { DialogManager } from './components/DialogManager';
 import { DocViewer } from './components/DocViewer';
 import { EnvironmentDebug } from './components/EnvironmentDebug';
@@ -638,7 +639,7 @@ export default function App() {
         activeTab={activeTab} 
         onTabChange={setActiveTab} 
       />
-      <EnvironmentDebug />
+  {/* <EnvironmentDebug /> */}
       {activeTab === 'edit' ? (
         <div className="tree-flex">
           <DialogManager
@@ -676,22 +677,26 @@ export default function App() {
             onDeleteStep={deleteStep}
             parentActivityForAdd={parentActivityForAdd}
           />
-          {state.selectedRef?.kind === 'script' ? (
-            <div className="tree-main">
-              <h2>Script Configuration</h2>
-              <ScriptEditor
-                script={script}
-                onChange={updateScript}
+          <div className="tree-main">
+            {state.selectedRef?.kind === 'script' ? (
+              <>
+                <h2>Script Configuration</h2>
+                <ScriptEditor
+                  script={script}
+                  onChange={updateScript}
+                />
+                <pre>{JSON.stringify(script, null, 2)}</pre>
+              </>
+            ) : selectedNode ? (
+              <NodeEditor
+                node={selectedNode}
+                onUpdateActivity={updateActivity}
+                onUpdateStep={updateStep}
               />
-              <pre>{JSON.stringify(script, null, 2)}</pre>
-            </div>
-          ) : (
-            <NodeDetailsPanel
-              selectedNode={selectedNode}
-              onUpdateActivity={updateActivity}
-              onUpdateStep={updateStep}
-            />
-          )}
+            ) : (
+              <div className="empty-node-editor">Select a node to edit its details.</div>
+            )}
+          </div>
         </div>
       ) : (
         <div className="documentation-flex">

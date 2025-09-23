@@ -1,4 +1,5 @@
 import React from 'react';
+import { SubTabBar } from './SubTabBar';
 import { Activity, Step, isActivity, isStep, ConditionGroup } from '../types';
 import { ConditionEditor } from './ConditionEditor';
 import { EditPanel } from './EditPanel';
@@ -28,25 +29,37 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
     onUpdateActivity(activityId, patch);
   };
 
+
+  const [activeTab, setActiveTab] = React.useState('Meta Data');
+  const tabList = ['Meta Data', 'Logic', 'UI Configuration', 'Script'];
+
+  // Helper for safe logic update
+  function safeUpdateStepLogic(s: Step, patch: Partial<Step['logic']>) {
+    updateStep(s.id!, { logic: { ...s.logic, ...patch } } as Partial<Step>);
+  }
+
   return (
     <div className="tree-main">
       <h2>Node Details</h2>
       {selectedNode ? (
         <>
-          {/* For both activities and steps, show metadata first */}
-          <EditPanel
-            node={selectedNode}
-            onChange={(patch: Partial<Activity> | Partial<Step>) => {
-              if (isActivitySelected) {
-                updateActivity(selectedNode.id!, patch as Partial<Activity>);
-              } else if (isStepSelected) {
-                updateStep(selectedNode.id!, patch as Partial<Step>);
-              }
-            }}
-          />
-          {/* Step-only logic section follows metadata */}
-          {isStepSelected && (selectedNode as Step).logic && (
-            <CollapsibleSection title="Logic" className="logic-block" bodyClassName="logic-inner" defaultOpen persistKey={`${(selectedNode as Step).id}-logic`}>
+          <SubTabBar tabs={tabList} activeTab={activeTab} onTabChange={setActiveTab} />
+
+          {activeTab === 'Meta Data' && (
+            <EditPanel
+              node={selectedNode}
+              onChange={(patch: Partial<Activity> | Partial<Step>) => {
+                if (isActivitySelected) {
+                  updateActivity(selectedNode.id!, patch as Partial<Activity>);
+                } else if (isStepSelected) {
+                  updateStep(selectedNode.id!, patch as Partial<Step>);
+                }
+              }}
+            />
+          )}
+
+          {activeTab === 'Logic' && isStepSelected && (selectedNode as Step).logic && (
+            <div className="logic-block logic-inner">
               <SetupEditor
                 step={selectedNode as Step}
                 onUpdateStep={updateStep}
@@ -57,7 +70,7 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
                 showConditionType={true}
                 onChange={(c) => {
                   const s = selectedNode as Step;
-                  updateStep(s.id!, { logic: { ...s.logic, successCondition: c } });
+                  safeUpdateStepLogic(s, { successCondition: c });
                 }}
               />
               <ConditionEditor
@@ -66,25 +79,28 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
                 showConditionType={true}
                 onChange={(c) => {
                   const s = selectedNode as Step;
-                  updateStep(s.id!, { logic: { ...s.logic, failCondition: c } });
+                  safeUpdateStepLogic(s, { failCondition: c });
                 }}
               />
               <div className="logic-flags">
-                <label>Can Retry: <input type="checkbox" checked={!!(selectedNode as Step).logic.canRetry} onChange={e => { const s = selectedNode as Step; updateStep(s.id!, { logic: { ...s.logic, canRetry: e.target.checked } }); }} /></label>
-                <label>Skip On Success: <input type="checkbox" checked={!!(selectedNode as Step).logic.skipOnSuccess} onChange={e => { const s = selectedNode as Step; updateStep(s.id!, { logic: { ...s.logic, skipOnSuccess: e.target.checked } }); }} /></label>
+                <label>Can Retry: <input type="checkbox" checked={!!(selectedNode as Step).logic.canRetry} onChange={e => { const s = selectedNode as Step; safeUpdateStepLogic(s, { canRetry: e.target.checked }); }} /></label>
+                <label>Skip On Success: <input type="checkbox" checked={!!(selectedNode as Step).logic.skipOnSuccess} onChange={e => { const s = selectedNode as Step; safeUpdateStepLogic(s, { skipOnSuccess: e.target.checked }); }} /></label>
               </div>
-            </CollapsibleSection>
+            </div>
           )}
-          {/* UI Editor section for steps that support UI configuration */}
-          {isStepSelected && ((selectedNode as Step).nodeType === 'RangeAnalysisScriptedStep' || (selectedNode as Step).nodeType === 'PerformanceCenterScriptedStep') && (
-            <CollapsibleSection title="UI Configuration" className="ui-block" bodyClassName="ui-inner" defaultOpen persistKey={`${(selectedNode as Step).id}-ui`}>
+
+          {activeTab === 'UI Configuration' && isStepSelected && ((selectedNode as Step).nodeType === 'RangeAnalysisScriptedStep' || (selectedNode as Step).nodeType === 'PerformanceCenterScriptedStep') && (
+            <div className="ui-block ui-inner">
               <UIEditor
                 step={selectedNode as Step}
                 onUpdateStep={updateStep}
               />
-            </CollapsibleSection>
+            </div>
           )}
-          <pre>{JSON.stringify(selectedNode, null, 2)}</pre>
+
+          {activeTab === 'Script' && (
+            <pre>{JSON.stringify(selectedNode, null, 2)}</pre>
+          )}
         </>
       ) : (
         <p>Select an activity or step from the tree.</p>

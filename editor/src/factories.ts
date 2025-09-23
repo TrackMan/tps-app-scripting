@@ -30,8 +30,11 @@ export function createActivity(opts: any): ScriptedActivity {
 }
 
 export function createStep(opts: any): ScriptedStep {
+  const stepType = opts.nodeType || 'RangeAnalysisScriptedStep';
+  const isPerformanceCenter = stepType === 'PerformanceCenterScriptedStep';
+  
   const step = {
-    nodeType: opts.nodeType || 'RangeAnalysisScriptedStep',
+    nodeType: stepType,
     id: opts.id,
     introMessage: opts.introMessage || {
       header: opts.introHeader || '',
@@ -49,12 +52,29 @@ export function createStep(opts: any): ScriptedStep {
       seconds: -1
     },
     logic: opts.logic || {
-      // Default logic based on step type
-      ...(opts.nodeType === 'PerformanceCenterScriptedStep' ? {
-        nodeType: 'PerformanceCenterScriptedLogic'
+      nodeType: isPerformanceCenter ? 'PerformanceCenterScriptedLogic' : 'RangeAnalysisScriptedLogic',
+      setup: isPerformanceCenter ? {
+        nodeType: 'PerformanceCenterApproachScriptedSetup',
+        hole: 1,
+        pin: 1,
+        playerCategory: 'Handicap',
+        hcp: 10,
+        gender: 'Unspecified',
+        minDistance: 30.0,
+        maxDistance: 220.0
       } : {
-        nodeType: 'RangeAnalysisScriptedLogic'
-      })
+        nodeType: 'RangeAnalysisScriptedSetup',
+        club: 'Drv',
+        distance: 200
+      },
+      successCondition: {
+        nodeType: isPerformanceCenter ? 'PerformanceCenterScriptedConditions' : 'RangeAnalysisScriptedConditions',
+        shots: 1
+      },
+      skipOnSuccess: false
+    },
+    ui: {
+      nodeType: isPerformanceCenter ? 'PerformanceCenterScriptedUI' : 'RangeAnalysisScriptedUI'
     }
   };
   
