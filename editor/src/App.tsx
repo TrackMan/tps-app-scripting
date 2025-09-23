@@ -654,7 +654,6 @@ export default function App() {
           <Sidebar
             script={script}
             selectedRef={state.selectedRef}
-            selectedNode={selectedNode}
             isValid={isValid}
             validationErrors={validationErrors}
             selectedFacilityId={selectedFacilityId}
