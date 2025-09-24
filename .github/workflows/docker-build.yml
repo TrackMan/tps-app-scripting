@@ -3,14 +3,8 @@ name: Build and Push Docker Image
 on:
   push:
     branches: [ main, develop ]
-    paths:
-      - 'editor/**'
-      - '.github/workflows/docker-build.yml'
   pull_request:
     branches: [ main ]
-    paths:
-      - 'editor/**'
-  
   # Allow manual trigger
   workflow_dispatch:
 
@@ -53,8 +47,8 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: ./editor
-        file: ./editor/Dockerfile
+        context: .
+        file: ./Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}

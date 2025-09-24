@@ -19,12 +19,12 @@ jobs:
 
       - name: Build and push editor image
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/app-scripting-editor:latest ./editor
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/app-scripting-editor:latest .
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/app-scripting-editor:latest
 
       - name: Build and push editor-api image
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/app-scripting-editor-api:latest ./editor/server
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/app-scripting-editor-api:latest ./server/server
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/app-scripting-editor-api:latest
 
   deploy-to-appservice:
