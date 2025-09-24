@@ -1,24 +1,37 @@
-# Dockerfile for editor mock API (TypeScript/Express)
-FROM node:18-alpine AS build
-WORKDIR /app
-# Copy only package.json from the build context. The repo root package-lock.json
-# is not available when building from the subfolder context, which caused
-# BuildKit checksum errors. Use npm ci when a lockfile exists, otherwise
-# fall back to npm install so the build doesn't fail.
-COPY package.json ./
-RUN npm ci --production=false || npm install --production=false
-COPY tsconfig.json ./
-COPY src ./src
+# Multi-stage Dockerfile: build frontend and server, produce single image
+
+# 1) Build web (editor)
+FROM node:20-alpine AS web-build
+WORKDIR /web
+COPY editor/package.json editor/package-lock.json* ./
+WORKDIR /web
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+COPY editor/ ./editor
+WORKDIR /web/editor
 RUN npm run build
 
+# 2) Build server
+FROM node:18-alpine AS server-build
+WORKDIR /srv
+COPY server/package.json server/package-lock.json* ./
+RUN if [ -f package-lock.json ]; then npm ci --production=false; else npm install --production=false; fi
+COPY server/ ./server
+WORKDIR /srv/server
+RUN npm run build
+
+# 3) Final image
 FROM node:18-alpine
 WORKDIR /app
-# Install only production deps
-COPY package.json ./
-# If a package-lock.json is present, npm ci will be used; if not, fall back
-# to npm install so the build doesn't fail when the lockfile is absent in the
-# build context (common when CI checkouts or subfolders don't include it).
-RUN npm ci --production || npm install --production
-COPY --from=build /app/dist ./dist
+# Install production deps for server
+COPY server/package.json ./
+RUN if [ -f package-lock.json ]; then npm ci --production; else npm install --production; fi
+
+# Copy built server
+COPY --from=server-build /srv/server/dist ./dist
+
+# Copy built frontend to editor-dist so server can serve it
+COPY --from=web-build /web/editor/dist ./editor-dist
+
 EXPOSE 4000
+ENV NODE_ENV=production
 CMD ["node", "dist/index.js"]
