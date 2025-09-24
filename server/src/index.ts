@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs";
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 
 const app = express();
@@ -18,15 +18,15 @@ const mockUser = {
 };
 
 // API mounted under /api to make it easy to host frontend and backend together
-app.get("/api/health", (_req, res) => {
+app.get("/api/health", (_req: Request, res: Response) => {
   res.json({ status: "ok", uptime: process.uptime() });
 });
 
-app.get("/api/me", (_req, res) => {
+app.get("/api/me", (_req: Request, res: Response) => {
   res.json({ authenticated: true, profile: mockUser });
 });
 
-app.post("/api/logout", (_req, res) => {
+app.post("/api/logout", (_req: Request, res: Response) => {
   res.json({ ok: true });
 });
 
@@ -36,7 +36,7 @@ if (fs.existsSync(staticPath)) {
   app.use(express.static(staticPath));
 
   // SPA fallback: any non-API route should return index.html so the client-side router can handle it
-  app.get("/*", (req, res, next) => {
+  app.get("/*", (req: Request, res: Response, next: NextFunction) => {
     if (req.path.startsWith("/api/")) return next();
     res.sendFile(path.join(staticPath, "index.html"));
   });
