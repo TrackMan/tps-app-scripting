@@ -56,6 +56,17 @@ RUN npm pkg delete devDependencies.@rollup/rollup-win32-x64-msvc && \
 # Copy source code
 COPY . .
 
+# Debug: show file layout and sample schema content so CI can tell us why Vite
+# cannot resolve JSON imports. This will be removed once the issue is fixed.
+RUN echo "🔍 Pre-build file layout:" && \
+    echo "-- /app --" && ls -la /app || true && \
+    echo "-- /app/schema --" && ls -la /app/schema || true && \
+    echo "-- /app/schema/latest --" && ls -la /app/schema/latest || true && \
+    echo "-- /app/src --" && ls -la /app/src || true && \
+    echo "-- /app/src/schema --" && ls -la /app/src/schema || true && \
+    echo "-- /app/src/schema/latest --" && ls -la /app/src/schema/latest || true && \
+    echo "-- head of app-scripting.schema.json --" && head -n 20 /app/schema/latest/app-scripting.schema.json || true
+
 # Build the application with version info
 RUN npm run build
 
