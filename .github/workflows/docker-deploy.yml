@@ -53,18 +53,28 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
+      - name: Check required App Service secrets
+        id: check-secrets
+        run: |
+          if [ -z "${{ secrets.EDITOR_APP_NAME }}" ] || [ -z "${{ secrets.RESOURCE_GROUP }}" ] || [ -z "${{ secrets.EDITOR_API_APP_NAME }}" ]; then
+            echo "deploy_ready=false" >> $GITHUB_OUTPUT
+            echo "One or more App Service secrets are missing; skipping deploy steps."
+          else
+            echo "deploy_ready=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Azure Login
-        if: ${{ secrets.EDITOR_APP_NAME != '' && secrets.RESOURCE_GROUP != '' && secrets.EDITOR_API_APP_NAME != '' }}
+        if: ${{ steps.check-secrets.outputs.deploy_ready == 'true' }}
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy editor to App Service (container)
-        if: ${{ secrets.EDITOR_APP_NAME != '' && secrets.RESOURCE_GROUP != '' && secrets.EDITOR_API_APP_NAME != '' }}
+        if: ${{ steps.check-secrets.outputs.deploy_ready == 'true' }}
         run: |
           az webapp config container set --name ${{ secrets.EDITOR_APP_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --docker-custom-image-name ${{ needs.build-and-push.outputs.registry }}/app-scripting-editor:latest
 
       - name: Deploy editor-api to App Service (container)
-        if: ${{ secrets.EDITOR_APP_NAME != '' && secrets.RESOURCE_GROUP != '' && secrets.EDITOR_API_APP_NAME != '' }}
+        if: ${{ steps.check-secrets.outputs.deploy_ready == 'true' }}
         run: |
           az webapp config container set --name ${{ secrets.EDITOR_API_APP_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --docker-custom-image-name ${{ needs.build-and-push.outputs.registry }}/app-scripting-editor-api:latest
