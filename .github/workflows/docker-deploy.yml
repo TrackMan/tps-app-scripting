@@ -1,0 +1,45 @@
+name: Build and deploy containers to Azure
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push editor image
+        run: |
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/app-scripting-editor:latest ./editor
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/app-scripting-editor:latest
+
+      - name: Build and push editor-api image
+        run: |
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/app-scripting-editor-api:latest ./editor/server
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/app-scripting-editor-api:latest
+
+  deploy-to-appservice:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy editor to App Service (container)
+        run: |
+          az webapp config container set --name ${{ secrets.EDITOR_APP_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --docker-custom-image-name ${{ secrets.ACR_LOGIN_SERVER }}/app-scripting-editor:latest
+
+      - name: Deploy editor-api to App Service (container)
+        run: |
+          az webapp config container set --name ${{ secrets.EDITOR_API_APP_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --docker-custom-image-name ${{ secrets.ACR_LOGIN_SERVER }}/app-scripting-editor-api:latest

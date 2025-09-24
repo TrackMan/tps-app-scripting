@@ -1,0 +1,1097 @@
+{
+  "id": "sample-custom-test",
+  "activities": [
+    {
+      "nodeType": "PerformanceCenterScriptedActivity",
+      "id": "custom-test-sample",
+      "introMessage": {
+        "header": "DSG Assessment Test",
+        "description": "You will be hitting 4 shots with different clubs in varied scenarios",
+        "seconds": 6
+      },
+      "endMessage": {
+        "header": "Assessment Ended",
+        "description": "",
+        "seconds": 6
+      },
+      "steps": [
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-1-sample-id",
+          "introMessage": {
+            "header": "Shot 1",
+            "description": "Hit your Driver off the tee",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterTeeShotsScriptedSetup",
+              "hole": 2,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "courseDistance": 5000,
+              "club": "Drv"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [
+                "Player",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult",
+                "TargetCarry"
+              ],
+              "disableFrames": [
+                "Tiles",
+                "ShotList",
+                "GoToSetup",
+                "Minimap"
+              ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "LandingCamera",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery",
+                "Tiles",
+                "Player",
+                "Minimap"
+              ]
+            },
+            "afterShot": {
+              "removeFrames": [
+                "GoToSetup",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult"
+              ],
+              "addFrames": [
+                "AllTiles"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-2-sample-id",
+          "introMessage": {
+            "header": "Shot 2",
+            "description": "Hit a 7 Iron for your approach shot",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 1,
+              "pin": 4,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "minDistance": 96.504,
+              "maxDistance": 96.504,
+              "club": "_7I"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [
+                "Player",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult",
+                "TargetCarry"
+              ],
+              "disableFrames": [
+                "Tiles",
+                "ShotList",
+                "GoToSetup",
+                "Minimap"
+              ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "LandingCamera",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery",
+                "Tiles",
+                "Player",
+                "Minimap"
+              ]
+            },
+            "afterShot": {
+              "removeFrames": [
+                "GoToSetup",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult"
+              ],
+              "addFrames": [
+                "AllTiles"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-3-sample-id",
+          "introMessage": {
+            "header": "Shot 3",
+            "description": "Hit your Driver off the tee",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterTeeShotsScriptedSetup",
+              "hole": 4,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "courseDistance": 5000,
+              "club": "Drv"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [
+                "Player",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult",
+                "TargetCarry"
+              ],
+              "disableFrames": [
+                "Tiles",
+                "ShotList",
+                "GoToSetup",
+                "Minimap"
+              ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "LandingCamera",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery",
+                "Tiles",
+                "Player",
+                "Minimap"
+              ]
+            },
+            "afterShot": {
+              "removeFrames": [
+                "GoToSetup",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult"
+              ],
+              "addFrames": [
+                "AllTiles"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-4-sample-id",
+          "introMessage": {
+            "header": "Shot 4",
+            "description": "Hit a Pitching Wedge for your approach shot",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 4,
+              "pin": 4,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "minDistance": 53.0055,
+              "maxDistance": 53.0055,
+              "club": "_PW"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [
+                "Player",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult",
+                "TargetCarry"
+              ],
+              "disableFrames": [
+                "Tiles",
+                "ShotList",
+                "GoToSetup",
+                "Minimap"
+              ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "LandingCamera",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery",
+                "Tiles",
+                "Player",
+                "Minimap"
+              ]
+            },
+            "afterShot": {
+              "removeFrames": [
+                "GoToSetup",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult"
+              ],
+              "addFrames": [
+                "AllTiles"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-5-sample-id",
+          "introMessage": {
+            "header": "Shot 5",
+            "description": "Hit a 4 Hybrid off the tee",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 9,
+              "pin": 7,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "minDistance": 120.54167,
+              "maxDistance": 120.54167,
+              "club": "_4H"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [
+                "Player",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult",
+                "TargetCarry"
+              ],
+              "disableFrames": [
+                "Tiles",
+                "ShotList",
+                "GoToSetup",
+                "Minimap"
+              ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "LandingCamera",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery",
+                "Tiles",
+                "Player",
+                "Minimap"
+              ]
+            },
+            "afterShot": {
+              "removeFrames": [
+                "GoToSetup",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult"
+              ],
+              "addFrames": [
+                "AllTiles"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-6-sample-id",
+          "introMessage": {
+            "header": "Shot 1",
+            "description": "Hit your Driver off the tee",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterTeeShotsScriptedSetup",
+              "hole": 5,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "courseDistance": 5000,
+              "club": "Drv"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [
+                "Player",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult",
+                "TargetCarry"
+              ],
+              "disableFrames": [
+                "Tiles",
+                "ShotList",
+                "GoToSetup",
+                "Minimap"
+              ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "LandingCamera",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery",
+                "Tiles",
+                "Player",
+                "Minimap"
+              ]
+            },
+            "afterShot": {
+              "removeFrames": [
+                "GoToSetup",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult"
+              ],
+              "addFrames": [
+                "AllTiles"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-7-sample-id",
+          "introMessage": {
+            "header": "Shot 7",
+            "description": "Hit a 4 Hybrid for your approach shot",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 5,
+              "pin": 7,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "minDistance": 120.54167,
+              "maxDistance": 120.54167,
+              "club": "_4H"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [
+                "Player",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult",
+                "TargetCarry"
+              ],
+              "disableFrames": [
+                "Tiles",
+                "ShotList",
+                "GoToSetup",
+                "Minimap"
+              ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "LandingCamera",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery",
+                "Tiles",
+                "Player",
+                "Minimap"
+              ]
+            },
+            "afterShot": {
+              "removeFrames": [
+                "GoToSetup",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult"
+              ],
+              "addFrames": [
+                "AllTiles"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-8-sample-id",
+          "introMessage": {
+            "header": "Shot 8",
+            "description": "Hit a Pitching Wedge for your approach shot",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 5,
+              "pin": 3,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "minDistance": 53.0055,
+              "maxDistance": 53.0055,
+              "club": "_PW"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [
+                "Player",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult",
+                "TargetCarry"
+              ],
+              "disableFrames": [
+                "Tiles",
+                "ShotList",
+                "GoToSetup",
+                "Minimap"
+              ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "LandingCamera",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery",
+                "Tiles",
+                "Player",
+                "Minimap"
+              ]
+            },
+            "afterShot": {
+              "removeFrames": [
+                "GoToSetup",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult"
+              ],
+              "addFrames": [
+                "AllTiles"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-9-sample-id",
+          "introMessage": {
+            "header": "Shot 9",
+            "description": "Hit a 7 Iron off the tee",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 7,
+              "pin": 8,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "minDistance": 96.504,
+              "maxDistance": 96.504,
+              "club": "_7I"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [
+                "Player",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult",
+                "TargetCarry"
+              ],
+              "disableFrames": [
+                "Tiles",
+                "ShotList",
+                "GoToSetup",
+                "Minimap"
+              ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "LandingCamera",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery",
+                "Tiles",
+                "Player",
+                "Minimap"
+              ]
+            },
+            "afterShot": {
+              "removeFrames": [
+                "GoToSetup",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult"
+              ],
+              "addFrames": [
+                "AllTiles"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-10-sample-id",
+          "introMessage": {
+            "header": "Shot 10",
+            "description": "Hit a 4 Hybrid for your approach shot",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 6,
+              "pin": 5,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "minDistance": 120.54167,
+              "maxDistance": 120.54167,
+              "club": "_4H"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [
+                "Player",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult",
+                "TargetCarry"
+              ],
+              "disableFrames": [
+                "Tiles",
+                "ShotList",
+                "GoToSetup",
+                "Minimap"
+              ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "LandingCamera",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery",
+                "Tiles",
+                "Player",
+                "Minimap"
+              ]
+            },
+            "afterShot": {
+              "removeFrames": [
+                "GoToSetup",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult"
+              ],
+              "addFrames": [
+                "AllTiles"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-11-sample-id",
+          "introMessage": {
+            "header": "Shot 11",
+            "description": "Hit a 4 Hybrid for your approach shot",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 6,
+              "pin": 2,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "minDistance": 96.504,
+              "maxDistance": 96.504,
+              "club": "_7I"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [
+                "Player",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult",
+                "TargetCarry"
+              ],
+              "disableFrames": [
+                "Tiles",
+                "ShotList",
+                "GoToSetup",
+                "Minimap"
+              ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "LandingCamera",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery",
+                "Tiles",
+                "Player",
+                "Minimap"
+              ]
+            },
+            "afterShot": {
+              "removeFrames": [
+                "GoToSetup",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult"
+              ],
+              "addFrames": [
+                "AllTiles"
+              ]
+            }
+          }
+        },
+        {
+          "nodeType": "PerformanceCenterScriptedStep",
+          "id": "task-12-sample-id",
+          "introMessage": {
+            "header": "Shot 12",
+            "description": "Hit a Pitching Wedge for your approach shot",
+            "seconds": 5
+          },
+          "successMessage": {
+            "header": "Success!",
+            "description": "",
+            "seconds": 3
+          },
+          "failMessage": {
+            "header": "Failed",
+            "description": "",
+            "seconds": 3
+          },
+          "logic": {
+            "nodeType": "PerformanceCenterScriptedLogic",
+            "setup": {
+              "nodeType": "PerformanceCenterApproachScriptedSetup",
+              "hole": 6,
+              "pin": 1,
+              "playerCategory": "Handicap",
+              "hcp": 15,
+              "gender": "Male",
+              "minDistance": 53.0055,
+              "maxDistance": 53.0055,
+              "club": "_PW"
+            },
+            "successCondition": {
+              "nodeType": "PerformanceCenterScriptedConditions",
+              "shots": 1
+            },
+            "skipOnSuccess": true
+          },
+          "ui": {
+            "nodeType": "PerformanceCenterScriptedUI",
+            "activeDataTiles": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed",
+              "AttackAngle"
+            ],
+            "shotListParameters": [
+              "Total",
+              "Carry",
+              "ClubSpeed",
+              "BallSpeed"
+            ],
+            "defaultShotListParameter": "Total",
+            "beforeShot": {
+              "removeFrames": [
+                "Player",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult",
+                "TargetCarry"
+              ],
+              "disableFrames": [
+                "Tiles",
+                "ShotList",
+                "GoToSetup",
+                "Minimap"
+              ]
+            },
+            "duringShot": {
+              "removeFrames": [
+                "LandingCamera",
+                "BroadcastTiles",
+                "GoToSetup",
+                "ClubDelivery",
+                "Tiles",
+                "Player",
+                "Minimap"
+              ]
+            },
+            "afterShot": {
+              "removeFrames": [
+                "GoToSetup",
+                "StrokesGainedSummaryTile",
+                "StrokesGainedShotResult"
+              ],
+              "addFrames": [
+                "AllTiles"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "startMode": "Overwrite",
+  "endMode": "Wait"
+}

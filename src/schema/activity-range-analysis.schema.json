@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.trackman.com/app-scripting/1-0-0/activity-range-analysis.json",
+  "$id": "https://schemas.trackman.com/app-scripting/1-0-0/activity-range-analysis.schema.json",
   "title": "Range Analysis Activity",
   "$defs": {
     "RangeAnalysisScriptedConditions": {

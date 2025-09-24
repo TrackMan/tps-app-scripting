@@ -234,7 +234,7 @@ export default function App() {
               }
             } else if (newStep.nodeType === 'PerformanceCenterScriptedStep') {
               if (!newStep.logic.setup || (newStep.logic.setup.nodeType !== 'PerformanceCenterApproachScriptedSetup' && newStep.logic.setup.nodeType !== 'PerformanceCenterTeeShotsScriptedSetup')) {
-                newStep.logic.setup = { nodeType: 'PerformanceCenterApproachScriptedSetup', hole: 1, pin: 1, playerCategory: 'Handicap', hcp: 10, gender: 'Unspecified', minDistance: 50, maxDistance: 150 };
+                newStep.logic.setup = { nodeType: 'PerformanceCenterApproachScriptedSetup', hole: 1, pin: 1, playerCategory: 'Handicap', hcp: 10, gender: 'Male', minDistance: 50, maxDistance: 150 };
                 mutated = true;
               }
             }

@@ -37,7 +37,7 @@ export type UIFrameName =
 
 // Player categories
 export type PlayerCategory = 'Handicap' | 'PGA' | 'LPGA';
-export type Gender = 'Male' | 'Female' | 'Unspecified';
+export type Gender = 'Male' | 'Female';
 
 // ===== CORE INTERFACES =====
 
@@ -66,7 +66,7 @@ export interface PerformanceCenterTeeShotsScriptedSetup {
   hole?: number;  // defaults to -1 (random)
   playerCategory?: PlayerCategory;  // defaults to 'Handicap'
   hcp?: number;  // required when playerCategory is 'Handicap'
-  gender?: Gender;  // defaults to 'Unspecified'
+  gender?: Gender;  // defaults to 'Male'
   courseDistance?: number;  // defaults to 6900, range 1000-9000 meters
   club?: ClubCode;  // defaults to 'Drv'
 }
@@ -77,7 +77,7 @@ export interface PerformanceCenterApproachScriptedSetup {
   pin?: number;  // defaults to -1 (random)
   playerCategory?: PlayerCategory;  // defaults to 'Handicap'
   hcp?: number;  // required when playerCategory is 'Handicap'
-  gender?: Gender;  // defaults to 'Unspecified'
+  gender?: Gender;  // defaults to 'Male'
   minDistance?: number;  // defaults to 30 meters
   maxDistance?: number;  // defaults to 220 meters
   club?: ClubCode;  // defaults to 'Drv'

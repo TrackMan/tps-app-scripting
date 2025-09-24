@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.trackman.com/app-scripting/1-0-0/app-scripting.json",
+  "$id": "https://schemas.trackman.com/app-scripting/1-0-0/app-scripting.schema.json",
   "title": "TrackMan App Scripting — Script",
   "type": "object",
   "additionalProperties": false,
@@ -23,8 +23,8 @@
       "minItems": 1,
       "items": {
         "oneOf": [
-          { "$ref": "activity-range-analysis.schema.json#Activity" },
-          { "$ref": "activity-performance-center.schema.json#Activity" }
+          { "$ref": "activity-range-analysis.schema.json#/$defs/RangeAnalysisScriptedActivity" },
+          { "$ref": "activity-performance-center.schema.json#/$defs/PerformanceCenterScriptedActivity" }
         ]
       }
     }

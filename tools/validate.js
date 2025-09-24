@@ -73,6 +73,15 @@ for (const rel of schemaFiles) {
               ajv.addSchema(s, filenameId);
             }
           }
+           // Special case: register a copy with the exact .json $id Ajv expects for anchors
+           if (path.basename(p) === "activity-performance-center.schema.json") {
+             const expectedId = "https://schemas.trackman.com/app-scripting/1-0-0/activity-performance-center.schema.json";
+             if (!ajv.getSchema(expectedId)) {
+               const sCopy2 = JSON.parse(JSON.stringify(s));
+               sCopy2.$id = expectedId;
+               ajv.addSchema(sCopy2, expectedId);
+             }
+           }
         } catch (_) {
           // ignore filename-based registration failures
         }
@@ -85,6 +94,12 @@ for (const rel of schemaFiles) {
     console.error(`Failed to load schema ${p}: ${e.message}`);
     process.exit(2);
   }
+}
+
+// Diagnostic: print all Ajv registered schema keys
+console.error('DEBUG: Ajv registered schema keys:');
+for (const k of Object.keys(ajv.schemas)) {
+  console.error('  ', k);
 }
 
 // Diagnostic: report whether Ajv has schema entries for the filename-based URLs

@@ -59,7 +59,7 @@ export function createStep(opts: any): ScriptedStep {
         pin: 1,
         playerCategory: 'Handicap',
         hcp: 10,
-        gender: 'Unspecified',
+        gender: 'Male',
         minDistance: 30.0,
         maxDistance: 220.0
       } : {

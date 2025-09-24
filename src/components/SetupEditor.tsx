@@ -38,7 +38,7 @@ export const SetupEditor: React.FC<SetupEditorProps> = ({ step, onUpdateStep }) 
         pin: setup.pin || 1,
         playerCategory: setup.playerCategory || 'Handicap',
         hcp: setup.hcp || 0,
-        gender: setup.gender || 'Unspecified',
+        gender: setup.gender || 'Male',
         minDistance: setup.minDistance || 0,
         maxDistance: setup.maxDistance || 100
       };
@@ -48,7 +48,7 @@ export const SetupEditor: React.FC<SetupEditorProps> = ({ step, onUpdateStep }) 
         hole: setup.hole || 1,
         playerCategory: setup.playerCategory || 'Handicap',
         hcp: setup.hcp || 0,
-        gender: setup.gender || 'Unspecified',
+        gender: setup.gender || 'Male',
         courseDistance: setup.courseDistance || 5000
       };
     }
@@ -224,12 +224,11 @@ export const SetupEditor: React.FC<SetupEditorProps> = ({ step, onUpdateStep }) 
             Gender
             <select 
               className="cond-input"
-              value={setup.gender || 'Unspecified'}
+              value={setup.gender || 'Male'}
               onChange={e => updateSetup({ gender: e.target.value })}
             >
               <option value="Male">Male</option>
               <option value="Female">Female</option>
-              <option value="Unspecified">Unspecified</option>
             </select>
           </label>
         </div>
