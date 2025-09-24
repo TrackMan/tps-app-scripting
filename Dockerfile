@@ -43,11 +43,16 @@ COPY package.json ./
 # and any `src/schema` used during development.
 COPY schema ./schema
 COPY src/schema ./src/schema
-# Ensure schema/latest is available under src/schema/latest so imports from
-# `src/...` using `../schema/latest/...` resolve correctly during the build
-RUN if [ -d schema/latest ]; then \
-            mkdir -p src/schema/latest && cp -r schema/latest/* src/schema/latest/; \
-        fi
+# Ensure `schema/latest` is a real directory with JSON files.
+# In some checkouts (Windows or sparse CI setups) `schema/latest` can be a
+# symlink that points to a host path like `D:/...` which is not readable inside
+# the Linux build container. Remove such symlink, create a proper directory,
+# and populate it from the files we have under `src/schema` so imports like
+# `../schema/latest/app-scripting.schema.json` resolve correctly.
+RUN if [ -L schema/latest ]; then rm -f schema/latest; fi && \
+    mkdir -p schema/latest && \
+    cp -a src/schema/*.json schema/latest/ || true && \
+    mkdir -p src/schema/latest && cp -a src/schema/*.json src/schema/latest/ || true
 
 # Remove Windows-specific Rollup package and install dependencies
 RUN npm pkg delete devDependencies.@rollup/rollup-win32-x64-msvc && \
