@@ -36,7 +36,7 @@ jobs:
 
       - name: Build and push editor-api image
         run: |
-          docker build -t ${{ steps.registry.outputs.registry }}/app-scripting-editor-api:latest ./server/server
+          docker build -t ${{ steps.registry.outputs.registry }}/app-scripting-editor-api:latest ./server
           docker push ${{ steps.registry.outputs.registry }}/app-scripting-editor-api:latest
 
   deploy-to-appservice:
