@@ -48,7 +48,7 @@ jobs:
           docker push ${{ steps.registry.outputs.registry }}/app-scripting-editor-api:latest
 
   deploy-to-appservice:
-    if: ${{ secrets.EDITOR_APP_NAME && secrets.RESOURCE_GROUP && secrets.EDITOR_API_APP_NAME }}
+    if: ${{ secrets.EDITOR_APP_NAME != '' && secrets.RESOURCE_GROUP != '' && secrets.EDITOR_API_APP_NAME != '' }}
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
@@ -56,11 +56,6 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Assert required App Service secrets are set
-        run: |
-          if [ -z "${{ secrets.EDITOR_APP_NAME }}" ]; then echo "ERROR: secrets.EDITOR_APP_NAME is not set"; exit 1; fi
-          if [ -z "${{ secrets.RESOURCE_GROUP }}" ]; then echo "ERROR: secrets.RESOURCE_GROUP is not set"; exit 1; fi
-          if [ -z "${{ secrets.EDITOR_API_APP_NAME }}" ]; then echo "ERROR: secrets.EDITOR_API_APP_NAME is not set"; exit 1; fi
 
       - name: Deploy editor to App Service (container)
         run: |
