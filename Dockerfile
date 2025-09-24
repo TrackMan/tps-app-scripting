@@ -43,6 +43,11 @@ COPY package.json ./
 # and any `src/schema` used during development.
 COPY schema ./schema
 COPY src/schema ./src/schema
+# Ensure schema/latest is available under src/schema/latest so imports from
+# `src/...` using `../schema/latest/...` resolve correctly during the build
+RUN if [ -d schema/latest ]; then \
+            mkdir -p src/schema/latest && cp -r schema/latest/* src/schema/latest/; \
+        fi
 
 # Remove Windows-specific Rollup package and install dependencies
 RUN npm pkg delete devDependencies.@rollup/rollup-win32-x64-msvc && \
