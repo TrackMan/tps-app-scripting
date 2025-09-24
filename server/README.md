@@ -1,16 +1,13 @@
 # App Scripting Server (dev mock)
 
-Simple TypeScript + Express mock server used for local development by the editor.
+Note: this top-level `server/` folder contains helper files and a copy of the mock server for historical reasons. The canonical server project used by CI and for local development is `server/server`.
 
-Endpoints:
-- GET /health — basic health check
-- GET /me — returns a mock authenticated profile
-- POST /logout — mock logout endpoint
-
-Run (from repo root):
+To run or develop the mock server, use the inner folder (recommended):
 
 ```powershell
-cd server
+cd server/server
 npm install
 npm run dev
 ```
+
+If you intend to make changes to the mock server, edit files under `server/server` so CI (which builds `./server/server`) and local dev remain consistent.
