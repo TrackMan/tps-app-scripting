@@ -1,8 +1,12 @@
 # Dockerfile for editor mock API (TypeScript/Express)
 FROM node:18-alpine AS build
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --production=false
+# Copy only package.json from the build context. The repo root package-lock.json
+# is not available when building from the subfolder context, which caused
+# BuildKit checksum errors. Use npm ci when a lockfile exists, otherwise
+# fall back to npm install so the build doesn't fail.
+COPY package.json ./
+RUN npm ci --production=false || npm install --production=false
 COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build
