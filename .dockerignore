@@ -8,3 +8,10 @@ README.md
 coverage
 .vscode
 dist
+
+# Ignore schema 'latest' which on Windows may be a symlink to a host path
+# that cannot be resolved inside the Linux build container. We create a real
+# schema/latest in the Dockerfile, so don't copy the host symlink into the
+# build context with COPY . .
+schema/latest
+src/schema/latest
