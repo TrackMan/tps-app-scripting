@@ -51,6 +51,14 @@ jobs:
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
+      # Ensure package-lock.json exists to avoid BuildKit checksum errors when restoring cache
+      # (some previous caches may reference package-lock.json; creating a harmless file prevents failures)
+      env:
+        GITHUB_WORKSPACE: ${{ github.workspace }}
+    - name: Ensure package-lock.json exists
+      run: |
+        if [ ! -f package-lock.json ]; then echo '{}' > package-lock.json; fi
+
       with:
         context: .
         file: ./Dockerfile
