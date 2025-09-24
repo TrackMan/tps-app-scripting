@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18-alpine AS build
+FROM node:20-alpine AS build
 WORKDIR /app
 
 # Build arguments for version info
@@ -35,6 +35,14 @@ RUN echo "🔍 Build Environment Debug:" && \
 # Copy package files first for better Docker layer caching
 # Copy package.json (package-lock.json may be absent in this repo; npm ci will fall back to npm install)
 COPY package.json ./
+
+# Ensure JSON schema files are present in the build context so imports like
+# `../schema/latest/shared.schema.json` can be resolved by Vite/Rollup on Linux
+# (case-sensitive filesystems and sparse checkouts in CI can sometimes omit
+# them when the Docker context is prepared). Copy both top-level `schema`
+# and any `src/schema` used during development.
+COPY schema ./schema
+COPY src/schema ./src/schema
 
 # Remove Windows-specific Rollup package and install dependencies
 RUN npm pkg delete devDependencies.@rollup/rollup-win32-x64-msvc && \
