@@ -10,7 +10,6 @@ const ajv = new Ajv2020({ allErrors: true, strict: false });
 ajv.addSchema(shared);
 ajv.addSchema(rangeAnalysis);
 ajv.addSchema(perfCenter);
-console.log('Ajv loaded schema IDs:', Object.keys(ajv.schemas));
 // Extra diagnostics for performance-center mismatch investigation
 try {
   const perfId = (perfCenter && (perfCenter as any).$id) || '(no $id)';

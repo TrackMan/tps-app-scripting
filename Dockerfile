@@ -33,7 +33,8 @@ RUN echo "🔍 Build Environment Debug:" && \
     echo "VITE_NODE_ENV=$VITE_NODE_ENV"
 
 # Copy package files first for better Docker layer caching
-COPY package.json package-lock.json ./
+# Copy package.json (package-lock.json may be absent in this repo; npm ci will fall back to npm install)
+COPY package.json ./
 
 # Remove Windows-specific Rollup package and install dependencies
 RUN npm pkg delete devDependencies.@rollup/rollup-win32-x64-msvc && \

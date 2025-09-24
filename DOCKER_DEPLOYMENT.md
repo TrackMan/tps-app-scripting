@@ -53,7 +53,6 @@ The workflow uses `GITHUB_TOKEN` which is automatically available - no additiona
 
 ### Build Docker image locally:
 ```bash
-cd editor
 docker build -t app-scripting-editor .
 ```
 
