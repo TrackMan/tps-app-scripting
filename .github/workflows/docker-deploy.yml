@@ -31,12 +31,20 @@ jobs:
 
       - name: Build and push editor image
         run: |
-          docker build -t ${{ steps.registry.outputs.registry }}/app-scripting-editor:latest .
+          docker build \
+            --build-arg VITE_APP_BUILD_TIME=${{ github.event.head_commit.timestamp }} \
+            --build-arg VITE_APP_COMMIT_SHA=${{ github.sha }} \
+            --build-arg VITE_APP_VERSION=1.0.0 \
+            -t ${{ steps.registry.outputs.registry }}/app-scripting-editor:latest .
           docker push ${{ steps.registry.outputs.registry }}/app-scripting-editor:latest
 
       - name: Build and push editor-api image
         run: |
-          docker build -t ${{ steps.registry.outputs.registry }}/app-scripting-editor-api:latest ./server
+          docker build \
+            --build-arg VITE_APP_BUILD_TIME=${{ github.event.head_commit.timestamp }} \
+            --build-arg VITE_APP_COMMIT_SHA=${{ github.sha }} \
+            --build-arg VITE_APP_VERSION=1.0.0 \
+            -t ${{ steps.registry.outputs.registry }}/app-scripting-editor-api:latest ./server
           docker push ${{ steps.registry.outputs.registry }}/app-scripting-editor-api:latest
 
   deploy-to-appservice:
