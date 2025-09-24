@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REGISTRY: tpsappscriptingacr.azurecr.io
+    outputs:
+      registry: ${{ steps.registry.outputs.registry }}
     steps:
       - uses: actions/checkout@v4
 
@@ -48,8 +50,12 @@ jobs:
           docker push ${{ steps.registry.outputs.registry }}/app-scripting-editor-api:latest
 
   deploy-to-appservice:
-    if: ${{ secrets.EDITOR_APP_NAME != '' && secrets.RESOURCE_GROUP != '' && secrets.EDITOR_API_APP_NAME != '' }}
     needs: build-and-push
+    env:
+      EDITOR_APP_NAME: ${{ secrets.EDITOR_APP_NAME }}
+      RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
+      EDITOR_API_APP_NAME: ${{ secrets.EDITOR_API_APP_NAME }}
+    if: ${{ env.EDITOR_APP_NAME != '' && env.RESOURCE_GROUP != '' && env.EDITOR_API_APP_NAME != '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Azure Login
@@ -59,8 +65,8 @@ jobs:
 
       - name: Deploy editor to App Service (container)
         run: |
-          az webapp config container set --name ${{ secrets.EDITOR_APP_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --docker-custom-image-name ${{ steps.registry.outputs.registry }}/app-scripting-editor:latest
+          az webapp config container set --name ${{ env.EDITOR_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --docker-custom-image-name ${{ needs.build-and-push.outputs.registry }}/app-scripting-editor:latest
 
       - name: Deploy editor-api to App Service (container)
         run: |
-          az webapp config container set --name ${{ secrets.EDITOR_API_APP_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --docker-custom-image-name ${{ steps.registry.outputs.registry }}/app-scripting-editor-api:latest
+          az webapp config container set --name ${{ env.EDITOR_API_APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }} --docker-custom-image-name ${{ needs.build-and-push.outputs.registry }}/app-scripting-editor-api:latest
