@@ -1,14 +1,9 @@
 # Multi-stage Dockerfile: build frontend and server, produce single image
 
-# 1) Build web (editor)
-FROM node:20-alpine AS web-build
-WORKDIR /web
-COPY editor/package.json editor/package-lock.json* ./
-WORKDIR /web
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
-COPY editor/ ./editor
-WORKDIR /web/editor
-RUN npm run build
+# 1) Use previously built editor image (pushed to registry) as web-build
+# This avoids requiring the 'editor/' directory in the Docker build context.
+ARG REGISTRY
+FROM ${REGISTRY}/app-scripting-editor:latest AS web-build
 
 # 2) Build server
 FROM node:18-alpine AS server-build
