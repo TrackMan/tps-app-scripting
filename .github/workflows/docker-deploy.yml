@@ -48,6 +48,7 @@ jobs:
           docker push ${{ steps.registry.outputs.registry }}/app-scripting-editor-api:latest
 
   deploy-to-appservice:
+    if: ${{ secrets.EDITOR_APP_NAME && secrets.RESOURCE_GROUP && secrets.EDITOR_API_APP_NAME }}
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
