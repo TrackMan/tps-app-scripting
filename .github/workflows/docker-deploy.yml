@@ -79,3 +79,27 @@ jobs:
         if: ${{ steps.check-secrets.outputs.deploy_ready == 'true' }}
         run: |
           az webapp config container set --name ${{ secrets.EDITOR_API_APP_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --docker-custom-image-name ${{ needs.build-and-push.outputs.registry }}/app-scripting-editor-api:latest
+
+      - name: Set WEBSITES_PORT for editor-api
+        if: ${{ steps.check-secrets.outputs.deploy_ready == 'true' }}
+        run: |
+          echo "Setting WEBSITES_PORT=4000 for ${EDITOR_API_APP_NAME}"
+          az webapp config appsettings set --name ${{ secrets.EDITOR_API_APP_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --settings WEBSITES_PORT=4000
+
+      - name: Smoke test editor-api
+        if: ${{ steps.check-secrets.outputs.deploy_ready == 'true' }}
+        run: |
+          host=$(az webapp show --name ${{ secrets.EDITOR_API_APP_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} --query defaultHostName -o tsv)
+          echo "Testing https://$host/api/health"
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "https://$host/api/health" || echo "000")
+            if [ "$status" = "200" ]; then
+              echo "OK: health returned 200"
+              exit 0
+            fi
+            echo "Attempt $i: status=$status; retrying in 5s..."
+            sleep 5
+          done
+          echo "ERROR: editor-api did not become healthy"
+          az webapp log tail --name ${{ secrets.EDITOR_API_APP_NAME }} --resource-group ${{ secrets.RESOURCE_GROUP }} &
+          exit 1
