@@ -6,6 +6,17 @@ export default defineConfig({
   root: '.',
   server: {
     port: 5000,
+    // Proxy API requests to the backend during local development so the
+    // frontend can run on :5000 (for OAuth/login) while APIs are served
+    // by the backend on :4000.
+    proxy: {
+      '/api': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
+    },
   },
   build: {
     // Ensure proper cache-busting for Azure Front Door
