@@ -35,6 +35,49 @@ app.post("/api/logout", (_req: Request, res: Response) => {
   res.json({ ok: true });
 });
 
+// Event Grid webhook for per-user webhook paths.
+// Example: POST /api/webhook/<user-unique-path>
+// If WEBHOOK_ALLOWED_KEYS is set (comma-separated), the :userPath must be present there.
+app.post("/api/webhook/:userPath", (req: Request, res: Response) => {
+  const userPath = req.params.userPath;
+
+  // Optional allow-list: comma separated keys in env var WEBHOOK_ALLOWED_KEYS
+  const allowed = process.env.WEBHOOK_ALLOWED_KEYS;
+  if (allowed) {
+    const allowedSet = new Set(allowed.split(",").map(s => s.trim()).filter(Boolean));
+    if (!allowedSet.has(userPath)) {
+      console.warn(`Rejected webhook for unknown key: ${userPath}`);
+      return res.status(404).json({ error: "unknown webhook path" });
+    }
+  }
+
+  // Event Grid sends an array of events in the body
+  const events = Array.isArray(req.body) ? req.body : [req.body];
+
+  // Subscription validation event
+  const validationEvent = events.find((e: any) => e && e.eventType === 'Microsoft.EventGrid.SubscriptionValidationEvent');
+  if (validationEvent) {
+    const data = validationEvent.data || {};
+    console.log(`EventGrid subscription validation for ${userPath}:`, data);
+    // Reply with validationResponse per Event Grid requirement
+    return res.json({ validationResponse: data.validationCode });
+  }
+
+  // Normal events: log and ack
+  try {
+    console.log(`Received ${events.length} event(s) for webhook ${userPath}`);
+    // For debugging include a small sample of events
+    console.log(JSON.stringify(events.map((e: any) => ({ id: e.id, eventType: e.eventType })), null, 2));
+  } catch (err) {
+    console.warn('Failed to log events', (err as Error).message);
+  }
+
+  // TODO: integrate with persistence / user properties: look up which user has this key
+  // and forward/enqueue events appropriately.
+
+  return res.status(200).json({ received: events.length });
+});
+
 // Serve static frontend if present in the final image at '../editor-dist'
 const staticPath = path.join(__dirname, "..", "editor-dist");
 const FRONTEND_INDEX = path.join(staticPath, "index.html");
