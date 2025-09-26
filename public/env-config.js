@@ -11,7 +11,9 @@
     VITE_OAUTH_WEB_CLIENT_ID: '__VITE_OAUTH_WEB_CLIENT_ID__',
     VITE_OAUTH_WEB_CLIENT_SECRET: '__VITE_OAUTH_WEB_CLIENT_SECRET__',
     VITE_GRAPHQL_URL: '__VITE_GRAPHQL_URL__',
-    VITE_OAUTH_TOKEN_URL: '__VITE_OAUTH_TOKEN_URL__'
+    VITE_OAUTH_TOKEN_URL: '__VITE_OAUTH_TOKEN_URL__',
+    // Build info (commit sha) can be provided at build time or injected at runtime
+    VITE_APP_COMMIT_SHA: '__VITE_APP_COMMIT_SHA__'
   };
   
 

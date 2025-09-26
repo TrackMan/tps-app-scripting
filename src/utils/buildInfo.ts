@@ -23,6 +23,19 @@ export const getBuildInfo = (): BuildInfo => {
   const buildTime = import.meta.env.VITE_APP_BUILD_TIME;
   const commitSha = import.meta.env.VITE_APP_COMMIT_SHA;
 
+  // If the commit SHA isn't available at build time, try the runtime-injected window.env
+  // (env-config.js injects window.env when running inside the container)
+  let runtimeCommitSha: string | undefined = undefined;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const w = window as any;
+    if (w && w.env && w.env.VITE_APP_COMMIT_SHA) {
+      runtimeCommitSha = String(w.env.VITE_APP_COMMIT_SHA);
+    }
+  } catch (e) {
+    // ignore (e.g., server-side rendering or restricted env)
+  }
+
   // Format the build time if available
   let timestamp: string;
   if (buildTime) {
@@ -35,7 +48,7 @@ export const getBuildInfo = (): BuildInfo => {
   return {
     version,
     timestamp,
-    commit: commitSha?.slice(0, 7) || undefined,
+    commit: (commitSha || runtimeCommitSha)?.slice ? (commitSha || runtimeCommitSha)?.slice(0, 7) : undefined,
   };
 };
 

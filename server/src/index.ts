@@ -51,8 +51,9 @@ app.post("/api/webhook/:userPath", (req: Request, res: Response) => {
     }
   }
 
-  // Event Grid sends an array of events in the body
-  const events = Array.isArray(req.body) ? req.body : [req.body];
+  // Event Grid usually sends an array, but some proxies or transports may send a single
+  // object. Normalize to an array for easier handling.
+  const events = Array.isArray(req.body) ? req.body : req.body ? [req.body] : [];
 
   // Save last request for diagnostics
   try {
@@ -69,26 +70,51 @@ app.post("/api/webhook/:userPath", (req: Request, res: Response) => {
     // ignore
   }
 
-  // Azure Event Grid subscription validation can arrive in two common shapes:
-  // 1) Standard validation event: an array with eventType === 'Microsoft.EventGrid.SubscriptionValidationEvent'
-  // 2) A special header 'aeg-event-type: SubscriptionValidation' with the events array
-  // Handle both cases robustly.
-  const validationEvent = events.find((e: any) => e && (e.eventType === 'Microsoft.EventGrid.SubscriptionValidationEvent' || e.eventType === 'Microsoft.EventGridSubscriptionValidationEvent'));
+  // Helper: extract validation code from an event object in a forgiving way.
+  const extractValidationCode = (ev: any): string | undefined => {
+    if (!ev) return undefined;
+    // Common places: ev.data.validationCode (case variants)
+    const data = ev.data || ev.Data || ev.DATA || ev;
+    if (data && typeof data === 'object') {
+      for (const key of Object.keys(data)) {
+        if (key.toLowerCase() === 'validationcode' && data[key]) return String(data[key]);
+      }
+    }
+    // Some transports may put the code at the top-level
+    for (const key of Object.keys(ev)) {
+      if (key.toLowerCase() === 'validationcode' && ev[key]) return String(ev[key]);
+    }
+    return undefined;
+  };
+
+  // Event Grid subscription validation can arrive as:
+  // - an event in the array with eventType matching expected strings
+  // - header-based flows where 'aeg-event-type' tells us it's a validation attempt
+  // Try to find any validation code in the incoming payloads.
+  const validationEvent = events.find((e: any) => {
+    if (!e) return false;
+    const et = (e.eventType || e.EventType || '').toString();
+    return (
+      et === 'Microsoft.EventGrid.SubscriptionValidationEvent' ||
+      et === 'Microsoft.EventGridSubscriptionValidationEvent' ||
+      et === 'Microsoft.EventGrid.SubscriptionValidation' ||
+      et.toLowerCase().includes('subscriptionvalidation')
+    );
+  });
+
   if (validationEvent) {
-    const data = validationEvent.data || {};
-    console.log(`EventGrid subscription validation for ${userPath}:`, data);
-    return res.status(200).json({ validationResponse: data.validationCode });
+    const code = extractValidationCode(validationEvent) || (validationEvent.data && validationEvent.data.validationCode) || undefined;
+    console.log(`EventGrid subscription validation (event) for ${userPath}:`, validationEvent?.data || validationEvent, '=> code=', code);
+    if (code) return res.status(200).json({ validationResponse: code });
   }
 
-  // Also handle the header-based SubscriptionValidation flow
+  // Also handle the header-based SubscriptionValidation flow: check aeg header and try first event
   const aegHeader = (req.header('aeg-event-type') || '').toString();
-  if (aegHeader === 'SubscriptionValidation' && Array.isArray(events) && events.length > 0) {
+  if (aegHeader && aegHeader.toLowerCase().includes('subscriptionvalidation') && events.length > 0) {
     const maybe = events[0] as any;
-    const code = maybe && maybe.data && (maybe.data.validationCode || maybe.data.validationcode || maybe.data.ValidationCode);
-    if (code) {
-      console.log(`EventGrid header-based validation for ${userPath}:`, code);
-      return res.status(200).json({ validationResponse: code });
-    }
+    const code = extractValidationCode(maybe);
+    console.log(`EventGrid header-based validation for ${userPath}: aeg=${aegHeader} =>`, maybe, '=> code=', code);
+    if (code) return res.status(200).json({ validationResponse: code });
   }
 
   // Normal events: log and ack

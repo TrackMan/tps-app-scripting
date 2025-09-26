@@ -21,6 +21,7 @@ sed -i "s|__VITE_OAUTH_CLIENT_ID__|${VITE_OAUTH_CLIENT_ID:-}|g" "$ENV_CONFIG_FIL
 sed -i "s|__VITE_OAUTH_CLIENT_SECRET__|${VITE_OAUTH_CLIENT_SECRET:-}|g" "$ENV_CONFIG_FILE"
 sed -i "s|__VITE_GRAPHQL_URL__|${VITE_GRAPHQL_URL:-}|g" "$ENV_CONFIG_FILE"
 sed -i "s|__VITE_OAUTH_TOKEN_URL__|${VITE_OAUTH_TOKEN_URL:-}|g" "$ENV_CONFIG_FILE"
+sed -i "s|__VITE_APP_COMMIT_SHA__|${VITE_APP_COMMIT_SHA:-}|g" "$ENV_CONFIG_FILE"
 
 echo "✅ Environment variables injected successfully!"
 echo "🌐 Backend Base URL: ${VITE_BACKEND_BASE_URL:-'NOT SET'}"
