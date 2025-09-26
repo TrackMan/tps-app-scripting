@@ -8,6 +8,7 @@ import { ScriptEditor } from './components/ScriptEditor';
 import { NodeEditor } from './components/NodeEditor';
 import { DialogManager } from './components/DialogManager';
 import { DocViewer } from './components/DocViewer';
+import WebhookView from './components/WebhookView';
 import { EnvironmentDebug } from './components/EnvironmentDebug';
 import { Activity, Step, ScriptData, isActivity, isStep, LogicNode } from './types';
 import { normalizeScript } from './normalizer';
@@ -697,11 +698,15 @@ export default function App() {
             )}
           </div>
         </div>
-      ) : (
+      ) : activeTab === 'documentation' ? (
         <div className="documentation-flex">
           <DocViewer />
         </div>
-      )}
+      ) : activeTab === 'webhook' ? (
+        <div className="documentation-flex">
+          <WebhookView />
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -72,10 +72,108 @@ app.post("/api/webhook/:userPath", (req: Request, res: Response) => {
     console.warn('Failed to log events', (err as Error).message);
   }
 
+  // Append events to in-memory store for this path
+  try {
+    const now = new Date().toISOString();
+    const records: EventRecord[] = events.map((e: any) => ({
+      id: e.id,
+      eventType: e.eventType,
+      timestamp: e.eventTime || now,
+      data: e.data,
+      raw: e,
+    }));
+
+    const existing = eventStore.get(userPath) || [];
+    // Newest at start
+    const combined = [...records.reverse(), ...existing];
+    // Trim to cap
+    const trimmed = combined.slice(0, EVENT_STORE_CAP);
+    eventStore.set(userPath, trimmed);
+  } catch (err) {
+    console.warn('Failed to store events in memory', (err as Error).message);
+  }
+
+  // Notify any SSE clients connected to this webhook path
+  try {
+    for (const e of events) {
+      const payload = { id: e.id, eventType: e.eventType, timestamp: e.eventTime || new Date().toISOString() };
+      sendSseToPath(userPath, payload);
+    }
+  } catch (err) {
+    console.warn('Failed to broadcast SSE', (err as Error).message);
+  }
+
   // TODO: integrate with persistence / user properties: look up which user has this key
   // and forward/enqueue events appropriately.
 
   return res.status(200).json({ received: events.length });
+});
+
+// In-memory event store per webhook path (newest items at start). This is ephemeral and
+// will be lost if the server restarts. We keep a modest cap per path.
+type EventRecord = {
+  id?: string;
+  eventType: string;
+  timestamp: string; // ISO
+  data: any;
+  raw: any;
+};
+
+const EVENT_STORE_CAP = 200;
+const eventStore = new Map<string, EventRecord[]>();
+
+// SSE clients per webhook path
+const sseClients = new Map<string, Set<Response>>();
+
+function sendSseToPath(userPath: string, payload: any) {
+  const clients = sseClients.get(userPath);
+  if (!clients) return;
+  const data = typeof payload === 'string' ? payload : JSON.stringify(payload);
+  for (const res of clients) {
+    try {
+      res.write(`data: ${data}\n\n`);
+    } catch (err) {
+      console.warn('Failed to write SSE to client', (err as Error).message);
+    }
+  }
+}
+
+// Return events for a specific webhook path (newest first). No auth is enforced here;
+// possession of the path acts as the access key. If you want stronger auth, wire this
+// up to your user system and verify ownership.
+app.get('/api/webhook/:userPath/events', (_req: Request, res: Response) => {
+  const userPath = _req.params.userPath;
+  const list = eventStore.get(userPath) || [];
+  return res.json({ count: list.length, events: list });
+});
+
+// Server-Sent Events stream for a webhook path.
+app.get('/api/webhook/:userPath/stream', (req: Request, res: Response) => {
+  const userPath = req.params.userPath;
+
+  // Set SSE headers
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+  });
+
+  // Send an initial comment to establish the stream
+  res.write(': connected\n\n');
+
+  // Register client
+  const set = sseClients.get(userPath) || new Set<Response>();
+  set.add(res);
+  sseClients.set(userPath, set);
+
+  req.on('close', () => {
+    // Remove client when they disconnect
+    const clients = sseClients.get(userPath);
+    if (clients) {
+      clients.delete(res);
+      if (clients.size === 0) sseClients.delete(userPath);
+    }
+  });
 });
 
 // Serve static frontend if present in the final image at '../editor-dist'
