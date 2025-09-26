@@ -1,9 +1,13 @@
 import React from 'react';
+import './WebhookEventsPanel.css';
 
 type EventItem = {
   id?: string;
   eventType: string;
   timestamp: string;
+  data?: any;
+  raw?: any;
+  expanded?: boolean;
 };
 
 interface Props {
@@ -25,7 +29,7 @@ export const WebhookEventsPanel: React.FC<Props> = ({ userPath }) => {
         const j = await r.json();
         if (!cancelled && Array.isArray(j.events)) {
           // ensure newest-first
-          setEvents(j.events.map((e: any) => ({ id: e.id, eventType: e.eventType, timestamp: e.timestamp })));
+          setEvents(j.events.map((e: any) => ({ id: e.id, eventType: e.eventType, timestamp: e.timestamp, data: e.data, raw: e.raw })));
         }
       } catch (err) {
         console.warn('Failed to load events', err);
@@ -54,8 +58,8 @@ export const WebhookEventsPanel: React.FC<Props> = ({ userPath }) => {
       es.onmessage = (ev) => {
         try {
           const data = JSON.parse(ev.data);
-          // Prepend newest-first
-          setEvents(prev => [{ id: data.id, eventType: data.eventType, timestamp: data.timestamp }, ...prev]);
+          // Prepend newest-first, include data/raw if present
+          setEvents(prev => [{ id: data.id, eventType: data.eventType, timestamp: data.timestamp, data: data.data, raw: data.raw }, ...prev]);
         } catch (err) {
           console.warn('Invalid SSE payload', err);
         }
@@ -72,20 +76,32 @@ export const WebhookEventsPanel: React.FC<Props> = ({ userPath }) => {
   }, [userPath]);
 
   return (
-    <div style={{ marginTop: 16 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+    <div className="webhook-events">
+      <div className="webhook-events-header">
         <strong>Events</strong>
-        <span style={{ color: connected ? 'green' : 'gray' }}>{connected ? 'live' : 'disconnected'}</span>
+        <span className={`webhook-events-status ${connected ? 'live' : ''}`}>{connected ? 'live' : 'disconnected'}</span>
       </div>
-      <div style={{ maxHeight: 360, overflow: 'auto', border: '1px solid #eee', padding: 8 }}>
+      <div className="webhook-events-list">
         {events.length === 0 ? (
           <div>No events yet.</div>
         ) : (
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+          <ul className="webhook-events-ul">
             {events.map((e, idx) => (
-              <li key={e.id || idx} style={{ padding: '6px 8px', borderBottom: '1px solid #f1f1f1' }}>
-                <div style={{ fontSize: 12, color: '#666' }}>{new Date(e.timestamp).toLocaleString()}</div>
-                <div style={{ fontWeight: 600 }}>{e.eventType}</div>
+              <li key={e.id || idx} className="webhook-event-item">
+                <div className="webhook-event-header">
+                  <div>
+                    <div className="webhook-event-meta">{new Date(e.timestamp).toLocaleString()}</div>
+                    <div className="webhook-event-type">{e.eventType}</div>
+                  </div>
+                  <div>
+                    <button onClick={() => {
+                      setEvents(prev => prev.map((it, i) => i === idx ? { ...it, expanded: !it.expanded } : it));
+                    }}>{e.expanded ? 'Hide' : 'Show'}</button>
+                  </div>
+                </div>
+                {e.expanded && (
+                  <pre className="webhook-event-pre">{JSON.stringify(e.raw || e.data || {}, null, 2)}</pre>
+                )}
               </li>
             ))}
           </ul>

@@ -54,13 +54,41 @@ app.post("/api/webhook/:userPath", (req: Request, res: Response) => {
   // Event Grid sends an array of events in the body
   const events = Array.isArray(req.body) ? req.body : [req.body];
 
-  // Subscription validation event
-  const validationEvent = events.find((e: any) => e && e.eventType === 'Microsoft.EventGrid.SubscriptionValidationEvent');
+  // Save last request for diagnostics
+  try {
+    lastWebhookDiagnostics.set(userPath, { headers: req.headers, body: events });
+  } catch (err) {
+    // ignore
+  }
+
+  // Diagnostic: log aeg-event-type header when present (helps Azure debugging)
+  try {
+    const aeg = String(req.header('aeg-event-type') || '');
+    if (aeg) console.log(`aeg-event-type: ${aeg}`);
+  } catch (err) {
+    // ignore
+  }
+
+  // Azure Event Grid subscription validation can arrive in two common shapes:
+  // 1) Standard validation event: an array with eventType === 'Microsoft.EventGrid.SubscriptionValidationEvent'
+  // 2) A special header 'aeg-event-type: SubscriptionValidation' with the events array
+  // Handle both cases robustly.
+  const validationEvent = events.find((e: any) => e && (e.eventType === 'Microsoft.EventGrid.SubscriptionValidationEvent' || e.eventType === 'Microsoft.EventGridSubscriptionValidationEvent'));
   if (validationEvent) {
     const data = validationEvent.data || {};
     console.log(`EventGrid subscription validation for ${userPath}:`, data);
-    // Reply with validationResponse per Event Grid requirement
-    return res.json({ validationResponse: data.validationCode });
+    return res.status(200).json({ validationResponse: data.validationCode });
+  }
+
+  // Also handle the header-based SubscriptionValidation flow
+  const aegHeader = (req.header('aeg-event-type') || '').toString();
+  if (aegHeader === 'SubscriptionValidation' && Array.isArray(events) && events.length > 0) {
+    const maybe = events[0] as any;
+    const code = maybe && maybe.data && (maybe.data.validationCode || maybe.data.validationcode || maybe.data.ValidationCode);
+    if (code) {
+      console.log(`EventGrid header-based validation for ${userPath}:`, code);
+      return res.status(200).json({ validationResponse: code });
+    }
   }
 
   // Normal events: log and ack
@@ -96,7 +124,13 @@ app.post("/api/webhook/:userPath", (req: Request, res: Response) => {
   // Notify any SSE clients connected to this webhook path
   try {
     for (const e of events) {
-      const payload = { id: e.id, eventType: e.eventType, timestamp: e.eventTime || new Date().toISOString() };
+      const payload = {
+        id: e.id,
+        eventType: e.eventType,
+        timestamp: e.eventTime || new Date().toISOString(),
+        data: e.data,
+        raw: e,
+      };
       sendSseToPath(userPath, payload);
     }
   } catch (err) {
@@ -122,6 +156,9 @@ type EventRecord = {
 const EVENT_STORE_CAP = 200;
 const eventStore = new Map<string, EventRecord[]>();
 
+// For debugging: store last request headers and body per path
+const lastWebhookDiagnostics = new Map<string, { headers: any; body: any }>();
+
 // SSE clients per webhook path
 const sseClients = new Map<string, Set<Response>>();
 
@@ -145,6 +182,14 @@ app.get('/api/webhook/:userPath/events', (_req: Request, res: Response) => {
   const userPath = _req.params.userPath;
   const list = eventStore.get(userPath) || [];
   return res.json({ count: list.length, events: list });
+});
+
+// Diagnostic endpoint to inspect last webhook request for a path
+app.get('/__diag/webhook/:userPath', (_req: Request, res: Response) => {
+  const userPath = _req.params.userPath;
+  const diag = lastWebhookDiagnostics.get(userPath) || null;
+  const stored = eventStore.get(userPath) || [];
+  return res.json({ lastRequest: diag, storedCount: stored.length });
 });
 
 // Server-Sent Events stream for a webhook path.

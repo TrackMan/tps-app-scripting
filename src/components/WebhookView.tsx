@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery, useMutation } from 'urql';
 import { GET_USER_PROPERTIES_QUERY, APP_SCRIPT_APPLICATION, SET_USER_PROPERTIES_MUTATION, SetUserPropertiesVariables, SetUserPropertiesData } from '../graphql/userProperties';
 import WebhookEventsPanel from './WebhookEventsPanel';
+import './WebhookView.css';
 
 export const WebhookView: React.FC = () => {
   const [result] = useQuery({
@@ -63,16 +64,16 @@ export const WebhookView: React.FC = () => {
   }, [result.fetching, result.error, webhookPath, localWebhook, setProperties]);
 
   return (
-    <div style={{ padding: 24 }}>
-      <h3>My Webhook URL</h3>
-      {result.fetching && <p>Loading...</p>}
-      {result.error && <p style={{ color: 'red' }}>Error loading properties</p>}
+    <div className="webhook-view">
+      <h3 className="webhook-title">My Webhook URL</h3>
+      {result.fetching && <p className="webhook-loading">Loading...</p>}
+      {result.error && <p className="webhook-error">Error loading properties</p>}
       {!result.fetching && !webhookPath && !localWebhook && <p>Creating webhook path...</p>}
       {url && (
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', maxWidth: 600 }}>
+        <div className="webhook-url-row">
           <label htmlFor="webhook-url" className="visually-hidden">Webhook URL</label>
-          <input id="webhook-url" readOnly value={url} style={{ flex: 1, padding: 8 }} />
-          <button onClick={() => { navigator.clipboard?.writeText(url); }} style={{ padding: '8px 12px' }}>Copy</button>
+          <input id="webhook-url" readOnly value={url} className="webhook-url-input" />
+          <button onClick={() => { navigator.clipboard?.writeText(url); }} className="webhook-copy-button">Copy</button>
         </div>
       )}
 

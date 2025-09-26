@@ -1,0 +1,51 @@
+.webhook-events {
+  margin-top: 16px;
+}
+.webhook-events-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.webhook-events-status {
+  color: gray;
+}
+.webhook-events-status.live {
+  color: green;
+}
+.webhook-events-list {
+  max-height: 360px;
+  overflow: auto;
+  border: 1px solid #eee;
+  padding: 8px;
+}
+.webhook-event-item {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f1f1f1;
+}
+.webhook-event-meta {
+  font-size: 12px;
+  color: #666;
+}
+.webhook-event-type {
+  font-weight: 600;
+}
+.webhook-event-pre {
+  margin-top: 8px;
+  white-space: pre-wrap;
+  background: #fafafa;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.webhook-events-ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.webhook-event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
