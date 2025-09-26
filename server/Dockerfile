@@ -24,8 +24,9 @@ RUN if [ -f package-lock.json ]; then npm ci --production; else npm install --pr
 # Copy built server
 COPY --from=server-build /srv/server/dist ./dist
 
-# Copy built frontend to editor-dist so server can serve it
-COPY --from=web-build /web/editor/dist ./editor-dist
+# Copy built frontend from the editor image (nginx html location) so the server can serve it
+# The editor image places the built site at /usr/share/nginx/html
+COPY --from=web-build /usr/share/nginx/html ./editor-dist
 
 EXPOSE 4000
 ENV NODE_ENV=production
