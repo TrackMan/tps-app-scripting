@@ -50,9 +50,17 @@ if (fs.existsSync(staticPath)) {
 
   app.use(express.static(staticPath));
 
-  // SPA fallback: any non-API route should return index.html so the client-side router can handle it
+  // SPA fallback: only serve index.html for GET requests that accept HTML,
+  // and explicitly exclude API and diagnostic routes so API clients get JSON.
   app.get("/*", (req: Request, res: Response, next: NextFunction) => {
-    if (req.path.startsWith("/api/")) return next();
+    if (req.method !== "GET") return next();
+    if (req.path.startsWith("/api/") || req.path.startsWith("/__diag")) return next();
+
+    const acceptHeader = req.headers.accept;
+    const acceptsHtml =
+      typeof acceptHeader === "string" && acceptHeader.indexOf("text/html") !== -1;
+    if (!acceptsHtml) return next();
+
     if (fs.existsSync(FRONTEND_INDEX)) return res.sendFile(FRONTEND_INDEX);
     // If index.html is missing respond with a small diagnostic message
     return res.status(500).send("Frontend index.html missing in image. Check server logs for details.");
