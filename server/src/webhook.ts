@@ -183,13 +183,34 @@ export function registerWebhookRoutes(app: express.Application) {
     set.add(res);
     sseClients.set(userPath, set);
 
+    // Log connection for debugging (shows remote address and total clients for the path)
+    try {
+      const remote = (req.ip || (req.socket && (req.socket.remoteAddress || req.socket.remoteFamily)) || 'unknown');
+      console.log(`SSE connected: path=${userPath} remote=${remote} clients=${set.size}`);
+    } catch (err) {
+      // ignore logging errors
+    }
+
     req.on('close', () => {
       const clients = sseClients.get(userPath);
       if (clients) {
         clients.delete(res);
         if (clients.size === 0) sseClients.delete(userPath);
       }
+      try {
+        const remote = (req.ip || (req.socket && (req.socket.remoteAddress || req.socket.remoteFamily)) || 'unknown');
+        console.log(`SSE disconnected: path=${userPath} remote=${remote} remaining=${sseClients.get(userPath)?.size || 0}`);
+      } catch (err) {
+        // ignore
+      }
     });
+  });
+
+  // Diagnostic: number of SSE clients for a given webhook path
+  app.get('/__diag/webhook-sse/:userPath', (req: Request, res: Response) => {
+    const userPath = req.params.userPath;
+    const clients = sseClients.get(userPath) || new Set<Response>();
+    return res.json({ path: userPath, clients: clients.size, keys: Array.from(sseClients.keys()) });
   });
 
   // Diagnostic endpoint to inspect last webhook request for a path
