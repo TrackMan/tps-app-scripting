@@ -75,6 +75,34 @@ if (fs.existsSync(staticPath)) {
     return res.status(404).send('// env-config not found');
   });
 
+  // Serve runtime-config.js (generated at container startup) if present,
+  // otherwise generate a minimal runtime-config from env vars to help the
+  // browser when runtime-config.js is missing from the static bundle.
+  app.get('/runtime-config.js', (_req: Request, res: Response) => {
+    const file = path.join(staticPath, 'runtime-config.js');
+    if (fs.existsSync(file)) {
+      // Ensure we send correct JS content type for static file
+      res.type('application/javascript');
+      return res.sendFile(file);
+    }
+
+    // Build runtime config from VITE_ env vars (fall back to empty strings)
+    const runtime = {
+      VITE_BACKEND_BASE_URL: process.env.VITE_BACKEND_BASE_URL || '',
+      VITE_LOGIN_BASE_URL: process.env.VITE_LOGIN_BASE_URL || '',
+      VITE_NODE_ENV: process.env.VITE_NODE_ENV || 'production',
+      VITE_OAUTH_WEB_CLIENT_ID: process.env.VITE_OAUTH_WEB_CLIENT_ID || '',
+      VITE_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_OAUTH_WEB_CLIENT_SECRET ? 'SET' : '',
+      _generated: new Date().toISOString(),
+    } as Record<string, any>;
+
+    const content = `// Runtime configuration (generated)\nwindow.runtimeConfig = ${JSON.stringify(
+      runtime,
+    )};\n`;
+    res.type('application/javascript');
+    return res.status(200).send(content);
+  });
+
   // SPA fallback: only serve index.html for GET requests that accept HTML,
   // and explicitly exclude API and diagnostic routes so API clients get JSON.
   app.get("/*", (req: Request, res: Response, next: NextFunction) => {
