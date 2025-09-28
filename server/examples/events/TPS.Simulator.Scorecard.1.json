@@ -1,0 +1,360 @@
+[
+    {
+        "id": "eb301c0b-54f7-4741-9afa-2a7d5b5a4b46",
+        "subject": "/facility/f5456fe9-5829-45ec-9721-2f6bf130e9c5/location/f5456fe9-5829-45ec-9721-2f6bf130e9c5/bay/e9acfb8b-6ddd-45ac-9d5b-f23e51b1fe2d",
+        "data": {
+            "EventModel": {
+                "Scorecard": {
+                    "GameId": "e12ca8c2-f75c-427f-a376-9349bf0ae756",
+                    "Kind": "CoursePlay",
+                    "Tees": [
+                        {
+                            "Name": "White",
+                            "Slope": 124,
+                            "Rating": 72,
+                            "Par": 72,
+                            "Distance": 5948.171875,
+                            "Gender": "Male",
+                            "Holes": [
+                                {
+                                    "HoleNumber": 1,
+                                    "StrokeIndex": 11,
+                                    "Par": 4,
+                                    "Distance": 343.81439208984375,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 2,
+                                    "StrokeIndex": 5,
+                                    "Par": 4,
+                                    "Distance": 363.93121337890625,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 3,
+                                    "StrokeIndex": 3,
+                                    "Par": 4,
+                                    "Distance": 358.4447937011719,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 4,
+                                    "StrokeIndex": 15,
+                                    "Par": 3,
+                                    "Distance": 141.73199462890625,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 5,
+                                    "StrokeIndex": 17,
+                                    "Par": 4,
+                                    "Distance": 340.15679931640625,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 6,
+                                    "StrokeIndex": 7,
+                                    "Par": 3,
+                                    "Distance": 167.335205078125,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 7,
+                                    "StrokeIndex": 13,
+                                    "Par": 5,
+                                    "Distance": 458.1144104003906,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 8,
+                                    "StrokeIndex": 9,
+                                    "Par": 4,
+                                    "Distance": 376.7327880859375,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 9,
+                                    "StrokeIndex": 1,
+                                    "Par": 5,
+                                    "Distance": 519.3792114257812,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 10,
+                                    "StrokeIndex": 8,
+                                    "Par": 4,
+                                    "Distance": 342.8999938964844,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 11,
+                                    "StrokeIndex": 14,
+                                    "Par": 3,
+                                    "Distance": 138.07440185546875,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 12,
+                                    "StrokeIndex": 16,
+                                    "Par": 5,
+                                    "Distance": 449.8847961425781,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 13,
+                                    "StrokeIndex": 4,
+                                    "Par": 4,
+                                    "Distance": 368.5032043457031,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 14,
+                                    "StrokeIndex": 12,
+                                    "Par": 4,
+                                    "Distance": 344.7287902832031,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 15,
+                                    "StrokeIndex": 18,
+                                    "Par": 4,
+                                    "Distance": 253.28880310058594,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 16,
+                                    "StrokeIndex": 6,
+                                    "Par": 3,
+                                    "Distance": 141.73199462890625,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 17,
+                                    "StrokeIndex": 10,
+                                    "Par": 4,
+                                    "Distance": 359.35919189453125,
+                                    "Position": {}
+                                },
+                                {
+                                    "HoleNumber": 18,
+                                    "StrokeIndex": 2,
+                                    "Par": 5,
+                                    "Distance": 480.05999755859375,
+                                    "Position": {}
+                                }
+                            ]
+                        }
+                    ],
+                    "Pins": [
+                        {
+                            "HoleNumber": 1,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 2,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 3,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 4,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 5,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 6,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 7,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 8,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 9,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 10,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 11,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 12,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 13,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 14,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 15,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 16,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 17,
+                            "Position": {}
+                        },
+                        {
+                            "HoleNumber": 18,
+                            "Position": {}
+                        }
+                    ],
+                    "GameSettings": {
+                        "GamePlay": "Normal",
+                        "GameBall": "Individual",
+                        "GameScore": "Stroke",
+                        "Handicapped": true,
+                        "TeamSize": 1,
+                        "Holes": 18,
+                        "SelectedHoles": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            9,
+                            10,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16,
+                            17,
+                            18
+                        ],
+                        "Pins": "Easy",
+                        "Mulligans": "No",
+                        "Units": "Us",
+                        "PuttingSettings": {
+                            "AutoGimmie": true,
+                            "GimmieDistance": 2.4384000301361084,
+                            "IsAuto": true,
+                            "IsAutoHandicap": false,
+                            "IsAimed": false,
+                            "FixedPutt": false,
+                            "TwoPutt": false,
+                            "IsManualInput": false,
+                            "IsManual": false
+                        }
+                    },
+                    "CourseSettings": {
+                        "CourseId": "adaremanor",
+                        "ModelVersion": "4.0.596319",
+                        "DataVersion": "4.0.15",
+                        "Name": "Adare Manor",
+                        "CourseSettings": {
+                            "Wind": "Calm",
+                            "WindDirection": "",
+                            "Lighting": "Afternoon"
+                        },
+                        "FairwaySettings": {
+                            "Firmness": "Normal"
+                        },
+                        "GreenSettings": {
+                            "StimpMeter": 8,
+                            "Firmness": "Soft",
+                            "Quality": "Realistic"
+                        }
+                    },
+                    "Players": [
+                        {
+                            "CourseHcp": -20,
+                            "Tee": "White",
+                            "IsGuest": false,
+                            "IsTournamentScore": true,
+                            "Id": "dab917d3-9588-476d-aeb0-0b65e775d0bc",
+                            "Name": "Mr. Bertelsen Dev",
+                            "Hcp": -18,
+                            "IsGhost": false,
+                            "Gender": "Male"
+                        }
+                    ],
+                    "Teams": [
+                        {
+                            "TeamNumber": 1,
+                            "Color": "Blue",
+                            "Hcp": -18,
+                            "Players": [
+                                {
+                                    "Id": "dab917d3-9588-476d-aeb0-0b65e775d0bc",
+                                    "Name": "Mr. Bertelsen Dev",
+                                    "Hcp": -18,
+                                    "IsGhost": false,
+                                    "Gender": "Male"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "GameId": "e12ca8c2-f75c-427f-a376-9349bf0ae756"
+            },
+            "Facility": {
+                "Id": "f5456fe9-5829-45ec-9721-2f6bf130e9c5",
+                "Name": "DSG Global Dev"
+            },
+            "Location": {
+                "Id": "f5456fe9-5829-45ec-9721-2f6bf130e9c5",
+                "Name": "DSG Global"
+            },
+            "Bay": {
+                "Id": "e9acfb8b-6ddd-45ac-9d5b-f23e51b1fe2d",
+                "Name": "JFE Office"
+            },
+            "Client": {
+                "Name": "TrackMan Performance Studio",
+                "Properties": {
+                    "Version": "10.2.119"
+                }
+            },
+            "Device": {
+                "Id": "1d1d211b-981e-4ff4-907c-fc22f776358c"
+            },
+            "Radar": {
+                "Properties": {
+                    "Model": "TMA4A",
+                    "Serial": "17404099",
+                    "Firmware": "2.10.0"
+                }
+            },
+            "User": {
+                "Id": "dab917d3-9588-476d-aeb0-0b65e775d0bc",
+                "Name": "Michael Bertelsen"
+            },
+            "CustomerSession": {
+                "Id": "2744d13e-6efc-4a6d-b7af-c9c08a632dae"
+            },
+            "ActivitySession": {
+                "Id": "6ad15aa5-e658-467a-be62-63b5d258068f"
+            }
+        },
+        "eventType": "TPS.Simulator.Scorecard",
+        "dataVersion": "1.0",
+        "metadataVersion": "1",
+        "eventTime": "2025-09-28T00:13:47.0336652Z",
+        "topic": "/subscriptions/09c4d679-8b43-4520-ad0a-c598267ed94c/resourceGroups/dr2-dev/providers/Microsoft.EventGrid/domains/dr-eventgrid-dev/topics/facility-f5456fe9-5829-45ec-9721-2f6bf130e9c5"
+    }
+]

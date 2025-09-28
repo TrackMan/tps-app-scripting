@@ -1,0 +1,289 @@
+[
+    {
+        "id": "af37956c-8777-4342-adf1-3d1f03a50061",
+        "subject": "/facility/f5456fe9-5829-45ec-9721-2f6bf130e9c5/location/f5456fe9-5829-45ec-9721-2f6bf130e9c5/bay/e9acfb8b-6ddd-45ac-9d5b-f23e51b1fe2d",
+        "data": {
+            "EventModel": {
+                "PlayerId": "ed69b1d1-9d6e-0e73-1aef-868371b74834",
+                "Measurement": {
+                    "Id": "d64da039-2d9f-4148-ba0a-138fc64c5278",
+                    "Time": "2025-09-28T00:14:01Z",
+                    "Kind": "Measurement",
+                    "TeePosition": [
+                        1.958914691,
+                        -0.1154492496,
+                        0.1180663222
+                    ],
+                    "PlayerDexterity": "Right",
+                    "DynamicLie": 50.8,
+                    "ImpactOffset": -0.0059,
+                    "ImpactHeight": -0.0091,
+                    "AttackAngle": 4.2,
+                    "LaunchDirection": -2.777,
+                    "BallSpeed": 75.7939,
+                    "ClubPath": -0.2,
+                    "ClubSpeed": 51.076,
+                    "DynamicLoft": 11.748,
+                    "FaceAngle": -3.366,
+                    "FaceToPath": -3.166,
+                    "LaunchAngle": 10.305,
+                    "SmashFactor": 1.4839,
+                    "SpinAxis": -10.419,
+                    "SpinLoft": 8.04,
+                    "SpinRate": 2617.05,
+                    "SwingDirection": 2.908,
+                    "SwingPlane": 48.436,
+                    "SwingRadius": 1.239,
+                    "DPlaneTilt": -21.38,
+                    "LowPointDistance": -0.156,
+                    "LowPointHeight": -0.005,
+                    "LowPointSide": -0.005,
+                    "MaxHeight": 30.35,
+                    "Carry": 260.576,
+                    "Total": 282.633,
+                    "CarrySide": -34.483,
+                    "TotalSide": -39.205,
+                    "LandingAngle": 37.554392,
+                    "HangTime": 6.978975,
+                    "LastData": 6.377,
+                    "Curve": -21.929,
+                    "BallTrajectory": [
+                        {
+                            "Kind": "Flight",
+                            "XFit": [
+                                0.0,
+                                74.48371342,
+                                -11.86309,
+                                1.737050524,
+                                -0.1822813204,
+                                0.01203848448,
+                                -0.000355483266
+                            ],
+                            "YFit": [
+                                0.0,
+                                13.55829334,
+                                0.3377839519,
+                                -0.8116232881,
+                                0.1180506468,
+                                -0.008975834901,
+                                0.000288771597
+                            ],
+                            "ZFit": [
+                                0.0,
+                                -3.613439882,
+                                -0.7720173898,
+                                0.1999766398,
+                                -0.02985497769,
+                                0.002499958872,
+                                -8.8313753E-05
+                            ],
+                            "SpinRateFit": [
+                                2617.648714,
+                                -75.725355,
+                                -2.320678,
+                                1.02306,
+                                -0.075439
+                            ],
+                            "TimeInterval": [
+                                0.0,
+                                6.978975
+                            ],
+                            "ValidTimeInterval": [
+                                0.0,
+                                6.978975
+                            ],
+                            "MeasuredTimeInterval": [
+                                0.0,
+                                0.085232
+                            ]
+                        },
+                        {
+                            "Kind": "Bounce",
+                            "XFit": [
+                                186.7996461,
+                                12.2603161,
+                                -0.2892032281
+                            ],
+                            "YFit": [
+                                -290.7490002,
+                                77.78319694,
+                                -5.17571135
+                            ],
+                            "ZFit": [
+                                -18.8707148,
+                                -2.677718376,
+                                0.0631635263
+                            ],
+                            "TimeInterval": [
+                                6.978975058,
+                                8.052705067
+                            ],
+                            "ValidTimeInterval": [
+                                6.978975058,
+                                8.052705067
+                            ]
+                        },
+                        {
+                            "Kind": "Bounce",
+                            "XFit": [
+                                188.3112629,
+                                11.81697071,
+                                -0.2575744429
+                            ],
+                            "YFit": [
+                                -351.4398245,
+                                85.06615768,
+                                -5.14406528
+                            ],
+                            "ZFit": [
+                                -19.20086047,
+                                -2.580889255,
+                                0.0562556235
+                            ],
+                            "TimeInterval": [
+                                8.052705067,
+                                8.48446634
+                            ],
+                            "ValidTimeInterval": [
+                                8.052705067,
+                                8.48446634
+                            ]
+                        },
+                        {
+                            "Kind": "Roll",
+                            "XFit": [
+                                234.8627761,
+                                4.144867371
+                            ],
+                            "YFit": [
+                                0.0
+                            ],
+                            "ZFit": [
+                                -29.36795853,
+                                -0.9052611231
+                            ],
+                            "TimeInterval": [
+                                8.48446634,
+                                10.86598041
+                            ],
+                            "ValidTimeInterval": [
+                                8.48446634,
+                                10.86598041
+                            ]
+                        }
+                    ],
+                    "ClubTrajectory": [
+                        {
+                            "Kind": "PreImpact",
+                            "XFit": [
+                                -0.0826759123,
+                                49.00193325,
+                                4.815927403,
+                                -10325.77919
+                            ],
+                            "YFit": [
+                                -0.0002741606065,
+                                3.793429941,
+                                733.4976571,
+                                3254.197867
+                            ],
+                            "ZFit": [
+                                0.002643094016,
+                                -0.4359686851,
+                                -652.5221904,
+                                -3423.104303
+                            ],
+                            "TimeInterval": [
+                                -0.01924121321,
+                                0.0
+                            ]
+                        },
+                        {
+                            "Kind": "PostImpact",
+                            "XFit": [
+                                -0.08419974976,
+                                38.45577663,
+                                -140.3349863,
+                                -3056.235884
+                            ],
+                            "YFit": [
+                                0.0002548467536,
+                                2.496003599,
+                                450.55193,
+                                -2865.066345
+                            ],
+                            "ZFit": [
+                                0.002095481219,
+                                0.07967584974,
+                                -408.6329876,
+                                2388.697111
+                            ],
+                            "TimeInterval": [
+                                0.0,
+                                0.04271078679
+                            ]
+                        }
+                    ],
+                    "TargetPosition": [
+                        7.7,
+                        -0.1499999999,
+                        0.0
+                    ],
+                    "InvalidNoTarget": [
+                        "LaunchDirection",
+                        "ClubPath",
+                        "FaceAngle",
+                        "SwingDirection",
+                        "LowPointSide",
+                        "CarrySide",
+                        "Total"
+                    ],
+                    "Simulated": true
+                }
+            },
+            "Facility": {
+                "Id": "f5456fe9-5829-45ec-9721-2f6bf130e9c5",
+                "Name": "DSG Global Dev"
+            },
+            "Location": {
+                "Id": "f5456fe9-5829-45ec-9721-2f6bf130e9c5",
+                "Name": "DSG Global"
+            },
+            "Bay": {
+                "Id": "e9acfb8b-6ddd-45ac-9d5b-f23e51b1fe2d",
+                "Name": "JFE Office"
+            },
+            "Client": {
+                "Name": "TrackMan Performance Studio",
+                "Properties": {
+                    "Version": "10.2.119"
+                }
+            },
+            "Device": {
+                "Id": "1d1d211b-981e-4ff4-907c-fc22f776358c"
+            },
+            "Radar": {
+                "Properties": {
+                    "Model": "TMA4A",
+                    "Serial": "17404099",
+                    "Firmware": "2.10.0"
+                }
+            },
+            "User": {
+                "Id": "dab917d3-9588-476d-aeb0-0b65e775d0bc",
+                "Name": "Michael Bertelsen"
+            },
+            "CustomerSession": {
+                "Id": "2744d13e-6efc-4a6d-b7af-c9c08a632dae"
+            },
+            "ActivitySession": {
+                "Id": "6ad15aa5-e658-467a-be62-63b5d258068f"
+            }
+        },
+        "eventType": "TPS.Live.OnStrokeCompletedEvent",
+        "dataVersion": "1.0",
+        "metadataVersion": "1",
+        "eventTime": "2025-09-28T00:14:05.8697476Z",
+        "topic": "/subscriptions/09c4d679-8b43-4520-ad0a-c598267ed94c/resourceGroups/dr2-dev/providers/Microsoft.EventGrid/domains/dr-eventgrid-dev/topics/facility-f5456fe9-5829-45ec-9721-2f6bf130e9c5"
+    }
+]

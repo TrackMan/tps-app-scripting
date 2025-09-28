@@ -1,0 +1,55 @@
+[
+    {
+        "id": "ce971512-c99e-442f-9ff1-c595020f045c",
+        "subject": "/facility/f5456fe9-5829-45ec-9721-2f6bf130e9c5/location/f5456fe9-5829-45ec-9721-2f6bf130e9c5/bay/47f65ad5-cd9c-45c9-be6f-8b7dc64e60d3",
+        "data": {
+            "EventModel": {
+                "Id": "b86dad69-481e-4d6e-9a16-8443f7dfac28-open-range-script",
+                "Event": "ScriptSkipped"
+            },
+            "Facility": {
+                "Id": "f5456fe9-5829-45ec-9721-2f6bf130e9c5",
+                "Name": "DSG Global Dev"
+            },
+            "Location": {
+                "Id": "f5456fe9-5829-45ec-9721-2f6bf130e9c5",
+                "Name": "DSG Global Dev"
+            },
+            "Bay": {
+                "Id": "47f65ad5-cd9c-45c9-be6f-8b7dc64e60d3",
+                "Name": "Innovation Bay"
+            },
+            "Client": {
+                "Name": "TrackMan Performance Studio",
+                "Properties": {
+                    "Version": "10.2.0-ci.1479+feature.scripting.5bbe5b86aee3a5ce4ad3f0985e2193d3cbaf0cdf"
+                }
+            },
+            "Device": {
+                "Id": "b5367812-c481-4169-b268-fc84c32f1c64"
+            },
+            "Radar": {
+                "Properties": {
+                    "Model": "TMA4A",
+                    "Serial": "20424035",
+                    "Firmware": "2.9.4"
+                }
+            },
+            "User": {
+                "Id": "0b1dc69a-0a42-4075-abc2-e0de50cd9186",
+                "Name": "Ryan mangis"
+            },
+            "CustomerSession": {
+                "Id": "7d692f5a-f172-4418-ab4e-d03ecac0b884"
+            },
+            "ActivitySession": {
+                "Id": "6709add0-6d43-4461-baf6-1084fde19c38"
+            }
+        },
+        "eventType": "AppScripting.Status",
+        "dataVersion": "1.0",
+        "metadataVersion": "1",
+        "eventTime": "2025-09-27T11:48:57.8340771Z",
+        "topic": "/subscriptions/09c4d679-8b43-4520-ad0a-c598267ed94c/resourceGroups/dr2-dev/providers/Microsoft.EventGrid/domains/dr-eventgrid-dev/topics/facility-f5456fe9-5829-45ec-9721-2f6bf130e9c5"
+    }
+]

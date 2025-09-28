@@ -15,6 +15,39 @@ const PORT = process.env.PORT
 app.use(cors({ origin: true }));
 app.use(express.json());
 
+// Handle JSON parse errors from express.json() so malformed requests don't crash the process
+app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Body parser errors often come with .type === 'entity.parse.failed'
+    if (err && (err.type === 'entity.parse.failed' || err.type === 'request.entity.parse.failed')) {
+      console.warn('JSON parse error on request:', err.message?.toString?.() || err);
+      if (!res.headersSent) return res.status(400).json({ error: 'invalid_json', message: err.message });
+      return;
+    }
+
+    // Generic SyntaxError with body property
+    if (err instanceof SyntaxError && Object.prototype.hasOwnProperty.call(err, 'body')) {
+      console.warn('SyntaxError parsing JSON body:', err.message);
+      if (!res.headersSent) return res.status(400).json({ error: 'invalid_json', message: err.message });
+      return;
+    }
+
+    // If no specific handling, delegate
+    return next(err);
+  } catch (outer) {
+    console.error('Error in JSON error handler', outer);
+    return next(err);
+  }
+});
+
+// Global handlers for dev so malformed requests or other issues don't kill the process silently
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err && (err as Error).stack ? (err as Error).stack : err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled rejection:', reason);
+});
+
 // Mock user for auth endpoints
 const mockUser = {
   id: "user-1",

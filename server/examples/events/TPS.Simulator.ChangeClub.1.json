@@ -1,0 +1,56 @@
+[
+    {
+        "id": "68aa3cf4-4cf3-415d-9456-7fd657883f02",
+        "subject": "/facility/f5456fe9-5829-45ec-9721-2f6bf130e9c5/location/f5456fe9-5829-45ec-9721-2f6bf130e9c5/bay/e9acfb8b-6ddd-45ac-9d5b-f23e51b1fe2d",
+        "data": {
+            "EventModel": {
+                "ClubName": "Driver",
+                "ActiveHole": 1,
+                "GameId": "e12ca8c2-f75c-427f-a376-9349bf0ae756"
+            },
+            "Facility": {
+                "Id": "f5456fe9-5829-45ec-9721-2f6bf130e9c5",
+                "Name": "DSG Global Dev"
+            },
+            "Location": {
+                "Id": "f5456fe9-5829-45ec-9721-2f6bf130e9c5",
+                "Name": "DSG Global"
+            },
+            "Bay": {
+                "Id": "e9acfb8b-6ddd-45ac-9d5b-f23e51b1fe2d",
+                "Name": "JFE Office"
+            },
+            "Client": {
+                "Name": "TrackMan Performance Studio",
+                "Properties": {
+                    "Version": "10.2.119"
+                }
+            },
+            "Device": {
+                "Id": "1d1d211b-981e-4ff4-907c-fc22f776358c"
+            },
+            "Radar": {
+                "Properties": {
+                    "Model": "TMA4A",
+                    "Serial": "17404099",
+                    "Firmware": "2.10.0"
+                }
+            },
+            "User": {
+                "Id": "dab917d3-9588-476d-aeb0-0b65e775d0bc",
+                "Name": "Michael Bertelsen"
+            },
+            "CustomerSession": {
+                "Id": "2744d13e-6efc-4a6d-b7af-c9c08a632dae"
+            },
+            "ActivitySession": {
+                "Id": "6ad15aa5-e658-467a-be62-63b5d258068f"
+            }
+        },
+        "eventType": "TPS.Simulator.ChangeClub",
+        "dataVersion": "1.0",
+        "metadataVersion": "1",
+        "eventTime": "2025-09-28T00:13:57.8296939Z",
+        "topic": "/subscriptions/09c4d679-8b43-4520-ad0a-c598267ed94c/resourceGroups/dr2-dev/providers/Microsoft.EventGrid/domains/dr-eventgrid-dev/topics/facility-f5456fe9-5829-45ec-9721-2f6bf130e9c5"
+    }
+]

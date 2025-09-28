@@ -1,0 +1,156 @@
+[
+    {
+        "id": "202f0256-234b-4710-a73b-0f7d0d6f9c71",
+        "subject": "/facility/f5456fe9-5829-45ec-9721-2f6bf130e9c5/location/f5456fe9-5829-45ec-9721-2f6bf130e9c5/bay/e9acfb8b-6ddd-45ac-9d5b-f23e51b1fe2d",
+        "data": {
+            "EventModel": {
+                "RecordedHole": {
+                    "Id": "00800ac5-8172-4864-9a2f-b4ead0fab555",
+                    "Kind": "CoursePlay",
+                    "ScorecardId": "e12ca8c2-f75c-427f-a376-9349bf0ae756",
+                    "Hole": {
+                        "Number": 1,
+                        "StrokeIndex": 11,
+                        "Par": 4,
+                        "Distance": 344,
+                        "Tee": "White"
+                    },
+                    "Players": [
+                        {
+                            "Id": "dab917d3-9588-476d-aeb0-0b65e775d0bc",
+                            "Name": "Mr. Bertelsen Dev",
+                            "Hcp": -18.0,
+                            "IsGhost": false,
+                            "Gender": "Male"
+                        }
+                    ],
+                    "LongestDriveResults": [
+                        {
+                            "ShotNumber": 1,
+                            "DriveDistance": 270.06072998046875
+                        }
+                    ],
+                    "CoursePlayHoleResult": {
+                        "Distance": 344,
+                        "StrokeIndex": 11,
+                        "Par": 4,
+                        "HcpStrokes": -1,
+                        "GrossScore": 7,
+                        "NetScore": 8,
+                        "Score": 7,
+                        "Mulligans": 0,
+                        "Gimmes": 0,
+                        "Putts": 0,
+                        "FairwayHit": "Left",
+                        "GreenInRegulation": true,
+                        "NetGreenInRegulation": true,
+                        "PickUp": true
+                    },
+                    "Shots": [
+                        {
+                            "Idx": 0,
+                            "MeasurementId": "d64da039-2d9f-4148-ba0a-138fc64c5278",
+                            "Club": "Driver",
+                            "Launch": {
+                                "Lie": "Tee",
+                                "Position": {},
+                                "AimPoint": {},
+                                "BallSpeed": 75.79389953613281,
+                                "LaunchAngle": 10.305000305175781,
+                                "LaunchDirection": -2.7769999504089355,
+                                "SpinRate": 2617.050048828125,
+                                "SpinAxis": -10.418999671936035,
+                                "Time": "2025-09-28T00:14:04.1795648Z"
+                            },
+                            "Final": {
+                                "Lie": "Rough",
+                                "Position": {},
+                                "Result": "NormalShot",
+                                "ShotsToAdd": 0,
+                                "Time": "2025-09-28T00:14:16.7477163Z"
+                            },
+                            "VgData": {
+                                "Forward": {},
+                                "Seed": 48.124061584472656
+                            }
+                        },
+                        {
+                            "Idx": 1,
+                            "MeasurementId": "cb77a284-d64d-46d4-89be-2ae8eaf27919",
+                            "Club": "1Iron",
+                            "Launch": {
+                                "Lie": "Rough",
+                                "Position": {},
+                                "AimPoint": {},
+                                "BallSpeed": 71.7968978881836,
+                                "LaunchAngle": 0.04399999976158142,
+                                "LaunchDirection": -6.927000045776367,
+                                "SpinRate": 1740.3057861328125,
+                                "SpinAxis": 0,
+                                "Time": "2025-09-28T00:14:46.8450656Z"
+                            },
+                            "Final": {
+                                "Lie": "HoleCup",
+                                "Position": {},
+                                "Result": "Pickup",
+                                "ShotsToAdd": 5,
+                                "DropPosition": {},
+                                "Time": "2025-09-28T00:14:50.6019736Z"
+                            },
+                            "VgData": {
+                                "Forward": {},
+                                "Seed": 91.10971069335938
+                            }
+                        }
+                    ],
+                    "StartedAt": "2025-09-28T00:13:47.0528169Z",
+                    "FinishedAt": "2025-09-28T00:15:06.1753904Z"
+                },
+                "GameId": "e12ca8c2-f75c-427f-a376-9349bf0ae756"
+            },
+            "Facility": {
+                "Id": "f5456fe9-5829-45ec-9721-2f6bf130e9c5",
+                "Name": "DSG Global Dev"
+            },
+            "Location": {
+                "Id": "f5456fe9-5829-45ec-9721-2f6bf130e9c5",
+                "Name": "DSG Global"
+            },
+            "Bay": {
+                "Id": "e9acfb8b-6ddd-45ac-9d5b-f23e51b1fe2d",
+                "Name": "JFE Office"
+            },
+            "Client": {
+                "Name": "TrackMan Performance Studio",
+                "Properties": {
+                    "Version": "10.2.119"
+                }
+            },
+            "Device": {
+                "Id": "1d1d211b-981e-4ff4-907c-fc22f776358c"
+            },
+            "Radar": {
+                "Properties": {
+                    "Model": "TMA4A",
+                    "Serial": "17404099",
+                    "Firmware": "2.10.0"
+                }
+            },
+            "User": {
+                "Id": "dab917d3-9588-476d-aeb0-0b65e775d0bc",
+                "Name": "Michael Bertelsen"
+            },
+            "CustomerSession": {
+                "Id": "2744d13e-6efc-4a6d-b7af-c9c08a632dae"
+            },
+            "ActivitySession": {
+                "Id": "6ad15aa5-e658-467a-be62-63b5d258068f"
+            }
+        },
+        "eventType": "TPS.Simulator.HoleCompleted",
+        "dataVersion": "1.0",
+        "metadataVersion": "1",
+        "eventTime": "2025-09-28T00:15:06.3306675Z",
+        "topic": "/subscriptions/09c4d679-8b43-4520-ad0a-c598267ed94c/resourceGroups/dr2-dev/providers/Microsoft.EventGrid/domains/dr-eventgrid-dev/topics/facility-f5456fe9-5829-45ec-9721-2f6bf130e9c5"
+    }
+]

@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import eventsLib, { classifyEventPayload, KnownEventPayload } from './events';
 
 // In-memory event store per webhook path (newest items at start). This is ephemeral and
 // will be lost if the server restarts. We keep a modest cap per path.
@@ -8,6 +9,10 @@ export type EventRecord = {
   timestamp: string; // ISO
   data: any;
   raw: any;
+  // optional strongly-typed payload when we can classify the event
+  typed?: KnownEventPayload | null;
+  // common metadata extracted from many events (facility/location/bay/etc)
+  common?: import('./events').CommonEventData | null;
 };
 
 const EVENT_STORE_CAP = 200;
@@ -114,23 +119,50 @@ export function registerWebhookRoutes(app: express.Application) {
       console.warn('Failed to log events', (err as Error).message);
     }
 
-    // Append events to in-memory store for this path
-    try {
-      const now = new Date().toISOString();
-
-      const normalize = (e: any): EventRecord => {
-        const eventType = e?.eventType || e?.EventType || e?.type || e?.Type || (e && e['event-type']) || '';
-        const timestamp = e?.eventTime || e?.event_time || e?.time || e?.Time || now;
-        const data = e?.data ?? e?.Data ?? null;
-        return {
-          id: e?.id,
-          eventType: String(eventType || '').trim(),
-          timestamp: timestamp,
-          data,
-          raw: e,
-        };
+    // Prepare normalization helper and timestamp for this request so SSE can reuse it
+    const now = new Date().toISOString();
+    const normalize = (e: any): EventRecord => {
+      const eventType = e?.eventType || e?.EventType || e?.type || e?.Type || (e && e['event-type']) || '';
+      const timestamp = e?.eventTime || e?.event_time || e?.time || e?.Time || now;
+      const data = e?.data ?? e?.Data ?? null;
+      const base: EventRecord = {
+        id: e?.id,
+        eventType: String(eventType || '').trim(),
+        timestamp: timestamp,
+        data,
+        raw: e,
+        typed: null,
       };
 
+        // Attempt to classify and attach typed payload and common metadata when possible
+      try {
+          const classified = classifyEventPayload(e);
+          if (classified && classified.typed) {
+            base.typed = classified.typed as KnownEventPayload;
+            base.common = (classified as any).common ?? null;
+            // prefer eventType from classifier when available
+            if (classified.name) base.eventType = classified.name;
+            console.log(`Classified event for webhook ${userPath} as ${classified.name}`);
+          } else {
+            // also try classifying the data payload directly
+            const classifiedData = classifyEventPayload(data);
+            if (classifiedData && classifiedData.typed) {
+              base.typed = classifiedData.typed as KnownEventPayload;
+              base.common = (classifiedData as any).common ?? null;
+              if (classifiedData.name) base.eventType = classifiedData.name;
+              console.log(`Classified event data for webhook ${userPath} as ${classifiedData.name}`);
+            }
+          }
+      } catch (err) {
+        // don't fail the webhook if classification fails
+        console.warn('Event classification error:', (err as Error).message);
+      }
+
+      return base;
+    };
+
+    // Append events to in-memory store for this path
+    try {
       const records: EventRecord[] = events.map((e: any) => normalize(e));
 
       const existing = eventStore.get(userPath) || [];
@@ -144,13 +176,23 @@ export function registerWebhookRoutes(app: express.Application) {
     // Notify any SSE clients connected to this webhook path
     try {
       for (const e of events) {
-        const ev: EventRecord = {
-          id: e?.id,
-          eventType: String(e?.eventType || e?.EventType || e?.type || '').trim(),
-          timestamp: e?.eventTime || e?.time || new Date().toISOString(),
-          data: e?.data ?? e?.Data ?? null,
-          raw: e,
-        };
+        // reuse normalization logic to ensure SSE payloads include typed when available
+        const ev = ((): EventRecord => {
+          try {
+            const nr = (normalize as any)(e) as EventRecord;
+            return nr;
+          } catch (err) {
+            return {
+              id: e?.id,
+              eventType: String(e?.eventType || e?.EventType || e?.type || '').trim(),
+              timestamp: e?.eventTime || e?.time || new Date().toISOString(),
+              data: e?.data ?? e?.Data ?? null,
+              raw: e,
+              typed: null,
+              common: null,
+            };
+          }
+        })();
         sendSseToPath(userPath, ev);
       }
     } catch (err) {
