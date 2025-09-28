@@ -89,14 +89,14 @@ location /api/ {
   # Forward to the backend base url. Note: using a full URL here lets nginx
   # perform an external proxy pass to the backend host configured at runtime.
   proxy_pass ${VITE_BACKEND_BASE_URL}/api/;
-  proxy_set_header Host $host;
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-  proxy_set_header X-Forwarded-Proto $scheme;
+  proxy_set_header Host \$host;
+  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+  proxy_set_header X-Forwarded-Proto \$scheme;
   proxy_http_version 1.1;
   proxy_set_header Connection '';
   proxy_buffering off; # important for SSE
   chunked_transfer_encoding off;
-  proxy_cache_bypass $http_upgrade;
+  proxy_cache_bypass \$http_upgrade;
   proxy_read_timeout 3600s;
   proxy_send_timeout 3600s;
 }
