@@ -19,6 +19,7 @@ export const WebhookView: React.FC<WebhookViewProps> = ({ selectedBayDbId = null
 
   const webhookKey = 'WEBHOOK_PATH';
   const [localWebhook, setLocalWebhook] = React.useState<string | null>(null);
+  const [clearSignal, setClearSignal] = React.useState(0);
 
   // Development override: allow forcing a webhook path via ?webhook=<id>
   // This is intentionally non-destructive and only used when no saved property exists.
@@ -92,9 +93,20 @@ export const WebhookView: React.FC<WebhookViewProps> = ({ selectedBayDbId = null
         <button onClick={async () => {
           if (!url) return;
           try {
-            await fetch(`${url}/events`, { method: 'DELETE' });
-            setLocalWebhook((v) => v ? null : '');
-            setTimeout(() => setLocalWebhook((v) => v === '' ? (new URLSearchParams(window.location.search).get('webhook') || null) : v), 50);
+            const r = await fetch(`${url}/events`, { method: 'DELETE' });
+            if (!r.ok) {
+              console.warn('Failed to clear events', await r.text());
+              return;
+            }
+            // notify inspector to clear its local state
+            setClearSignal(s => s + 1);
+            try {
+              // global fallback for listeners that don't receive prop change
+              const ev = new CustomEvent('webhook:clear', { detail: { userPath: (localWebhook || webhookPath) } });
+              window.dispatchEvent(ev);
+            } catch (err) {
+              // ignore - older browsers may not support CustomEvent constructor
+            }
           } catch (err) {
             console.warn('Failed to clear events', err);
           }
@@ -103,7 +115,7 @@ export const WebhookView: React.FC<WebhookViewProps> = ({ selectedBayDbId = null
 
       <div className="webhook-inspector-wrap">
         {url && (
-          <WebhookInspector userPath={(localWebhook || webhookPath) as string} selectedBayDbId={selectedBayDbId} selectedBayId={selectedBayIdProp} />
+          <WebhookInspector userPath={(localWebhook || webhookPath) as string} selectedBayDbId={selectedBayDbId} selectedBayId={selectedBayIdProp} clearSignal={clearSignal} />
         )}
       </div>
     </div>

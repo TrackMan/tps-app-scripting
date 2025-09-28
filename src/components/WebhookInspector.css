@@ -16,3 +16,7 @@
 .preview-time{margin-bottom:8px;color:#666}
 .preview-json{background:#fafafa;padding:12px;border-radius:6px;overflow:auto}
 .preview-empty{color:#666}
+
+/* Remove ugly default focus ring on the left list, but keep a subtle ring for keyboard users */
+.webhook-inspector-list:focus{outline: none; box-shadow: none}
+.webhook-inspector-list:focus-visible{outline: none; box-shadow: 0 0 0 3px rgba(0,120,212,0.15);}

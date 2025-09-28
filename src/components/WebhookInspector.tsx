@@ -15,6 +15,7 @@ interface Props {
   userPath: string;
   selectedBayDbId?: number | null;
   selectedBayId?: string | null;
+  clearSignal?: number;
 }
 
 const getBayIdFromEvent = (e: EventItem) => {
@@ -35,11 +36,12 @@ const getBayIdFromEvent = (e: EventItem) => {
   }
 };
 
-const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, selectedBayId = null }) => {
+const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, selectedBayId = null, clearSignal }) => {
   const [allEvents, setAllEvents] = React.useState<EventItem[]>([]);
   const [connected, setConnected] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
   const listRef = React.useRef<HTMLUListElement | null>(null);
+  const listContainerRef = React.useRef<HTMLDivElement | null>(null);
 
   // Fetch initial events
   React.useEffect(() => {
@@ -77,7 +79,20 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
       es.onmessage = (ev) => {
         try {
           const data = JSON.parse(ev.data);
-          setAllEvents(prev => [{ id: data.id, eventType: data.eventType, timestamp: data.timestamp, data: data.data, raw: data.raw, expanded: false }, ...prev]);
+          const newItem: EventItem = { id: data.id, eventType: data.eventType, timestamp: data.timestamp, data: data.data, raw: data.raw, expanded: false };
+          setAllEvents(prev => [newItem, ...prev]);
+          // If the new item matches the current bay filter (or there is no filter) select it and focus the list
+          try {
+            const bayId = getBayIdFromEvent(newItem);
+            const matches = (!selectedBayDbId && !selectedBayId) || (bayId && (String(bayId) === String(selectedBayId) || String(bayId) === String(selectedBayDbId)));
+              if (matches) {
+                setSelectedIndex(0);
+                // focus the list container so keyboard navigation continues from the newly added item
+                setTimeout(() => listContainerRef.current?.focus(), 0);
+              }
+          } catch (e) {
+            // ignore
+          }
         } catch (err) {
           console.warn('Invalid SSE payload', err);
         }
@@ -113,6 +128,30 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
     }
   }, [selectedIndex, filtered]);
 
+  // clear local events when requested
+  React.useEffect(() => {
+    if (typeof clearSignal === 'undefined') return;
+    setAllEvents([]);
+    setSelectedIndex(null);
+  }, [clearSignal]);
+
+  // global fallback: listen for 'webhook:clear' events
+  React.useEffect(() => {
+    const handler = (ev: any) => {
+      try {
+        if (!ev || !ev.detail) return;
+        const detailPath = ev.detail.userPath;
+        if (!detailPath) return;
+        if (String(detailPath) === String(userPath)) {
+          setAllEvents([]);
+          setSelectedIndex(null);
+        }
+      } catch (err) { /* ignore */ }
+    };
+    window.addEventListener('webhook:clear', handler as EventListener);
+    return () => window.removeEventListener('webhook:clear', handler as EventListener);
+  }, [userPath]);
+
   const select = (idx: number) => {
     setSelectedIndex(idx);
   };
@@ -132,9 +171,29 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
 
   const selectedEvent = selectedIndex === null ? null : filtered[selectedIndex];
 
+  const getEventModelPayload = (e: EventItem) => {
+    try {
+      // Common places where the EventModel might appear
+      const maybe = (e.data ?? e.raw) as any;
+      if (!maybe) return e.data ?? e.raw ?? {};
+      // If envelope where data contains EventModel
+      if (maybe.EventModel) return maybe.EventModel;
+      // Some payloads might have data: { EventModel: {...} }
+      if (maybe.data && maybe.data.EventModel) return maybe.data.EventModel;
+      // Some normalized records put typed payload under 'data' already
+      if (e.data && (e.data.EventModel || e.data.eventModel)) return e.data.EventModel ?? e.data.eventModel;
+      // Fallback to raw.data.EventModel
+      if (e.raw && e.raw.data && (e.raw.data.EventModel || e.raw.data.eventModel)) return e.raw.data.EventModel ?? e.raw.data.eventModel;
+      // Last resort: return the whole data/raw object
+      return maybe;
+    } catch (err) {
+      return e.data ?? e.raw ?? {};
+    }
+  };
+
   return (
     <div className="webhook-inspector">
-      <div className="webhook-inspector-list" tabIndex={0} onKeyDown={onListKeyDown}>
+  <div ref={listContainerRef} className="webhook-inspector-list" tabIndex={0} onKeyDown={onListKeyDown}>
         <div className="webhook-events-header">
           <strong>Events</strong>
           <span className={`webhook-events-status ${connected ? 'live' : ''}`}>{connected ? 'live' : 'disconnected'}</span>
@@ -159,7 +218,7 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
             <h4 className="preview-title">{selectedEvent.eventType}</h4>
             <div className="preview-time">{new Date(selectedEvent.timestamp).toLocaleString()}</div>
             {/* Version 1: render JSON fallback of event.data or raw */}
-            <pre className="preview-json">{JSON.stringify(selectedEvent.data || selectedEvent.raw || {}, null, 2)}</pre>
+            <pre className="preview-json">{JSON.stringify(getEventModelPayload(selectedEvent), null, 2)}</pre>
           </div>
         ) : (
           <div className="preview-empty">Select an event to preview</div>
