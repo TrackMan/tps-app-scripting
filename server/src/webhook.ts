@@ -209,6 +209,16 @@ export function registerWebhookRoutes(app: express.Application) {
     return res.json({ count: list.length, events: list });
   });
 
+  // Delete (clear) events for a specific webhook path
+  app.delete('/api/webhook/:userPath/events', (req: Request, res: Response) => {
+    const userPath = req.params.userPath;
+    const list = eventStore.get(userPath) || [];
+    const count = list.length;
+    eventStore.set(userPath, []);
+    console.log(`Cleared ${count} events for webhook ${userPath}`);
+    return res.json({ cleared: count });
+  });
+
   // Server-Sent Events stream for a webhook path.
   app.get('/api/webhook/:userPath/stream', (req: Request, res: Response) => {
     const userPath = req.params.userPath;

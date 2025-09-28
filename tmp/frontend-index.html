@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script type="module">import { injectIntoGlobalHook } from "/@react-refresh";
+injectIntoGlobalHook(window);
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;</script>
+
+    <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrackMan Script Editor</title>
+  <link rel="icon" type="image/x-icon" href="https://golf-portal-dev.trackmangolfdev.com/favicon.ico" />
+    <link rel="stylesheet" href="/src/index.css" />
+    <!-- Runtime configuration for Azure App Service -->  
+    <script>
+      // Load runtime config with cache-busting timestamp (only in production)
+      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        const script = document.createElement('script');
+        script.src = '/runtime-config.js?v=' + Date.now();
+        script.onerror = function() {
+          console.warn('Runtime config not available - using build-time environment variables');
+        };
+        document.head.appendChild(script);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

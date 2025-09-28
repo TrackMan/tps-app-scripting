@@ -416,6 +416,15 @@ export default function App() {
     }
   };
 
+  // Expose selectedBayObj.id globally for the webhook UI to read (minimal plumbing)
+  useEffect(() => {
+    try {
+      (window as any)._selectedBayIdForWebhook = selectedBayObj?.id ?? null;
+    } catch (err) {
+      // ignore in non-browser environments
+    }
+  }, [selectedBayObj]);
+
   const handleAddActivity = (activity: Activity) => {
     dispatch({ type: 'ADD_ACTIVITY', activity, select: true });
   };
@@ -704,7 +713,7 @@ export default function App() {
         </div>
       ) : activeTab === 'webhook' ? (
         <div className="documentation-flex">
-          <WebhookView />
+          <WebhookView selectedBayDbId={selectedBayObj?.dbId ?? null} />
         </div>
       ) : null}
     </div>

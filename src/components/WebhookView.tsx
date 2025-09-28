@@ -1,10 +1,17 @@
 import React from 'react';
 import { useQuery, useMutation } from 'urql';
 import { GET_USER_PROPERTIES_QUERY, APP_SCRIPT_APPLICATION, SET_USER_PROPERTIES_MUTATION, SetUserPropertiesVariables, SetUserPropertiesData } from '../graphql/userProperties';
-import WebhookEventsPanel from './WebhookEventsPanel';
+import WebhookInspector from './WebhookInspector';
+import './WebhookView.css';
 import './WebhookView.css';
 
-export const WebhookView: React.FC = () => {
+interface WebhookViewProps {
+  selectedBayDbId?: number | null;
+}
+
+export const WebhookView: React.FC<WebhookViewProps> = ({ selectedBayDbId = null }) => {
+  // selectedBayId will be passed from App via prop injection in App.tsx
+  const selectedBayIdProp = (window as any)?._selectedBayIdForWebhook || null;
   const [result] = useQuery({
     query: GET_USER_PROPERTIES_QUERY,
     variables: { application: APP_SCRIPT_APPLICATION },
@@ -12,6 +19,20 @@ export const WebhookView: React.FC = () => {
 
   const webhookKey = 'WEBHOOK_PATH';
   const [localWebhook, setLocalWebhook] = React.useState<string | null>(null);
+
+  // Development override: allow forcing a webhook path via ?webhook=<id>
+  // This is intentionally non-destructive and only used when no saved property exists.
+  React.useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const override = params.get('webhook');
+        if (override && !localWebhook) setLocalWebhook(override);
+      }
+    } catch (err) {
+      // ignore in non-browser environments
+    }
+  }, []);
 
   let webhookPath: string | null = null;
   if (result.data && result.data.me && Array.isArray(result.data.me.properties)) {
@@ -65,21 +86,26 @@ export const WebhookView: React.FC = () => {
 
   return (
     <div className="webhook-view">
-      <h3 className="webhook-title">My Webhook URL</h3>
-      {result.fetching && <p className="webhook-loading">Loading...</p>}
-      {result.error && <p className="webhook-error">Error loading properties</p>}
-      {!result.fetching && !webhookPath && !localWebhook && <p>Creating webhook path...</p>}
-      {url && (
-        <div className="webhook-url-row">
-          <label htmlFor="webhook-url" className="visually-hidden">Webhook URL</label>
-          <input id="webhook-url" readOnly value={url} className="webhook-url-input" />
-          <button onClick={() => { navigator.clipboard?.writeText(url); }} className="webhook-copy-button">Copy</button>
-        </div>
-      )}
+      <div className="webhook-topbar">
+        <input readOnly value={url || ''} className="webhook-url-input" aria-label="Webhook URL" />
+        <button onClick={() => { navigator.clipboard?.writeText(url || ''); }} className="webhook-copy-button">Copy</button>
+        <button onClick={async () => {
+          if (!url) return;
+          try {
+            await fetch(`${url}/events`, { method: 'DELETE' });
+            setLocalWebhook((v) => v ? null : '');
+            setTimeout(() => setLocalWebhook((v) => v === '' ? (new URLSearchParams(window.location.search).get('webhook') || null) : v), 50);
+          } catch (err) {
+            console.warn('Failed to clear events', err);
+          }
+        }} className="webhook-clear-button">Clear</button>
+      </div>
 
-      {url && (
-        <WebhookEventsPanel userPath={(localWebhook || webhookPath) as string} />
-      )}
+      <div className="webhook-inspector-wrap">
+        {url && (
+          <WebhookInspector userPath={(localWebhook || webhookPath) as string} selectedBayDbId={selectedBayDbId} selectedBayId={selectedBayIdProp} />
+        )}
+      </div>
     </div>
   );
 };
