@@ -115,6 +115,15 @@ sed -i "s|__BACKEND_BASE_URL__|${BACKEND}|g" /etc/nginx/conf.d/api-proxy.conf
 
 echo "✅ Wrote /etc/nginx/conf.d/api-proxy.conf (proxy -> ${BACKEND}/api/)"
 
+# Remove any default server-level configuration that may exist in /etc/nginx/conf.d
+# (for example the base image's default.conf). Our custom nginx.conf expects the
+# conf.d fragments to contain only `location` blocks; a top-level `server { ... }`
+# in conf.d will cause nginx to error with: "'server' directive is not allowed here".
+if [ -f /etc/nginx/conf.d/default.conf ]; then
+  echo "⚠️ Removing /etc/nginx/conf.d/default.conf to avoid nested server blocks"
+  rm -f /etc/nginx/conf.d/default.conf || true
+fi
+
 # Start nginx
 echo "🌐 Starting nginx..."
 exec nginx -g "daemon off;"
