@@ -139,6 +139,59 @@ if (fs.existsSync(staticPath)) {
   });
 } else {
   console.warn(`Static frontend directory not found at ${staticPath}`);
+
+  // Emergency fallback: if the static frontend isn't present in the image
+  // (for example a mis-built image or multi-stage copy failure), serve a
+  // small informational HTML page at / so users hitting the site root get a
+  // helpful message instead of a generic Azure "Application Error".
+  app.get('/', (_req: Request, res: Response) => {
+    res.type('text/html');
+    const html = `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>App Scripting — Frontend unavailable</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>body{font-family:Segoe UI,Roboto,Arial,sans-serif;margin:2rem;color:#222}a{color:#0366d6}</style>
+  </head>
+  <body>
+    <h1>Frontend temporarily unavailable</h1>
+    <p>The frontend static bundle was not found inside this container image.</p>
+    <p>You can still use the API directly:</p>
+    <ul>
+      <li><a href="/api/health">/api/health</a></li>
+    </ul>
+    <p>If you maintain this deployment, rebuild the editor image so the
+    <code>editor-dist</code> directory is present, or deploy the editor/nginx image.</p>
+    <hr/>
+    <p><small>Generated at ${new Date().toISOString()}</small></p>
+  </body>
+</html>`;
+    return res.status(200).send(html);
+  });
+
+  // Provide a minimal env-config.js so clients can still fetch runtime settings
+  app.get('/env-config.js', (_req: Request, res: Response) => {
+    res.type('application/javascript');
+    return res.status(200).send('// env-config not present in image (fallback)\n');
+  });
+
+  // Provide the same runtime-config.js fallback as we do when static files exist
+  app.get('/runtime-config.js', (_req: Request, res: Response) => {
+    res.type('application/javascript');
+    const runtime = {
+      VITE_BACKEND_BASE_URL: process.env.VITE_BACKEND_BASE_URL || '',
+      VITE_LOGIN_BASE_URL: process.env.VITE_LOGIN_BASE_URL || '',
+      VITE_NODE_ENV: process.env.VITE_NODE_ENV || 'production',
+      VITE_OAUTH_WEB_CLIENT_ID: process.env.VITE_OAUTH_WEB_CLIENT_ID || '',
+      VITE_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_OAUTH_WEB_CLIENT_SECRET ? 'SET' : '',
+      _generated: new Date().toISOString(),
+    } as Record<string, any>;
+    const content = `// Runtime configuration (generated)\nwindow.runtimeConfig = ${JSON.stringify(
+      runtime,
+    )};\n`;
+    return res.status(200).send(content);
+  });
 }
 
 // Lightweight diagnostics endpoint so we can query the container about the frontend bundle
