@@ -16,6 +16,8 @@ import { createActivity, createStep } from './factories';
 import { validateScript, formatErrors, getValidatorStatus } from './validator';
 import { editorReducer, initialEditorState, getSelectedNode } from './editorReducer';
 import { usePersistedSelections } from './hooks/usePersistedSelections';
+import AppProviders from './app/Providers';
+import AppShell from './app/AppShell';
 
 type TabType = 'edit' | 'documentation';
 
@@ -639,84 +641,27 @@ export default function App() {
   }
 
   return (
-    <div className="app-container">
-      <TopBar 
+    <AppProviders>
+      <AppShell
         selectedFacility={selectedFacility}
         selectedFacilityId={selectedFacilityId}
         onFacilitySelect={handleFacilitySelect}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        state={state}
+        script={script}
+        isValid={isValid}
+        validationErrors={validationErrors.errors || validationErrors}
+        selections={selections}
+        selectedLocation={selectedLocation}
+        selectedBayObj={selectedBayObj}
+        onLoadScript={loadScript}
+        onDownloadScript={downloadScript}
+        onLocationSelect={handleLocationSelect}
+        onBaySelect={handleBaySelect}
+        dispatch={dispatch}
       />
-      <TabBar 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab} 
-      />
-  {/* <EnvironmentDebug /> */}
-      {activeTab === 'edit' ? (
-        <div className="tree-flex">
-          <DialogManager
-            showActivityDialog={showActivityDialog}
-            showStepDialog={showStepDialog}
-            onCloseActivityDialog={() => setShowActivityDialog(false)}
-            onCloseStepDialog={() => setShowStepDialog(false)}
-            onAddActivity={handleAddActivity}
-            onAddStep={handleAddStep}
-            parentActivityForAdd={parentActivityForAdd}
-          />
-          <Sidebar
-            script={script}
-            selectedRef={state.selectedRef}
-            isValid={isValid}
-            validationErrors={validationErrors}
-            selectedFacilityId={selectedFacilityId}
-            selectedLocationId={selectedLocation?.id || null}
-            persistedLocationId={selections?.locationId || null}
-            selectedBayId={selectedBayId}
-            persistedBayId={selections?.bayId || null}
-            selectedBayObj={selectedBayObj}
-            onLoadScript={loadScript}
-            onDownloadScript={downloadScript}
-            onLocationSelect={handleLocationSelect}
-            onBaySelect={handleBaySelect}
-            onCloneSelected={() => dispatch({ type: 'CLONE_SELECTED' })}
-            onShowActivityDialog={() => setShowActivityDialog(true)}
-            onShowStepDialog={() => setShowStepDialog(true)}
-            onSelectScript={() => dispatch({ type: 'SELECT_SCRIPT' })}
-            onSelectActivity={(activityId: string) => dispatch({ type: 'SELECT_ACTIVITY', activityId })}
-            onSelectStep={(activityId: string, stepId: string) => dispatch({ type: 'SELECT_STEP', activityId, stepId })}
-            onDeleteActivity={deleteActivity}
-            onDeleteStep={deleteStep}
-            parentActivityForAdd={parentActivityForAdd}
-          />
-          <div className="tree-main">
-            {state.selectedRef?.kind === 'script' ? (
-              <>
-                <h2>Script Configuration</h2>
-                <ScriptEditor
-                  script={script}
-                  onChange={updateScript}
-                />
-                <pre>{JSON.stringify(script, null, 2)}</pre>
-              </>
-            ) : selectedNode ? (
-              <NodeEditor
-                node={selectedNode}
-                onUpdateActivity={updateActivity}
-                onUpdateStep={updateStep}
-              />
-            ) : (
-              <div className="empty-node-editor">Select a node to edit its details.</div>
-            )}
-          </div>
-        </div>
-      ) : activeTab === 'documentation' ? (
-        <div className="documentation-flex">
-          <DocViewer />
-        </div>
-      ) : activeTab === 'webhook' ? (
-        <div className="documentation-flex">
-          <WebhookView selectedBayDbId={selectedBayObj?.dbId ?? null} />
-        </div>
-      ) : null}
-    </div>
+    </AppProviders>
   );
 }
 

@@ -94,3 +94,6 @@ editor/dist/
 
 # Ignore build output from possible CI
 server/dist/
+
+# Local manifest dumps (registry manifests/diagnostics)
+manifests.json
