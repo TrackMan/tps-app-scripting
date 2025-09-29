@@ -18,7 +18,7 @@ interface Location {
   name: string;
 }
 
-interface SidebarProps {
+export interface SidebarProps {
   script: ScriptData;
   selectedRef: { kind: 'script' } | { kind: 'activity'; activityId: string } | { kind: 'step'; activityId: string; stepId: string } | null;
   selectedNode: Activity | Step | null;
@@ -43,6 +43,8 @@ interface SidebarProps {
   onDeleteActivity: (activityId: string) => void;
   onDeleteStep: (activityId: string, stepId: string) => void;
   parentActivityForAdd: Activity | undefined;
+  onUpdateActivity?: (activityId: string, patch: Partial<Activity>) => void;
+  onUpdateStep?: (stepId: string, patch: Partial<Step>) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -223,7 +225,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 if (patch.id && patch.id !== activityId) {
                   handleNodeIdChange(activityId, patch.id, 'activity');
                 }
-                onUpdateActivity(activityId, patch);
+                  onUpdateActivity?.(activityId, patch);
               }}
               onUpdateStep={(stepId: string, patch: Partial<Step>) => {
                 if (patch.id && patch.id !== stepId) {
@@ -233,7 +235,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }
                   handleNodeIdChange(stepId, patch.id, 'step', parentId || undefined);
                 }
-                onUpdateStep(stepId, patch);
+                  onUpdateStep?.(stepId, patch);
               }}
             />
           )}

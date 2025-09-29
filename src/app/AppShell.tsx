@@ -7,6 +7,9 @@ import { ScriptEditor } from '../components/ScriptEditor';
 import { NodeEditor } from '../components/NodeEditor';
 import { DocViewer } from '../components/DocViewer';
 import WebhookView from '../components/WebhookView';
+import Routes from './Routes';
+import { ScriptData, Activity, Step } from '../types';
+import { SidebarProps } from '../components/Sidebar';
 
 export type TabType = 'edit' | 'documentation' | 'webhook';
 
@@ -19,12 +22,14 @@ export interface AppShellProps {
   setActiveTab: (t: TabType) => void;
   // editor state and handlers (kept generic to avoid tight coupling in this step)
   state: any;
-  script: any;
+  selectedNode?: Activity | Step | null;
+  script: ScriptData;
   isValid: boolean;
-  validationErrors: any[];
+  validationErrors: string[];
   selections: any;
   selectedLocation: any;
   selectedBayObj: any;
+  parentActivityForAdd?: any;
   onLoadScript: () => void;
   onDownloadScript: () => void;
   onLocationSelect: (l: any) => void;
@@ -46,6 +51,7 @@ export const AppShell: React.FC<AppShellProps> = (props) => {
     selections,
     selectedLocation,
     selectedBayObj,
+    parentActivityForAdd,
     onLoadScript,
     onDownloadScript,
     onLocationSelect,
@@ -53,7 +59,9 @@ export const AppShell: React.FC<AppShellProps> = (props) => {
     dispatch
   } = props;
 
-  const selectedNode = (() => {
+  // Prefer a hydrated selected node object from the top-level App when available
+  const effectiveSelectedNode = (() => {
+    if (props.selectedNode !== undefined) return props.selectedNode;
     try { return (state && state.selectedRef && state.selectedRef.kind !== 'script') ? state.selectedRef : null; } catch { return null; }
   })();
 
@@ -69,75 +77,24 @@ export const AppShell: React.FC<AppShellProps> = (props) => {
         onTabChange={setActiveTab} 
       />
 
-      {activeTab === 'edit' ? (
-        <div className="tree-flex">
-          <DialogManager
-            // dialog props are expected to be provided via dispatch or parent
-            showActivityDialog={false}
-            showStepDialog={false}
-            onCloseActivityDialog={() => {}}
-            onCloseStepDialog={() => {}}
-            onAddActivity={() => {}}
-            onAddStep={() => {}}
-            parentActivityForAdd={undefined}
-          />
-          <Sidebar
-            script={script}
-            selectedRef={state.selectedRef}
-            selectedNode={selectedNode}
-            isValid={isValid}
-            validationErrors={validationErrors}
-            selectedFacilityId={selectedFacilityId}
-            selectedLocationId={selectedLocation?.id || null}
-            persistedLocationId={selections?.locationId || null}
-            selectedBayId={selectedBayObj?.id || null}
-            persistedBayId={selections?.bayId || null}
-            selectedBayObj={selectedBayObj}
-            onLoadScript={onLoadScript}
-            onDownloadScript={onDownloadScript}
-            onLocationSelect={onLocationSelect}
-            onBaySelect={onBaySelect}
-            onCloneSelected={() => dispatch({ type: 'CLONE_SELECTED' })}
-            onShowActivityDialog={() => {}}
-            onShowStepDialog={() => {}}
-            onSelectScript={() => dispatch({ type: 'SELECT_SCRIPT' })}
-            onSelectActivity={(activityId: string) => dispatch({ type: 'SELECT_ACTIVITY', activityId })}
-            onSelectStep={(activityId: string, stepId: string) => dispatch({ type: 'SELECT_STEP', activityId, stepId })}
-            onDeleteActivity={(id: string) => dispatch({ type: 'DELETE_ACTIVITY', activityId: id })}
-            onDeleteStep={(activityId: string, stepId: string) => dispatch({ type: 'DELETE_STEP', activityId, stepId })}
-            parentActivityForAdd={undefined}
-          />
-
-          <div className="tree-main">
-            {state.selectedRef?.kind === 'script' ? (
-              <>
-                <h2>Script Configuration</h2>
-                <ScriptEditor
-                  script={script}
-                  onChange={(s: any) => dispatch({ type: 'LOAD_SCRIPT', script: s })}
-                />
-                <pre>{JSON.stringify(script, null, 2)}</pre>
-              </>
-            ) : selectedNode ? (
-              <NodeEditor
-                node={selectedNode}
-                onUpdateActivity={(activityId: string, patch: any) => dispatch({ type: 'UPDATE_ACTIVITY', activityId, patch })}
-                onUpdateStep={(stepId: string, patch: any) => dispatch({ type: 'UPDATE_STEP', stepId, patch })}
-              />
-            ) : (
-              <div className="empty-node-editor">Select a node to edit its details.</div>
-            )}
-          </div>
-        </div>
-      ) : activeTab === 'documentation' ? (
-        <div className="documentation-flex">
-          <DocViewer />
-        </div>
-      ) : activeTab === 'webhook' ? (
-        <div className="documentation-flex">
-          <WebhookView selectedBayDbId={selectedBayObj?.dbId ?? null} />
-        </div>
-      ) : null}
+      <Routes
+        activeTab={activeTab}
+        state={state}
+  selectedNode={effectiveSelectedNode ?? null}
+        script={script}
+        isValid={isValid}
+        validationErrors={validationErrors}
+        selections={selections}
+        selectedFacilityId={selectedFacilityId}
+        parentActivityForAdd={parentActivityForAdd}
+        selectedLocation={selectedLocation}
+        selectedBayObj={selectedBayObj}
+        onLoadScript={onLoadScript}
+        onDownloadScript={onDownloadScript}
+        onLocationSelect={onLocationSelect}
+        onBaySelect={onBaySelect}
+        dispatch={dispatch}
+      />
     </div>
   );
 };

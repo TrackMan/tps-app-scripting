@@ -19,7 +19,7 @@ import { usePersistedSelections } from './hooks/usePersistedSelections';
 import AppProviders from './app/Providers';
 import AppShell from './app/AppShell';
 
-type TabType = 'edit' | 'documentation';
+type TabType = 'edit' | 'documentation' | 'webhook';
 
 interface Bay {
   id: string;
@@ -269,7 +269,10 @@ export default function App() {
     });
     if (mutated) {
       // dispatch minimal updates via LOAD_SCRIPT to reuse validation effect
-      dispatch({ type: 'LOAD_SCRIPT', script: { activities: repairedActivities } });
+      // repairedActivities may be a freshly-mapped array and TypeScript
+      // can be conservative about subtype narrowing here. Cast to ScriptData
+      // to satisfy the reducer action shape while preserving runtime value.
+      dispatch({ type: 'LOAD_SCRIPT', script: { activities: repairedActivities } as unknown as ScriptData });
     }
     setMigrationComplete(true);
   }, [script.activities, migrationComplete]);
@@ -583,56 +586,19 @@ export default function App() {
     
     if (logoutComplete) {
       return (
-        <div style={{ 
-          height: '100vh', 
-          display: 'flex', 
-          flexDirection: 'column',
-          alignItems: 'center', 
-          justifyContent: 'center',
-          backgroundColor: '#f5f5f5',
-          fontFamily: 'system-ui, -apple-system, sans-serif'
-        }}>
-          <div style={{
-            padding: '2rem',
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            textAlign: 'center',
-            maxWidth: '400px'
-          }}>
-            <div style={{ fontSize: '48px', marginBottom: '1rem' }}>✅</div>
-            <h2 style={{ margin: '0 0 1rem 0', color: '#333' }}>Logout Successful</h2>
-            <p style={{ margin: '0', color: '#666' }}>
+        <div className="logout-center">
+          <div className="logout-box">
+            <div className="logout-emoji">✅</div>
+            <h2 className="logout-heading">Logout Successful</h2>
+            <p className="logout-text">
               You have been logged out successfully.<br/>
               Redirecting to login page...
             </p>
-            <div style={{ 
-              marginTop: '1rem', 
-              padding: '0.5rem',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '4px',
-              fontSize: '0.9em',
-              color: '#666'
-            }}>
-              <div className="spinner" style={{
-                display: 'inline-block',
-                width: '16px',
-                height: '16px',
-                border: '2px solid #ddd',
-                borderTop: '2px solid #007acc',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite',
-                marginRight: '8px'
-              }}></div>
+            <div className="logout-spinner-wrap">
+              <div className="logout-spinner" aria-hidden="true"></div>
               Please wait...
             </div>
           </div>
-          <style>{`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
         </div>
       );
     }
@@ -649,12 +615,14 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         state={state}
+        selectedNode={selectedNode}
         script={script}
         isValid={isValid}
-        validationErrors={validationErrors.errors || validationErrors}
+  validationErrors={validationErrors}
         selections={selections}
         selectedLocation={selectedLocation}
         selectedBayObj={selectedBayObj}
+        parentActivityForAdd={parentActivityForAdd}
         onLoadScript={loadScript}
         onDownloadScript={downloadScript}
         onLocationSelect={handleLocationSelect}

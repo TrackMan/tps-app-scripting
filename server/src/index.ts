@@ -48,26 +48,12 @@ process.on('unhandledRejection', (reason) => {
   console.error('Unhandled rejection:', reason);
 });
 
-// Mock user for auth endpoints
-const mockUser = {
-  id: "user-1",
-  name: "Demo User",
-  avatar:
-    "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=128",
-};
 
 // API mounted under /api to make it easy to host frontend and backend together
 app.get("/api/health", (_req: Request, res: Response) => {
   res.json({ status: "ok", uptime: process.uptime() });
 });
 
-app.get("/api/me", (_req: Request, res: Response) => {
-  res.json({ authenticated: true, profile: mockUser });
-});
-
-app.post("/api/logout", (_req: Request, res: Response) => {
-  res.json({ ok: true });
-});
 
 // Register webhook-related routes (event store, SSE, diagnostics)
 registerWebhookRoutes(app);

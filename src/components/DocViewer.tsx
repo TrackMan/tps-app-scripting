@@ -40,30 +40,16 @@ export const DocViewer: React.FC<DocViewerProps> = () => {
   }, [activeSection]);
 
   return (
-    <div className="doc-viewer" style={{ display: 'flex', height: '100%' }}>
+    <div className="doc-viewer-layout">
       {/* Table of Contents */}
-      <div style={{ 
-        width: '250px', 
-        borderRight: '1px solid #ccc', 
-        padding: '20px',
-        backgroundColor: '#f5f5f5'
-      }}>
+      <div className="doc-toc">
         <h3>Contents</h3>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
+  <ul>
           {sections.map(section => (
             <li key={section.id}>
               <button
                 onClick={() => setActiveSection(section.id)}
-                style={{
-                  background: activeSection === section.id ? '#007acc' : 'transparent',
-                  color: activeSection === section.id ? 'white' : '#333',
-                  border: 'none',
-                  padding: '8px 12px',
-                  cursor: 'pointer',
-                  width: '100%',
-                  textAlign: 'left',
-                  borderRadius: '4px'
-                }}
+                className={activeSection === section.id ? 'active' : ''}
               >
                 {section.title}
               </button>
@@ -73,16 +59,9 @@ export const DocViewer: React.FC<DocViewerProps> = () => {
       </div>
 
       {/* Content Area */}
-      <div style={{ flex: 1, padding: '20px', overflow: 'auto' }}>
+      <div className="doc-content-area">
         <div 
-          className="markdown-content"
-          style={{ 
-            backgroundColor: '#ffffff', 
-            padding: '20px', 
-            borderRadius: '4px',
-            border: '1px solid #ddd',
-            lineHeight: '1.6'
-          }}
+          className="doc-markdown-box markdown-content"
           dangerouslySetInnerHTML={{ __html: content }}
         />
       </div>

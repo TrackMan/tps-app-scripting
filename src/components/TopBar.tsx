@@ -82,26 +82,17 @@ export const TopBar: React.FC<TopBarProps> = ({
             <>
               <div
                 ref={avatarRef}
-                className="top-bar-user-image top-bar-user-image-clickable"
+                className="top-bar-user-image top-bar-user-image-clickable topbar-avatar-wrapper"
                 onClick={() => {
                   setMenuOpen((v) => !v);
                 }}
-                style={{ display: 'inline-block', position: 'relative' }}
               >
                 {profile.picture && (
                   <img src={profile.picture} alt={profile.fullName || ''} />
                 )}
               </div>
               {menuOpen && (
-                <div
-                  className="top-bar-user-menu"
-                  style={{
-                    position: 'absolute',
-                    right: 0,
-                    top: '56px',
-                    zIndex: 1000
-                  }}
-                >
+                <div className="top-bar-user-menu topbar-user-menu-absolute">
                   <div className="top-bar-user-menu-title">{profile.fullName || ''}</div>
                   <hr className="top-bar-user-menu-divider" />
                   <button
