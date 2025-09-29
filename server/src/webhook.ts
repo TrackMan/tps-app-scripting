@@ -161,39 +161,101 @@ export function registerWebhookRoutes(app: express.Application) {
       return base;
     };
 
-    // Append events to in-memory store for this path
+    // Append minimal records (no heavy classification) to in-memory store for this path
     try {
-      const records: EventRecord[] = events.map((e: any) => normalize(e));
+      const minimalNormalize = (ev: any): EventRecord => {
+        const eventType = ev?.eventType || ev?.EventType || ev?.type || ev?.Type || (ev && ev['event-type']) || '';
+        const timestamp = ev?.eventTime || ev?.event_time || ev?.time || ev?.Time || new Date().toISOString();
+        return {
+          id: ev?.id,
+          eventType: String(eventType || '').trim(),
+          timestamp,
+          data: ev?.data ?? ev?.Data ?? null,
+          raw: ev,
+          typed: null,
+          common: null,
+        };
+      };
 
+      const minimalRecords: EventRecord[] = events.map((e: any) => minimalNormalize(e));
       const existing = eventStore.get(userPath) || [];
-      const combined = [...records.reverse(), ...existing];
+      const combined = [...minimalRecords.reverse(), ...existing];
       const trimmed = combined.slice(0, EVENT_STORE_CAP);
       eventStore.set(userPath, trimmed);
     } catch (err) {
       console.warn('Failed to store events in memory', (err as Error).message);
     }
 
-    // Notify any SSE clients connected to this webhook path
+    // Notify any SSE clients connected to this webhook path: send minimal record immediately,
+    // then run classification asynchronously and send an enriched update when ready.
     try {
       for (const e of events) {
-        // reuse normalization logic to ensure SSE payloads include typed when available
-        const ev = ((): EventRecord => {
+        const tStart = Date.now();
+        try {
+          console.log(`[webhook] receive start path=${userPath} eventId=${e?.id || 'n/a'} ts=${new Date(tStart).toISOString()}`);
+        } catch (_) { /* ignore */ }
+
+        // Build minimal record (same shape as stored)
+        const minimal: EventRecord = {
+          id: e?.id,
+          eventType: String(e?.eventType || e?.EventType || e?.type || '').trim(),
+          timestamp: e?.eventTime || e?.time || new Date().toISOString(),
+          data: e?.data ?? e?.Data ?? null,
+          raw: e,
+          typed: null,
+          common: null,
+        };
+
+        // Send minimal SSE immediately
+        sendSseToPath(userPath, minimal);
+
+        const tAfterSend = Date.now();
+        try {
+          console.log(`[webhook] minimal SSE sent path=${userPath} eventId=${minimal.id || 'n/a'} elapsedMs=${tAfterSend - tStart}`);
+        } catch (_) {}
+
+        // Classify/enrich asynchronously to avoid blocking the request
+        (async () => {
+          const classifyStart = Date.now();
           try {
-            const nr = (normalize as any)(e) as EventRecord;
-            return nr;
+            const classified = classifyEventPayload(e);
+            if (classified && classified.typed) {
+              // Build enriched record
+              const enriched: EventRecord = { ...minimal };
+              enriched.typed = classified.typed as any;
+              enriched.common = (classified as any).common ?? null;
+              if ((classified as any).name) enriched.eventType = (classified as any).name;
+
+              // Update eventStore: replace the minimal record we inserted earlier (match by id if present)
+              try {
+                const existingList = eventStore.get(userPath) || [];
+                const idx = existingList.findIndex(r => (r.id && enriched.id && r.id === enriched.id) || r.raw === enriched.raw);
+                if (idx >= 0) {
+                  const updated = existingList.slice();
+                  updated[idx] = enriched;
+                  eventStore.set(userPath, updated);
+                }
+              } catch (err) {
+                console.warn('Failed to update eventStore with enriched record', (err as Error).message);
+              }
+
+              // Send enriched SSE to clients
+              try {
+                sendSseToPath(userPath, enriched);
+                const classifyEnd = Date.now();
+                console.log(`[webhook] enriched SSE sent path=${userPath} eventId=${enriched.id || 'n/a'} classifyMs=${classifyEnd - classifyStart} totalMs=${classifyEnd - tStart}`);
+              } catch (err) {
+                console.warn('Failed to send enriched SSE', (err as Error).message);
+              }
+            } else {
+              // If classification yielded nothing useful, we still log timing
+              const classifyEnd = Date.now();
+              console.log(`[webhook] classification no-op path=${userPath} eventId=${e?.id || 'n/a'} classifyMs=${classifyEnd - classifyStart}`);
+            }
           } catch (err) {
-            return {
-              id: e?.id,
-              eventType: String(e?.eventType || e?.EventType || e?.type || '').trim(),
-              timestamp: e?.eventTime || e?.time || new Date().toISOString(),
-              data: e?.data ?? e?.Data ?? null,
-              raw: e,
-              typed: null,
-              common: null,
-            };
+            console.warn('Async classification error', (err as Error).message);
           }
         })();
-        sendSseToPath(userPath, ev);
       }
     } catch (err) {
       console.warn('Failed to broadcast SSE', (err as Error).message);

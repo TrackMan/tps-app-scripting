@@ -80,7 +80,24 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
         try {
           const data = JSON.parse(ev.data);
           const newItem: EventItem = { id: data.id, eventType: data.eventType, timestamp: data.timestamp, data: data.data, raw: data.raw, expanded: false };
-          setAllEvents(prev => [newItem, ...prev]);
+          setAllEvents(prev => {
+            try {
+              if (newItem.id) {
+                const idx = prev.findIndex(p => p.id && p.id === newItem.id);
+                if (idx >= 0) {
+                  // merge fields so enriched SSE augments the minimal one
+                  const merged = { ...prev[idx], ...newItem };
+                  // move merged item to the top
+                  const copy = prev.slice();
+                  copy.splice(idx, 1);
+                  return [merged, ...copy];
+                }
+              }
+            } catch (err) {
+              // fallback to naive prepend on any error
+            }
+            return [newItem, ...prev];
+          });
           // If the new item matches the current bay filter (or there is no filter) select it and focus the list
           try {
             const bayId = getBayIdFromEvent(newItem);
