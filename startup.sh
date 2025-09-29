@@ -58,9 +58,22 @@ cat /usr/share/nginx/html/runtime-config.js
 echo "� File permissions after writing:"
 ls -la /usr/share/nginx/html/runtime-config.js
 
-# DEBUG: Test file can be read by nginx user
-echo "🔍 Testing nginx config:"
-nginx -t 2>/dev/null && echo "✅ Nginx config valid" || echo "❌ Nginx config error"
+# DEBUG: Test nginx config and capture detailed stderr so App Service logs show
+# the precise error (helpful when nginx silently fails at startup in the platform).
+echo "🔍 Testing nginx config (detailed output will be saved to /tmp/nginx-test.log):"
+# Run nginx -t and capture stderr to a file we can print; preserve exit code
+nginx -t 2>/tmp/nginx-test.log || true
+echo "--- nginx -t stderr (/tmp/nginx-test.log) ---"
+if [ -s /tmp/nginx-test.log ]; then
+  sed -n '1,200p' /tmp/nginx-test.log || true
+else
+  echo "(no nginx test output)"
+fi
+if nginx -t >/dev/null 2>&1; then
+  echo "✅ Nginx config valid"
+else
+  echo "❌ Nginx config error (see /tmp/nginx-test.log above)"
+fi
 
 # CRITICAL: Verify the VITE_NODE_ENV was written correctly
 echo "🔍 CRITICAL CHECK - Verifying VITE_NODE_ENV in file:"
