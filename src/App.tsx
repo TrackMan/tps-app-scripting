@@ -14,6 +14,7 @@ import { Activity, Step, ScriptData, isActivity, isStep, LogicNode } from './typ
 import { normalizeScript } from './normalizer';
 import { createActivity, createStep } from './factories';
 import { validateScript, formatErrors, getValidatorStatus } from './validator';
+import { repairActivities } from './lib/repairSteps';
 import { editorReducer, initialEditorState, getSelectedNode } from './editorReducer';
 import { usePersistedSelections } from './hooks/usePersistedSelections';
 import AppProviders from './app/Providers';
@@ -224,55 +225,9 @@ export default function App() {
   useEffect(() => {
     if (migrationComplete) return; // Only run once
     
-    let mutated = false;
-    const repairedActivities = script.activities.map(act => {
-      const repairedSteps = act.steps.map(step => {
-        const newStep = { ...step } as Step;
-        if (newStep.logic) {
-          // Repair setup
-            if (newStep.nodeType === 'RangeAnalysisScriptedStep') {
-              if (!newStep.logic.setup || newStep.logic.setup.nodeType !== 'RangeAnalysisScriptedSetup') {
-                newStep.logic.setup = { nodeType: 'RangeAnalysisScriptedSetup', club: 'Drv', distance: 200 };
-                mutated = true;
-              }
-            } else if (newStep.nodeType === 'PerformanceCenterScriptedStep') {
-              if (!newStep.logic.setup || (newStep.logic.setup.nodeType !== 'PerformanceCenterApproachScriptedSetup' && newStep.logic.setup.nodeType !== 'PerformanceCenterTeeShotsScriptedSetup')) {
-                newStep.logic.setup = { nodeType: 'PerformanceCenterApproachScriptedSetup', hole: 1, pin: 1, playerCategory: 'Handicap', hcp: 10, gender: 'Male', minDistance: 50, maxDistance: 150 };
-                mutated = true;
-              }
-            }
-          const fixCond = (grp: any, isRange: boolean) => {
-            if (!grp) return grp;
-            if (!grp.nodeType) {
-              grp.nodeType = isRange ? 'RangeAnalysisScriptedConditions' : 'PerformanceCenterScriptedConditions';
-              mutated = true;
-            }
-            if (!Array.isArray(grp.conditions) || grp.conditions.length === 0) {
-              grp.conditions = [{ parameter: 'Total', min: 0 }];
-              mutated = true;
-            }
-            if (!grp.shots) { grp.shots = 1; mutated = true; }
-            if (!grp.conditionType) { grp.conditionType = 'And'; mutated = true; }
-            return grp;
-          };
-          const isRange = newStep.nodeType === 'RangeAnalysisScriptedStep';
-          newStep.logic.successCondition = fixCond(newStep.logic.successCondition, isRange);
-          newStep.logic.failCondition = fixCond(newStep.logic.failCondition, isRange);
-        }
-        return newStep;
-      });
-      if (repairedSteps.some((s, idx) => s !== act.steps[idx])) {
-        mutated = true;
-        return { ...act, steps: repairedSteps };
-      }
-      return act;
-    });
-    if (mutated) {
-      // dispatch minimal updates via LOAD_SCRIPT to reuse validation effect
-      // repairedActivities may be a freshly-mapped array and TypeScript
-      // can be conservative about subtype narrowing here. Cast to ScriptData
-      // to satisfy the reducer action shape while preserving runtime value.
-      dispatch({ type: 'LOAD_SCRIPT', script: { activities: repairedActivities } as unknown as ScriptData });
+    const result = repairActivities(script.activities as any);
+    if (result.mutated) {
+      dispatch({ type: 'LOAD_SCRIPT', script: { activities: result.activities } });
     }
     setMigrationComplete(true);
   }, [script.activities, migrationComplete]);
