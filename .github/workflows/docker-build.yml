@@ -1,84 +1,78 @@
-name: Build and Push Docker Image
+name: Build and Push Docker Images
 
 on:
   push:
     branches: [ main, develop ]
   pull_request:
     branches: [ main ]
-  # Allow manual trigger
   workflow_dispatch:
 
 env:
   REGISTRY: tpsappscriptingacr.azurecr.io
-  IMAGE_NAME: app-scripting-editor
+  IMAGE_STATIC: app-scripting-editor
+  IMAGE_API: app-scripting-editor-api
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+      id-token: write
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Assert required ACR secrets are set
-      run: |
-        if [ -z "${{ secrets.ACR_USERNAME }}" ]; then echo "ERROR: secrets.ACR_USERNAME is not set"; exit 1; fi
-        if [ -z "${{ secrets.ACR_PASSWORD }}" ]; then echo "ERROR: secrets.ACR_PASSWORD is not set"; exit 1; fi
+      # --- Login to ACR (simple user/pass; or swap to azure/login + OIDC if you prefer) ---
+      - name: Docker login to ACR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
-    - name: Determine registry to use
-      id: registry
-      run: |
-        # Prefer explicit secret ACR_LOGIN_SERVER when present, otherwise use env.REGISTRY
-        if [ -n "${{ secrets.ACR_LOGIN_SERVER }}" ]; then
-          echo "registry=${{ secrets.ACR_LOGIN_SERVER }}" >> $GITHUB_OUTPUT
-        else
-          echo "registry=${{ env.REGISTRY }}" >> $GITHUB_OUTPUT
-        fi
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Log in to Azure Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ steps.registry.outputs.registry }}
-        username: ${{ secrets.ACR_USERNAME }}
-        password: ${{ secrets.ACR_PASSWORD }}
+      # ---------- Build STATIC (nginx) image ----------
+      # IMPORTANT: set context/file to your actual static image Dockerfile.
+      # If your static image is built from the repo root with ./Dockerfile.nginx, set file accordingly.
+      - name: Build & push STATIC image (nginx)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.nginx # <--- CHANGE if your static Dockerfile has a different path/name
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_STATIC }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_STATIC }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_STATIC }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_STATIC }}:buildcache,mode=max
 
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ steps.registry.outputs.registry }}/${{ env.IMAGE_NAME }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=sha,prefix={{branch}}-
-          type=raw,value=latest,enable={{is_default_branch}}
-
-    - name: Ensure package-lock.json exists
-      run: |
-        if [ ! -f package-lock.json ]; then echo '{}' > package-lock.json; fi
-
-    - name: Build and push Docker image
-      id: build
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        build-args: |
-          VITE_APP_VERSION=1.0.0
-          VITE_APP_BUILD_TIME=${{ github.event.head_commit.timestamp }}
-          VITE_APP_COMMIT_SHA=${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        platforms: linux/amd64,linux/arm64
-
-    - name: Image digest
-      run: echo ${{ steps.build.outputs.digest }}
+      # ---------- Build API (Node/Express) image ----------
+      # This Dockerfile copies the built SPA from the STATIC image via:
+      #   ARG REGISTRY
+      #   FROM ${REGISTRY}/app-scripting-editor:latest AS web-build
+      #   COPY --from=web-build /usr/share/nginx/html ./editor-dist
+      #
+      # Therefore we MUST pass REGISTRY as a build-arg.
+      - name: Build & push API image (Node/Express + SPA)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile # <--- CHANGE if your API Dockerfile has a different path/name
+          push: true
+          build-args: |
+            REGISTRY=${{ env.REGISTRY }}
+            VITE_APP_VERSION=1.0.0
+            VITE_APP_BUILD_TIME=${{ github.event.head_commit.timestamp }}
+            VITE_APP_COMMIT_SHA=${{ github.sha }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_API }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_API }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_API }}:buildcache,mode=max
