@@ -1,10 +1,12 @@
 name: Deploy API Image to Azure App Service
 
 on:
+  # Run automatically after the build workflow completes on main
   workflow_run:
     workflows: ["Build and Push Docker Images"]
-    types: [ completed ]
-    branches: [ main ]
+    types: [completed]
+    branches: [main]
+  # Allow manual runs
   workflow_dispatch:
 
 env:
@@ -12,7 +14,8 @@ env:
   AZURE_RESOURCE_GROUP: tps-app-scripting-rg
   REGISTRY: tpsappscriptingacr.azurecr.io
   IMAGE_API: app-scripting-editor-api
-  # optional: use your Front Door host for health check; leave blank to use default *.azurewebsites.net
+  # If you want the health check to go via Front Door, keep this.
+  # Leave empty to use the default *.azurewebsites.net host instead.
   FRONTDOOR_HOST: app-scripting-editor.trackmangolfdev.com
 
 jobs:
@@ -26,43 +29,70 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Azure login (OIDC)
+      # ==== Azure Auth (Service Principal JSON) ====
+      # Create once via:
+      #   SUB_ID=$(az account show --query id -o tsv)
+      #   az ad sp create-for-rbac \
+      #     --name "gh-actions-tps-app-scripting" \
+      #     --role Contributor \
+      #     --scopes "/subscriptions/$SUB_ID/resourceGroups/tps-app-scripting-rg" \
+      #     --sdk-auth
+      # Put the full JSON in a repo secret named AZURE_CREDENTIALS.
+      - name: Azure login (SPN JSON)
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # Point the Web App at the API image and ensure it can pull from ACR
       - name: Set API image on App Service
         run: |
-          az webapp config container set             --name "${{ env.AZURE_WEBAPP_NAME }}"             --resource-group "${{ env.AZURE_RESOURCE_GROUP }}"             --docker-custom-image-name "${{ env.REGISTRY }}/${{ env.IMAGE_API }}:latest"             --docker-registry-server-url "https://${{ env.REGISTRY }}"             --docker-registry-server-user "${{ secrets.ACR_USERNAME }}"             --docker-registry-server-password "${{ secrets.ACR_PASSWORD }}"
+          az webapp config container set \
+            --name "${{ env.AZURE_WEBAPP_NAME }}" \
+            --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+            --docker-custom-image-name "${{ env.REGISTRY }}/${{ env.IMAGE_API }}:latest" \
+            --docker-registry-server-url "https://${{ env.REGISTRY }}" \
+            --docker-registry-server-user "${{ secrets.ACR_USERNAME }}" \
+            --docker-registry-server-password "${{ secrets.ACR_PASSWORD }}"
 
-      - name: Ensure WEBSITES_PORT=4000 (Express listens here)
+      # Make sure App Service routes to your Express port
+      - name: Ensure WEBSITES_PORT=4000
         run: |
-          az webapp config appsettings set             --name "${{ env.AZURE_WEBAPP_NAME }}"             --resource-group "${{ env.AZURE_RESOURCE_GROUP }}"             --settings WEBSITES_PORT=4000
+          az webapp config appsettings set \
+            --name "${{ env.AZURE_WEBAPP_NAME }}" \
+            --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+            --settings WEBSITES_PORT=4000
 
       - name: Restart App
         run: |
-          az webapp restart             --name "${{ env.AZURE_WEBAPP_NAME }}"             --resource-group "${{ env.AZURE_RESOURCE_GROUP }}"
+          az webapp restart \
+            --name "${{ env.AZURE_WEBAPP_NAME }}" \
+            --resource-group "${{ env.AZURE_RESOURCE_GROUP }}"
 
+      # Work out which host to health check (Front Door or default host)
       - name: Determine public host for health check
         id: host
+        shell: bash
         run: |
           if [ -n "${{ env.FRONTDOOR_HOST }}" ]; then
             echo "host=${{ env.FRONTDOOR_HOST }}" >> "$GITHUB_OUTPUT"
           else
-            host=$(az webapp show --name "${{ env.AZURE_WEBAPP_NAME }}" --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" --query defaultHostName -o tsv)
+            host=$(az webapp show \
+              --name "${{ env.AZURE_WEBAPP_NAME }}" \
+              --resource-group "${{ env.AZURE_RESOURCE_GROUP }}" \
+              --query defaultHostName -o tsv)
             echo "host=${host}" >> "$GITHUB_OUTPUT"
           fi
 
+      # Poll /api/health until it returns 200
       - name: Wait for /api/health = 200
+        shell: bash
         run: |
           set -e
           url="https://${{ steps.host.outputs.host }}/api/health"
           echo "Checking $url ..."
           for i in {1..20}; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "000")
-            echo "Attempt $i -> $code"
+            echo "Attempt $i -> HTTP $code"
             if [ "$code" = "200" ]; then
               echo "Healthy."
               exit 0
