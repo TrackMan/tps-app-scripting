@@ -9,7 +9,6 @@ on:
 
 env:
   REGISTRY: tpsappscriptingacr.azurecr.io
-  IMAGE_STATIC: app-scripting-editor
   IMAGE_API: app-scripting-editor-api
 
 jobs:
@@ -24,7 +23,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # --- Login to ACR (simple user/pass; or swap to azure/login + OIDC if you prefer) ---
       - name: Docker login to ACR
         uses: docker/login-action@v3
         with:
@@ -38,33 +36,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # ---------- Build STATIC (nginx) image ----------
-      # IMPORTANT: set context/file to your actual static image Dockerfile.
-      # If your static image is built from the repo root with ./Dockerfile.nginx, set file accordingly.
-      - name: Build & push STATIC image (nginx)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile.nginx # <--- CHANGE if your static Dockerfile has a different path/name
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_STATIC }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_STATIC }}:${{ github.sha }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_STATIC }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_STATIC }}:buildcache,mode=max
-
-      # ---------- Build API (Node/Express) image ----------
-      # This Dockerfile copies the built SPA from the STATIC image via:
-      #   ARG REGISTRY
-      #   FROM ${REGISTRY}/app-scripting-editor:latest AS web-build
-      #   COPY --from=web-build /usr/share/nginx/html ./editor-dist
-      #
-      # Therefore we MUST pass REGISTRY as a build-arg.
+      # ---- Build API (Node/Express) image ----
+      # NOTE: Your API Dockerfile copies the SPA from ${REGISTRY}/app-scripting-editor:latest.
+      # Make sure that image exists in ACR, or switch to the "self-contained" Dockerfile approach below.
       - name: Build & push API image (Node/Express + SPA)
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile # <--- CHANGE if your API Dockerfile has a different path/name
+          file: ./Dockerfile            # change if your API Dockerfile lives elsewhere
           push: true
           build-args: |
             REGISTRY=${{ env.REGISTRY }}
