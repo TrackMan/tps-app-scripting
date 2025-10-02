@@ -129,7 +129,7 @@ const Routes: React.FC<RoutesProps> = ({
   if (activeTab === 'webhook') {
     return (
       <div className="documentation-flex">
-        <WebhookView selectedBayDbId={selectedBayObj?.dbId ?? null} />
+        <WebhookView selectedDeviceId={selectedBayObj?.deviceId ?? null} />
       </div>
     );
   }

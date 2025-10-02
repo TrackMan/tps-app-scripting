@@ -56,6 +56,9 @@ export const BAYS_IN_LOCATION_QUERY = gql`
           id
           dbId
           name
+          ... on SimulatorBay {
+            deviceId
+          }
         }
       }
     }

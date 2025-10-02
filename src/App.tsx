@@ -26,6 +26,7 @@ interface Bay {
   id: string;
   dbId: number;
   name: string;
+  deviceId?: string;
 }
 
 interface Location {

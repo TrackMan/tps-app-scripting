@@ -6,10 +6,10 @@ import './WebhookView.css';
 import './WebhookView.css';
 
 interface WebhookViewProps {
-  selectedBayDbId?: number | null;
+  selectedDeviceId?: string | null;
 }
 
-export const WebhookView: React.FC<WebhookViewProps> = ({ selectedBayDbId = null }) => {
+export const WebhookView: React.FC<WebhookViewProps> = ({ selectedDeviceId = null }) => {
   // selectedBayId will be passed from App via prop injection in App.tsx
   const selectedBayIdProp = (window as any)?._selectedBayIdForWebhook || null;
   const [result] = useQuery({
@@ -115,7 +115,7 @@ export const WebhookView: React.FC<WebhookViewProps> = ({ selectedBayDbId = null
 
       <div className="webhook-inspector-wrap">
         {url && (
-          <WebhookInspector userPath={(localWebhook || webhookPath) as string} selectedBayDbId={selectedBayDbId} selectedBayId={selectedBayIdProp} clearSignal={clearSignal} />
+          <WebhookInspector userPath={(localWebhook || webhookPath) as string} selectedDeviceId={selectedDeviceId} selectedBayId={selectedBayIdProp} clearSignal={clearSignal} />
         )}
       </div>
     </div>

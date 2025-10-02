@@ -13,7 +13,7 @@ type EventItem = {
 
 interface Props {
   userPath: string;
-  selectedBayDbId?: number | null;
+  selectedDeviceId?: string | null;
   selectedBayId?: string | null;
   clearSignal?: number;
 }
@@ -67,25 +67,21 @@ const getColorForId = (id: string | undefined, colorMap: Map<string, string>): s
   return colorMap.get(id) || null;
 };
 
-const getBayIdFromEvent = (e: EventItem) => {
+const getDeviceIdFromEvent = (e: EventItem) => {
   try {
     const raw = e.raw as any;
     const data = e.data as any;
-    if (raw && raw.common && raw.common.Bay && (raw.common.Bay.Id || raw.common.Bay.id)) return raw.common.Bay.Id ?? raw.common.Bay.id;
-    if (raw && raw.common && raw.common.BayId) return raw.common.BayId;
-    if (raw && raw.data && raw.data.Bay && (raw.data.Bay.Id || raw.data.Bay.id)) return raw.data.Bay.Id ?? raw.data.Bay.id;
-    if (raw && raw.data && (raw.data.BayId || raw.data.bayId)) return raw.data.BayId ?? raw.data.bayId;
-    if (raw && raw.Bay && (raw.Bay.Id || raw.Bay.id)) return raw.Bay.Id ?? raw.Bay.id;
-    if (data && data.Bay && (data.Bay.Id || data.Bay.id)) return data.Bay.Id ?? data.Bay.id;
-    if (data && (data.BayId || data.bayId)) return data.BayId ?? data.bayId;
-    if (data && data.common && data.common.Bay && (data.common.Bay.Id || data.common.Bay.id)) return data.common.Bay.Id ?? data.common.Bay.id;
+    // Check for Device.Id in various locations
+    if (raw && raw.data && raw.data.Device && raw.data.Device.Id) return raw.data.Device.Id;
+    if (raw && raw.Device && raw.Device.Id) return raw.Device.Id;
+    if (data && data.Device && data.Device.Id) return data.Device.Id;
     return null;
   } catch (err) {
     return null;
   }
 };
 
-const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, selectedBayId = null, clearSignal }) => {
+const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, selectedBayId = null, clearSignal }) => {
   const [allEvents, setAllEvents] = React.useState<EventItem[]>([]);
   const [connected, setConnected] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
@@ -159,10 +155,12 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
             }
             return [newItem, ...prev];
           });
-          // If the new item matches the current bay filter (or there is no filter) select it and focus the list
+          // If the new item matches the current device/bay filter (or there is no filter) select it and focus the list
           try {
-            const bayId = getBayIdFromEvent(newItem);
-            const matches = (!selectedBayDbId && !selectedBayId) || (bayId && (String(bayId) === String(selectedBayId) || String(bayId) === String(selectedBayDbId)));
+            const deviceId = getDeviceIdFromEvent(newItem);
+            const matches = (!selectedDeviceId && !selectedBayId) || 
+                          (deviceId && String(deviceId) === String(selectedDeviceId)) ||
+                          (selectedBayId && String(deviceId) === String(selectedBayId));
               if (matches) {
                 setSelectedIndex(0);
                 // focus the list container so keyboard navigation continues from the newly added item
@@ -187,21 +185,21 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
   }, [userPath]);
 
   const filtered = React.useMemo(() => {
-    // If "Show All Events" is enabled, bypass Bay filtering
+    // If "Show All Events" is enabled, bypass Device/Bay filtering
     if (showAllEvents) return allEvents;
     
-    // If no Bay is selected, show all events
-    if (!selectedBayDbId && !selectedBayId) return allEvents;
+    // If no Device/Bay is selected, show all events
+    if (!selectedDeviceId && !selectedBayId) return allEvents;
     
-    // Filter by selected Bay
+    // Filter by selected Device ID (from bay's deviceId field)
     return allEvents.filter(e => {
-      const bayId = getBayIdFromEvent(e);
-      if (!bayId) return false;
-      if (selectedBayId && String(bayId) === String(selectedBayId)) return true;
-      if (selectedBayDbId && String(bayId) === String(selectedBayDbId)) return true;
+      const deviceId = getDeviceIdFromEvent(e);
+      if (!deviceId) return false;
+      if (selectedDeviceId && String(deviceId) === String(selectedDeviceId)) return true;
+      if (selectedBayId && String(deviceId) === String(selectedBayId)) return true;
       return false;
     });
-  }, [allEvents, selectedBayDbId, selectedBayId, showAllEvents]);
+  }, [allEvents, selectedDeviceId, selectedBayId, showAllEvents]);
 
   // ensure selected item is visible
   React.useEffect(() => {
@@ -281,7 +279,7 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
         <div className="webhook-events-header">
           <strong>Events</strong>
           <span className={`webhook-events-status ${connected ? 'live' : ''}`}>{connected ? 'live' : 'disconnected'}</span>
-          {(selectedBayDbId || selectedBayId) && (
+          {(selectedDeviceId || selectedBayId) && (
             <label style={{ marginLeft: 'auto', fontSize: '0.85em', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
               <input 
                 type="checkbox" 
