@@ -123,16 +123,23 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
     let reconnectTimer: number | null = null;
 
     const connect = () => {
+      console.log(`[SSE] Connecting to /api/webhook/${userPath}/stream`);
       es = new EventSource(`/api/webhook/${encodeURIComponent(userPath)}/stream`);
-      es.onopen = () => setConnected(true);
-      es.onerror = () => {
+      es.onopen = () => {
+        console.log('[SSE] Connection opened, status: live');
+        setConnected(true);
+      };
+      es.onerror = (err) => {
+        console.error('[SSE] Connection error:', err, 'readyState:', es?.readyState);
         setConnected(false);
         if (es) es.close();
         reconnectTimer = window.setTimeout(() => connect(), 3000);
       };
       es.onmessage = (ev) => {
+        console.log('[SSE] Message received:', ev.data.substring(0, 100) + '...');
         try {
           const data = JSON.parse(ev.data);
+          console.log('[SSE] Parsed event:', data.eventType, 'id:', data.id);
           const newItem: EventItem = { id: data.id, eventType: data.eventType, timestamp: data.timestamp, data: data.data, raw: data.raw, expanded: false };
           setAllEvents(prev => {
             try {
