@@ -1,8 +1,79 @@
 // Strongly-typed event interfaces and lightweight runtime type-guards
 
+// AppScripting.Status event
+export interface AppScriptingStatusEvent {
+  Id: string;
+  Event: string;
+}
+
+// TPS.SessionInfo event
+export interface Player {
+  Id: string;
+  Name: string;
+  IsGuest: boolean;
+  Picture?: string;
+}
+
+export enum ActivityType {
+  Course = 'Course',
+  TPS = 'TPS',
+  Other = 'Other'
+}
+
+export enum ActivitySubType {
+  VirtualGolf3 = 'VirtualGolf3',
+  ShotAnalysis = 'ShotAnalysis',
+  Other = 'Other'
+}
+
+export interface Activity {
+  Type: ActivityType | string;
+  SubType: ActivitySubType | string;
+  Identifier: string;
+  Properties?: {
+    Resolution?: {
+      Width: number;
+      Height: number;
+      Scale: number;
+    };
+    Course?: string;
+    CourseVersion?: string;
+    Client?: string;
+    Version?: string;
+    GraphicsQuality?: string;
+    [key: string]: any; // Allow additional properties
+  };
+  Id: string;
+  Timestamp: string;
+}
+
+export interface SessionInfoEvent {
+  Id: string;
+  Status: string;
+  Timestamp: string;
+  Players: Player[];
+  Activity?: Activity;
+  Language: string;
+  IsLocked: boolean;
+}
+
+// TPS.StartActivity / TPS.EndActivity event
+export interface ActivityEvent {
+  Name: string;
+  Description?: string;
+  ImageUrl?: string;
+  Kind: string;
+}
+
+// TPS.Live.OnStrokeConditionChanged event (empty model)
+export interface StrokeConditionChangedEvent {
+  // EventModel is empty for this event type
+}
+
+// Base event - most simulator events have these common fields
 export interface BaseEvent {
   GameId: string;
-  Hole: number;
+  ActiveHole: number;
 }
 
 export interface ChangePlayerEvent extends BaseEvent {
@@ -16,11 +87,9 @@ export interface GimmeReport {
   PlayerId: string;
   PlayerName: string;
 }
+
 export interface GivenGimmeEvent extends BaseEvent {
   Gimme: GimmeReport;
-  HoleId?: number;
-  PlayerId?: string;
-  PlayerName?: string;
 }
 
 export interface PickupReport {
@@ -28,6 +97,7 @@ export interface PickupReport {
   PlayerId: string;
   PlayerName: string;
 }
+
 export interface PlayerPickupEvent extends BaseEvent {
   PickUp: PickupReport;
 }
@@ -37,6 +107,7 @@ export interface MulliganReport {
   PlayerId: string;
   PlayerName: string;
 }
+
 export interface GivenMulliganEvent extends BaseEvent {
   Mulligan: MulliganReport;
 }
@@ -83,6 +154,10 @@ export interface ShotFinishEvent extends BaseEvent {
 }
 
 export type KnownEventPayload =
+  | AppScriptingStatusEvent
+  | SessionInfoEvent
+  | ActivityEvent
+  | StrokeConditionChangedEvent
   | ChangePlayerEvent
   | GivenGimmeEvent
   | PlayerPickupEvent
@@ -91,24 +166,152 @@ export type KnownEventPayload =
   | ShotFinishEvent;
 
 // Additional real-world event shapes
-export interface ChangeClubEvent {
-  ClubName?: string;
-  ActiveHole?: number;
-  GameId?: string;
+export interface ChangeClubEvent extends BaseEvent {
+  ClubName: string;
 }
 
-export interface HoleCompletedEvent {
-  RecordedHole?: any;
-  GameId?: string;
+export interface Shot {
+  Idx: number;
+  MeasurementId: string;
+  Club: string;
+  Launch?: {
+    Lie?: string;
+    Position?: any;
+    AimPoint?: any;
+    BallSpeed?: number;
+    LaunchAngle?: number;
+    LaunchDirection?: number;
+    SpinRate?: number;
+    SpinAxis?: number;
+    Time?: string;
+  };
+  Final?: {
+    Lie?: string;
+    Position?: any;
+    Result?: string;
+    ShotsToAdd?: number;
+    DropPosition?: any;
+    Time?: string;
+  };
+  VgData?: any;
+}
+
+export interface RecordedHole {
+  Id: string;
+  Kind: string;
+  ScorecardId: string;
+  Hole: {
+    Number: number;
+    StrokeIndex: number;
+    Par: number;
+    Distance: number;
+    Tee: string;
+  };
+  Players: Array<{
+    Id: string;
+    Name: string;
+    Hcp: number;
+    IsGhost: boolean;
+    Gender: string;
+  }>;
+  LongestDriveResults?: any[];
+  CoursePlayHoleResult?: any;
+  Shots: Shot[];
+  StartedAt: string;
+  FinishedAt: string;
+}
+
+export interface HoleCompletedEvent extends BaseEvent {
+  RecordedHole: RecordedHole;
+}
+
+export interface TeeInfo {
+  Name: string;
+  Slope: number;
+  Rating: number;
+  Par: number;
+  Distance: number;
+  Gender: string;
+  Holes: Array<{
+    HoleNumber: number;
+    StrokeIndex: number;
+    Par: number;
+    Distance: number;
+    Position: any;
+  }>;
 }
 
 export interface ScorecardEvent {
-  Scorecard?: any;
+  Scorecard: {
+    GameId: string;
+    Kind: string;
+    Tees: TeeInfo[];
+    Pins: any[];
+    GameSettings: any;
+    CourseSettings: any;
+    Players: any[];
+    Teams: any[];
+  };
+}
+
+export interface TrajectorySegment {
+  Kind: string;
+  XFit: number[];
+  YFit: number[];
+  ZFit: number[];
+  SpinRateFit?: number[];
+  TimeInterval: number[];
+}
+
+export interface Measurement {
+  Id: string;
+  Time: string;
+  Kind: string;
+  TeePosition?: number[];
+  PlayerDexterity?: string;
+  DynamicLie?: number;
+  ImpactOffset?: number;
+  ImpactHeight?: number;
+  AttackAngle?: number;
+  LaunchDirection?: number;
+  BallSpeed?: number;
+  ClubPath?: number;
+  ClubSpeed?: number;
+  DynamicLoft?: number;
+  FaceAngle?: number;
+  FaceToPath?: number;
+  LaunchAngle?: number;
+  SmashFactor?: number;
+  SpinAxis?: number;
+  SpinLoft?: number;
+  SpinRate?: number;
+  SwingDirection?: number;
+  SwingPlane?: number;
+  SwingRadius?: number;
+  DPlaneTilt?: number;
+  LowPointDistance?: number;
+  LowPointHeight?: number;
+  LowPointSide?: number;
+  MaxHeight?: number;
+  Carry?: number;
+  Total?: number;
+  CarrySide?: number;
+  TotalSide?: number;
+  LandingAngle?: number;
+  HangTime?: number;
+  LastData?: number;
+  Curve?: number;
+  BallTrajectory?: TrajectorySegment[];
+  ClubTrajectory?: TrajectorySegment[];
+  TargetPosition?: number[];
+  InvalidNoTarget?: string[];
+  Simulated?: boolean;
+  [key: string]: any; // Allow additional fields
 }
 
 export interface StrokeCompletedEvent {
-  Measurement?: any;
-  PlayerId?: string;
+  PlayerId: string;
+  Measurement: Measurement;
 }
 
 export type KnownEventPayloadExtended = KnownEventPayload | ChangeClubEvent | HoleCompletedEvent | ScorecardEvent | StrokeCompletedEvent;
@@ -215,11 +418,14 @@ export function isShotStarting(o: any): o is ShotStartingEvent {
 
 export function isShotFinish(o: any): o is ShotFinishEvent {
   const m = getEventModel(o);
+  // ShotFinish has additional fields like FinishingLie, Carry, Total, etc. that ShotStarting doesn't have
   return (
     isObject(m) &&
     hasString(m, 'GameId') &&
     (hasNumber(m, 'Hole') || hasNumber(m, 'ActiveHole')) &&
-    hasString(m, 'PlayerId')
+    hasString(m, 'PlayerId') &&
+    // Check for at least one ShotFinish-specific field
+    (hasString(m, 'FinishingLie') || hasNumber(m, 'Carry') || hasNumber(m, 'Total') || hasNumber(m, 'ClubSpeed'))
   );
 }
 
@@ -288,59 +494,58 @@ export function classifyEventPayload(ev: any): { name?: string; typed?: KnownEve
       const et = ev.eventType;
       switch (et) {
         case 'TPS.Simulator.ChangePlayer':
-          if (isChangePlayer(ev.data || ev)) return { name: et, typed: ev.data || ev };
+          if (isChangePlayer(ev)) return { name: et, typed: getEventModel(ev), common: extractCommon(ev) };
           break;
         case 'TPS.Simulator.GivenGimme':
-          if (isGivenGimme(ev.data || ev)) return { name: et, typed: ev.data || ev };
+          if (isGivenGimme(ev)) return { name: et, typed: getEventModel(ev), common: extractCommon(ev) };
           break;
         case 'TPS.Simulator.PlayerPickup':
-          if (isPlayerPickup(ev.data || ev)) return { name: et, typed: ev.data || ev };
+          if (isPlayerPickup(ev)) return { name: et, typed: getEventModel(ev), common: extractCommon(ev) };
           break;
         case 'TPS.Simulator.GivenMulligan':
-          if (isGivenMulligan(ev.data || ev)) return { name: et, typed: ev.data || ev };
+          if (isGivenMulligan(ev)) return { name: et, typed: getEventModel(ev), common: extractCommon(ev) };
           break;
         case 'TPS.Simulator.ShotStarting':
-          if (isShotStarting(ev.data || ev)) return { name: et, typed: ev.data || ev };
+          if (isShotStarting(ev)) return { name: et, typed: getEventModel(ev), common: extractCommon(ev) };
           break;
         case 'TPS.Simulator.ShotFinish':
-          if (isShotFinish(ev.data || ev)) return { name: et, typed: ev.data || ev, common: extractCommon(ev) };
+          if (isShotFinish(ev)) return { name: et, typed: getEventModel(ev), common: extractCommon(ev) };
           break;
         case 'TPS.Simulator.ChangeClub':
-          if (isObject(ev.data) && isObject(ev.data.EventModel) && hasString(ev.data.EventModel, 'ClubName')) return { name: et, typed: ev.data || ev, common: extractCommon(ev) };
+          if (isObject(ev.data) && isObject(ev.data.EventModel) && hasString(ev.data.EventModel, 'ClubName')) return { name: et, typed: ev.data.EventModel, common: extractCommon(ev) };
           break;
         case 'TPS.Simulator.HoleCompleted':
-          if (isObject(ev.data) && isObject(ev.data.EventModel) && isObject(ev.data.EventModel.RecordedHole)) return { name: et, typed: ev.data || ev, common: extractCommon(ev) };
+          if (isObject(ev.data) && isObject(ev.data.EventModel) && isObject(ev.data.EventModel.RecordedHole)) return { name: et, typed: ev.data.EventModel, common: extractCommon(ev) };
           break;
         case 'TPS.Simulator.Scorecard':
-          if (isObject(ev.data) && isObject(ev.data.EventModel) && isObject(ev.data.EventModel.Scorecard)) return { name: et, typed: ev.data || ev, common: extractCommon(ev) };
+          if (isObject(ev.data) && isObject(ev.data.EventModel) && isObject(ev.data.EventModel.Scorecard)) return { name: et, typed: ev.data.EventModel, common: extractCommon(ev) };
           break;
         case 'TPS.Live.OnStrokeCompletedEvent':
-          if (isObject(ev.data) && isObject(ev.data.EventModel) && isObject(ev.data.EventModel.Measurement)) return { name: et, typed: ev.data || ev, common: extractCommon(ev) };
-          break;
+          if (isObject(ev.data) && isObject(ev.data.EventModel) && isObject(ev.data.EventModel.Measurement)) return { name: et, typed: ev.data.EventModel, common: extractCommon(ev) };
           break;
         case 'AppScripting.Status':
-          if (isAppScriptingStatus(ev) || isAppScriptingStatus(ev.data)) return { name: 'AppScripting.Status', typed: ev.data || ev, common: extractCommon(ev) };
+          if (isAppScriptingStatus(ev) && isObject(ev.data) && isObject(ev.data.EventModel)) return { name: 'AppScripting.Status', typed: ev.data.EventModel, common: extractCommon(ev) };
           break;
         case 'TPS.SessionInfo':
-          if (isSessionInfo(ev) || isSessionInfo(ev.data)) return { name: 'TPS.SessionInfo', typed: ev.data || ev, common: extractCommon(ev) };
+          if (isSessionInfo(ev) && isObject(ev.data) && isObject(ev.data.EventModel)) return { name: 'TPS.SessionInfo', typed: ev.data.EventModel, common: extractCommon(ev) };
           break;
         case 'TPS.EndActivity':
         case 'TPS.StartActivity':
-          if (isActivityEvent(ev) || isActivityEvent(ev.data)) return { name: et, typed: ev.data || ev, common: extractCommon(ev) };
+          if (isActivityEvent(ev) && isObject(ev.data) && isObject(ev.data.EventModel)) return { name: et, typed: ev.data.EventModel, common: extractCommon(ev) };
           break;
         case 'TPS.Live.OnStrokeConditionChanged':
-          if (isStrokeConditionChanged(ev) || isStrokeConditionChanged(ev.data)) return { name: et, typed: ev.data || ev, common: extractCommon(ev) };
+          if (isStrokeConditionChanged(ev)) return { name: et, typed: {}, common: extractCommon(ev) };
           break;
       }
     }
 
     // Fallback: try to infer from body shape
-    if (isChangePlayer(ev)) return { name: 'TPS.Simulator.ChangePlayer', typed: ev, common: extractCommon(ev) };
-    if (isGivenGimme(ev)) return { name: 'TPS.Simulator.GivenGimme', typed: ev, common: extractCommon(ev) };
-    if (isPlayerPickup(ev)) return { name: 'TPS.Simulator.PlayerPickup', typed: ev, common: extractCommon(ev) };
-    if (isGivenMulligan(ev)) return { name: 'TPS.Simulator.GivenMulligan', typed: ev, common: extractCommon(ev) };
-    if (isShotStarting(ev)) return { name: 'TPS.Simulator.ShotStarting', typed: ev, common: extractCommon(ev) };
-    if (isShotFinish(ev)) return { name: 'TPS.Simulator.ShotFinish', typed: ev, common: extractCommon(ev) };
+    if (isChangePlayer(ev)) return { name: 'TPS.Simulator.ChangePlayer', typed: getEventModel(ev), common: extractCommon(ev) };
+    if (isGivenGimme(ev)) return { name: 'TPS.Simulator.GivenGimme', typed: getEventModel(ev), common: extractCommon(ev) };
+    if (isPlayerPickup(ev)) return { name: 'TPS.Simulator.PlayerPickup', typed: getEventModel(ev), common: extractCommon(ev) };
+    if (isGivenMulligan(ev)) return { name: 'TPS.Simulator.GivenMulligan', typed: getEventModel(ev), common: extractCommon(ev) };
+    if (isShotStarting(ev)) return { name: 'TPS.Simulator.ShotStarting', typed: getEventModel(ev), common: extractCommon(ev) };
+    if (isShotFinish(ev)) return { name: 'TPS.Simulator.ShotFinish', typed: getEventModel(ev), common: extractCommon(ev) };
   } catch (err) {
     // ignore
   }
@@ -348,11 +553,19 @@ export function classifyEventPayload(ev: any): { name?: string; typed?: KnownEve
 }
 
 export default {
+  // Type guards for event models
   isChangePlayer,
   isGivenGimme,
   isPlayerPickup,
   isGivenMulligan,
   isShotStarting,
   isShotFinish,
+  isAppScriptingStatus,
+  isSessionInfo,
+  isActivityEvent,
+  isStrokeConditionChanged,
+  // Helper functions
+  getEventModel,
+  extractCommon,
   classifyEventPayload,
 };

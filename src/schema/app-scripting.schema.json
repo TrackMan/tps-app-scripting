@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.trackman.com/app-scripting/1-0-0/app-scripting.schema.json",
+  "$id": "https://schemas.trackman.com/app-scripting/1.0.0/app-scripting.schema.json",
   "title": "TrackMan App Scripting",
   "description": "Schema for orchestrating multi-app training flows across Range Analysis and Performance Center.",
   "type": "object",

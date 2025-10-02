@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.trackman.com/app-scripting/1-0-0/shared.schema.json",
+  "$id": "https://schemas.trackman.com/app-scripting/1.0.0/shared.schema.json",
   "title": "Shared App Scripting definitions",
   "$defs": {
     "IdString": { "type": "string", "pattern": "^[a-zA-Z0-9_-]+$" },

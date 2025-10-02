@@ -5,8 +5,10 @@
   "scripts": {
     "validate": "node tools/validate.js",
     "format": "node tools/format.js",
-  "editor": "npm run dev",
+    "editor": "npm run dev",
     "dev": "vite",
+    "dev:server": "cd server && npm run dev",
+    "start-dev": "concurrently \"npm run dev\" \"npm run dev:server\" --names \"frontend,backend\" --prefix-colors \"cyan,yellow\"",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",

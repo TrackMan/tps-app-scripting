@@ -1,0 +1,66 @@
+[
+    {
+        "id": "5a83dcc0-d284-4910-9a8e-520e67060152",
+        "subject": "/facility/f5456fe9-5829-45ec-9721-2f6bf130e9c5/location/f5456fe9-5829-45ec-9721-2f6bf130e9c5/bay/e9acfb8b-6ddd-45ac-9d5b-f23e51b1fe2d",
+        "data": {
+            "EventModel": {
+                "Id": "79fa6c45-f5d6-46fe-ae14-a079c3257157",
+                "Status": "Active",
+                "Timestamp": "2025-10-01T14:40:44.8535520+00:00",
+                "Players": [],
+                "Activity": {
+                    "Type": "TPS",
+                    "SubType": "ShotAnalysis",
+                    "Identifier": "ShotAnalysis_tps10",
+                    "Id": "a3cba333-7745-4afe-8df3-0c99104fa591",
+                    "Timestamp": "2025-10-01T14:40:49.0380014+00:00"
+                },
+                "Language": "en-US",
+                "IsLocked": false
+            },
+            "Facility": {
+                "Id": "f5456fe9-5829-45ec-9721-2f6bf130e9c5",
+                "Name": "DSG Global Dev"
+            },
+            "Location": {
+                "Id": "f5456fe9-5829-45ec-9721-2f6bf130e9c5",
+                "Name": "DSG Global"
+            },
+            "Bay": {
+                "Id": "e9acfb8b-6ddd-45ac-9d5b-f23e51b1fe2d",
+                "Name": "JFE Office"
+            },
+            "Client": {
+                "Name": "TrackMan Performance Studio",
+                "Properties": {
+                    "Version": "10.2.119"
+                }
+            },
+            "Device": {
+                "Id": "1d1d211b-981e-4ff4-907c-fc22f776358c"
+            },
+            "Radar": {
+                "Properties": {
+                    "Model": "TMA4A",
+                    "Serial": "17404099",
+                    "Firmware": "2.10.0"
+                }
+            },
+            "User": {
+                "Id": "dab917d3-9588-476d-aeb0-0b65e775d0bc",
+                "Name": "Michael Bertelsen"
+            },
+            "CustomerSession": {
+                "Id": "79fa6c45-f5d6-46fe-ae14-a079c3257157"
+            },
+            "ActivitySession": {
+                "Id": "a3cba333-7745-4afe-8df3-0c99104fa591"
+            }
+        },
+        "eventType": "TPS.SessionInfo",
+        "dataVersion": "1.0",
+        "metadataVersion": "1",
+        "eventTime": "2025-10-01T14:40:49.038174Z",
+        "topic": "/subscriptions/09c4d679-8b43-4520-ad0a-c598267ed94c/resourceGroups/dr2-dev/providers/Microsoft.EventGrid/domains/dr-eventgrid-dev/topics/facility-f5456fe9-5829-45ec-9721-2f6bf130e9c5"
+    }
+]

@@ -40,7 +40,7 @@ const schemaFiles = await glob("schema/latest/**/*.json", { cwd: root, nodir: tr
 const mainSchemaRaw = loadSchema(latestSchemaPath);
 const mainSchemaBase = (mainSchemaRaw && mainSchemaRaw.$id)
   ? mainSchemaRaw.$id.replace(/\/[^\/]*$/, "")
-  : "https://schemas.trackman.com/app-scripting/1-0-0";
+  : "https://schemas.trackman.com/app-scripting/1.0.0";
 for (const rel of schemaFiles) {
   const p = path.join(root, rel);
   try {
@@ -75,7 +75,7 @@ for (const rel of schemaFiles) {
           }
            // Special case: register a copy with the exact .json $id Ajv expects for anchors
            if (path.basename(p) === "activity-performance-center.schema.json") {
-             const expectedId = "https://schemas.trackman.com/app-scripting/1-0-0/activity-performance-center.schema.json";
+             const expectedId = "https://schemas.trackman.com/app-scripting/1.0.0/activity-performance-center.schema.json";
              if (!ajv.getSchema(expectedId)) {
                const sCopy2 = JSON.parse(JSON.stringify(s));
                sCopy2.$id = expectedId;

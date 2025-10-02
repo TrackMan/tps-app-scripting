@@ -1,6 +1,6 @@
 # Schema Reference
 
-* **Canonical ID:** `https://schemas.trackman.com/app-scripting/1-0-0.json`
+* **Canonical ID:** `https://schemas.trackman.com/app-scripting/1.0.0.json`
 * **Local path (versioned):** `schema/1.0.0/app-scripting.schema.json`
 * **Stable entrypoint:** `schema/latest/app-scripting.schema.json` (pointer or copy)
 
