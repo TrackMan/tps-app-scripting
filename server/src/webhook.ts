@@ -32,6 +32,10 @@ function sendSseToPath(userPath: string, payload: any) {
   for (const res of clients) {
     try {
       res.write(`data: ${data}\n\n`);
+      // Explicitly flush to ensure immediate delivery (important for proxied connections)
+      if (typeof (res as any).flush === 'function') {
+        (res as any).flush();
+      }
     } catch (err) {
       console.warn('Failed to write SSE to client', (err as Error).message);
     }
@@ -377,6 +381,7 @@ export function registerWebhookRoutes(app: express.Application) {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       Connection: 'keep-alive',
+      'X-Accel-Buffering': 'no', // Disable buffering for Azure/nginx proxies
     });
 
     res.write(': connected\n\n');
@@ -393,7 +398,17 @@ export function registerWebhookRoutes(app: express.Application) {
       // ignore logging errors
     }
 
+    // Send keepalive comments every 30 seconds to prevent proxy timeouts
+    const keepaliveInterval = setInterval(() => {
+      try {
+        res.write(': keepalive\n\n');
+      } catch (err) {
+        clearInterval(keepaliveInterval);
+      }
+    }, 30000);
+
     req.on('close', () => {
+      clearInterval(keepaliveInterval);
       const clients = sseClients.get(userPath);
       if (clients) {
         clients.delete(res);
