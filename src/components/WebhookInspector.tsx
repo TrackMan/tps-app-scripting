@@ -40,6 +40,7 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
   const [allEvents, setAllEvents] = React.useState<EventItem[]>([]);
   const [connected, setConnected] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
+  const [showAllEvents, setShowAllEvents] = React.useState(false);
   const listRef = React.useRef<HTMLUListElement | null>(null);
   const listContainerRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -126,7 +127,13 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
   }, [userPath]);
 
   const filtered = React.useMemo(() => {
+    // If "Show All Events" is enabled, bypass Bay filtering
+    if (showAllEvents) return allEvents;
+    
+    // If no Bay is selected, show all events
     if (!selectedBayDbId && !selectedBayId) return allEvents;
+    
+    // Filter by selected Bay
     return allEvents.filter(e => {
       const bayId = getBayIdFromEvent(e);
       if (!bayId) return false;
@@ -134,7 +141,7 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
       if (selectedBayDbId && String(bayId) === String(selectedBayDbId)) return true;
       return false;
     });
-  }, [allEvents, selectedBayDbId, selectedBayId]);
+  }, [allEvents, selectedBayDbId, selectedBayId, showAllEvents]);
 
   // ensure selected item is visible
   React.useEffect(() => {
@@ -210,10 +217,20 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
 
   return (
     <div className="webhook-inspector">
-  <div ref={listContainerRef} className="webhook-inspector-list" tabIndex={0} onKeyDown={onListKeyDown}>
+      <div ref={listContainerRef} className="webhook-inspector-list" tabIndex={0} onKeyDown={onListKeyDown}>
         <div className="webhook-events-header">
           <strong>Events</strong>
           <span className={`webhook-events-status ${connected ? 'live' : ''}`}>{connected ? 'live' : 'disconnected'}</span>
+          {(selectedBayDbId || selectedBayId) && (
+            <label style={{ marginLeft: 'auto', fontSize: '0.85em', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+              <input 
+                type="checkbox" 
+                checked={showAllEvents} 
+                onChange={(e) => setShowAllEvents(e.target.checked)}
+              />
+              Show All Events
+            </label>
+          )}
         </div>
         <ul className="webhook-events-ul" ref={listRef}>
           {filtered.length === 0 ? (

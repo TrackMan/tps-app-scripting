@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import eventsLib, { classifyEventPayload, KnownEventPayload } from './events';
+import { webhookEventStorage } from './storage';
 
 // In-memory event store per webhook path (newest items at start). This is ephemeral and
 // will be lost if the server restarts. We keep a modest cap per path.
@@ -97,24 +98,38 @@ export function registerWebhookRoutes(app: express.Application) {
       );
     });
 
+    // Handle validation but don't return early if there are other events to process
+    let validationCode: string | undefined = undefined;
     if (validationEvent) {
       const code = extractValidationCode(validationEvent) || (validationEvent.data && validationEvent.data.validationCode) || undefined;
       console.log(`EventGrid subscription validation (event) for ${userPath}:`, validationEvent?.data || validationEvent, '=> code=', code);
-      if (code) return res.status(200).json({ validationResponse: code });
+      validationCode = code;
     }
 
     const aegHeader = (req.header('aeg-event-type') || '').toString();
-    if (aegHeader && aegHeader.toLowerCase().includes('subscriptionvalidation') && events.length > 0) {
+    if (!validationCode && aegHeader && aegHeader.toLowerCase().includes('subscriptionvalidation') && events.length > 0) {
       const maybe = events[0] as any;
       const code = extractValidationCode(maybe);
       console.log(`EventGrid header-based validation for ${userPath}: aeg=${aegHeader} =>`, maybe, '=> code=', code);
-      if (code) return res.status(200).json({ validationResponse: code });
+      validationCode = code;
     }
 
-    // Normal events: log and ack
+    // Filter out validation events from processing
+    const normalEvents = events.filter((e: any) => {
+      const et = (e?.eventType || e?.EventType || '').toString();
+      return !et.toLowerCase().includes('subscriptionvalidation');
+    });
+
+    // If we only received validation events, return the validation response
+    if (validationCode && normalEvents.length === 0) {
+      return res.status(200).json({ validationResponse: validationCode });
+    }
+
+    // Continue processing normal events (use normalEvents instead of events)
+    const eventsToProcess = normalEvents.length > 0 ? normalEvents : events;    // Normal events: log and ack
     try {
-      console.log(`Received ${events.length} event(s) for webhook ${userPath}`);
-      console.log(JSON.stringify(events.map((e: any) => ({ id: e.id, eventType: e.eventType })), null, 2));
+      console.log(`Received ${eventsToProcess.length} event(s) for webhook ${userPath}`);
+      console.log(JSON.stringify(eventsToProcess.map((e: any) => ({ id: e.id, eventType: e.eventType })), null, 2));
     } catch (err) {
       console.warn('Failed to log events', (err as Error).message);
     }
@@ -177,11 +192,18 @@ export function registerWebhookRoutes(app: express.Application) {
         };
       };
 
-      const minimalRecords: EventRecord[] = events.map((e: any) => minimalNormalize(e));
+      const minimalRecords: EventRecord[] = eventsToProcess.map((e: any) => minimalNormalize(e));
       const existing = eventStore.get(userPath) || [];
       const combined = [...minimalRecords.reverse(), ...existing];
       const trimmed = combined.slice(0, EVENT_STORE_CAP);
       eventStore.set(userPath, trimmed);
+
+      // Persist to Azure Table Storage (async, don't block webhook response)
+      for (const record of minimalRecords) {
+        webhookEventStorage.storeEvent(userPath, record).catch(err => {
+          console.warn('Background storage error:', err?.message || err);
+        });
+      }
     } catch (err) {
       console.warn('Failed to store events in memory', (err as Error).message);
     }
@@ -189,7 +211,7 @@ export function registerWebhookRoutes(app: express.Application) {
     // Notify any SSE clients connected to this webhook path: send minimal record immediately,
     // then run classification asynchronously and send an enriched update when ready.
     try {
-      for (const e of events) {
+      for (const e of eventsToProcess) {
         const tStart = Date.now();
         try {
           console.log(`[webhook] receive start path=${userPath} eventId=${e?.id || 'n/a'} ts=${new Date(tStart).toISOString()}`);
@@ -261,24 +283,90 @@ export function registerWebhookRoutes(app: express.Application) {
       console.warn('Failed to broadcast SSE', (err as Error).message);
     }
 
-    return res.status(200).json({ received: events.length });
+    // Return response with validation code if present, otherwise just received count
+    if (validationCode) {
+      return res.status(200).json({ validationResponse: validationCode, received: eventsToProcess.length });
+    }
+    return res.status(200).json({ received: eventsToProcess.length });
   });
 
   // Return events for a specific webhook path (newest first).
-  app.get('/api/webhook/:userPath/events', (req: Request, res: Response) => {
+  // Combines in-memory cache with Table Storage for complete history.
+  app.get('/api/webhook/:userPath/events', async (req: Request, res: Response) => {
     const userPath = req.params.userPath;
-    const list = eventStore.get(userPath) || [];
-    return res.json({ count: list.length, events: list });
+    const limit = parseInt(req.query.limit as string) || 200;
+    const includeStorage = req.query.storage !== 'false'; // Allow disabling via ?storage=false
+
+    // Start with in-memory events (fast)
+    const inMemoryEvents = eventStore.get(userPath) || [];
+    
+    // If we have enough in memory or storage is disabled, return immediately
+    if (inMemoryEvents.length >= limit || !includeStorage) {
+      return res.json({ 
+        count: inMemoryEvents.length, 
+        events: inMemoryEvents.slice(0, limit),
+        source: 'memory',
+        storageEnabled: webhookEventStorage.isEnabled(),
+      });
+    }
+
+    // Query Table Storage for more history
+    try {
+      const { events: storageEvents } = await webhookEventStorage.getEvents(userPath, { limit });
+      
+      // Merge and deduplicate by event ID
+      const eventMap = new Map<string, EventRecord>();
+      
+      // Add storage events first (older)
+      for (const evt of storageEvents) {
+        const key = evt.id || `${evt.timestamp}_${evt.eventType}`;
+        eventMap.set(key, evt);
+      }
+      
+      // Add in-memory events (newer, may override)
+      for (const evt of inMemoryEvents) {
+        const key = evt.id || `${evt.timestamp}_${evt.eventType}`;
+        eventMap.set(key, evt);
+      }
+      
+      const mergedEvents = Array.from(eventMap.values())
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, limit);
+
+      return res.json({ 
+        count: mergedEvents.length, 
+        events: mergedEvents,
+        source: 'memory+storage',
+        storageEnabled: webhookEventStorage.isEnabled(),
+      });
+    } catch (err) {
+      console.error('Error querying storage:', err);
+      // Fallback to in-memory only
+      return res.json({ 
+        count: inMemoryEvents.length, 
+        events: inMemoryEvents.slice(0, limit),
+        source: 'memory (storage error)',
+        storageEnabled: webhookEventStorage.isEnabled(),
+      });
+    }
   });
 
   // Delete (clear) events for a specific webhook path
-  app.delete('/api/webhook/:userPath/events', (req: Request, res: Response) => {
+  app.delete('/api/webhook/:userPath/events', async (req: Request, res: Response) => {
     const userPath = req.params.userPath;
     const list = eventStore.get(userPath) || [];
-    const count = list.length;
+    const memoryCount = list.length;
     eventStore.set(userPath, []);
-    console.log(`Cleared ${count} events for webhook ${userPath}`);
-    return res.json({ cleared: count });
+    
+    // Also clear from Table Storage
+    const storageCount = await webhookEventStorage.deleteEvents(userPath);
+    
+    console.log(`Cleared ${memoryCount} in-memory events and ${storageCount} storage events for webhook ${userPath}`);
+    return res.json({ 
+      cleared: memoryCount + storageCount,
+      memory: memoryCount,
+      storage: storageCount,
+    });
   });
 
   // Server-Sent Events stream for a webhook path.
