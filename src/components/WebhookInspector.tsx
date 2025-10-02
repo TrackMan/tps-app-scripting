@@ -18,6 +18,55 @@ interface Props {
   clearSignal?: number;
 }
 
+// Color palette for session/activity indicators
+const SESSION_COLORS = [
+  '#3b82f6', // blue
+  '#10b981', // green
+  '#f59e0b', // amber
+  '#ef4444', // red
+  '#8b5cf6', // violet
+  '#ec4899', // pink
+  '#06b6d4', // cyan
+  '#f97316', // orange
+  '#84cc16', // lime
+  '#6366f1', // indigo
+];
+
+const getSessionIds = (e: EventItem): { customerSessionId?: string; activitySessionId?: string } => {
+  try {
+    const raw = e.raw as any;
+    const data = raw?.data || raw;
+    
+    // Extract CustomerSession.Id
+    const customerSessionId = 
+      data?.CustomerSession?.Id || 
+      data?.common?.CustomerSession?.Id ||
+      raw?.common?.CustomerSession?.Id;
+    
+    // Extract ActivitySession.Id
+    const activitySessionId = 
+      data?.ActivitySession?.Id || 
+      data?.common?.ActivitySession?.Id ||
+      raw?.common?.ActivitySession?.Id;
+    
+    return { customerSessionId, activitySessionId };
+  } catch (err) {
+    return {};
+  }
+};
+
+const getColorForId = (id: string | undefined, colorMap: Map<string, string>): string | null => {
+  if (!id) return null;
+  
+  if (!colorMap.has(id)) {
+    // Assign a color based on the current size of the map
+    const colorIndex = colorMap.size % SESSION_COLORS.length;
+    colorMap.set(id, SESSION_COLORS[colorIndex]);
+  }
+  
+  return colorMap.get(id) || null;
+};
+
 const getBayIdFromEvent = (e: EventItem) => {
   try {
     const raw = e.raw as any;
@@ -43,6 +92,10 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
   const [showAllEvents, setShowAllEvents] = React.useState(false);
   const listRef = React.useRef<HTMLUListElement | null>(null);
   const listContainerRef = React.useRef<HTMLDivElement | null>(null);
+  
+  // Color maps for session IDs
+  const customerSessionColors = React.useRef(new Map<string, string>()).current;
+  const activitySessionColors = React.useRef(new Map<string, string>()).current;
 
   // Fetch initial events
   React.useEffect(() => {
@@ -236,13 +289,36 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedBayDbId = null, s
           {filtered.length === 0 ? (
             <li className="no-events">No events yet.</li>
           ) : (
-            filtered.map((e, idx) => (
-              <li key={e.id || idx} className={`webhook-event-item ${selectedIndex === idx ? 'selected' : ''}`} onClick={() => select(idx)}>
-                <div className="event-type">{e.eventType}</div>
-                <div className="event-meta">{new Date(e.timestamp).toLocaleString()}</div>
-                <div className="event-bay">{getBayIdFromEvent(e) ? `Bay: ${getBayIdFromEvent(e)}` : ''}</div>
-              </li>
-            ))
+            filtered.map((e, idx) => {
+              const { customerSessionId, activitySessionId } = getSessionIds(e);
+              const customerColor = getColorForId(customerSessionId, customerSessionColors);
+              const activityColor = getColorForId(activitySessionId, activitySessionColors);
+              
+              return (
+                <li key={e.id || idx} className={`webhook-event-item ${selectedIndex === idx ? 'selected' : ''}`} onClick={() => select(idx)}>
+                  <div className="event-type">{e.eventType}</div>
+                  <div className="event-meta">{new Date(e.timestamp).toLocaleString()}</div>
+                  <div className="event-session-indicators">
+                    {customerColor && (
+                      <div 
+                        className="session-dot"
+                        // eslint-disable-next-line react/forbid-dom-props
+                        style={{ backgroundColor: customerColor }}
+                        title={`Customer Session: ${customerSessionId}`}
+                      />
+                    )}
+                    {activityColor && (
+                      <div 
+                        className="session-dot"
+                        // eslint-disable-next-line react/forbid-dom-props
+                        style={{ backgroundColor: activityColor }}
+                        title={`Activity Session: ${activitySessionId}`}
+                      />
+                    )}
+                  </div>
+                </li>
+              );
+            })
           )}
         </ul>
       </div>
