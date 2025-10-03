@@ -29,6 +29,15 @@ export interface RoutesProps {
   onSelectActivity?: SidebarProps['onSelectActivity'];
   onSelectStep?: SidebarProps['onSelectStep'];
   dispatch: any;
+  // Dialog props
+  showActivityDialog: boolean;
+  showStepDialog: boolean;
+  onShowActivityDialog: () => void;
+  onShowStepDialog: () => void;
+  onCloseActivityDialog: () => void;
+  onCloseStepDialog: () => void;
+  onAddActivity: (activity: any) => void;
+  onAddStep: (step: any, parentActivityId: string) => void;
 }
 
 const Routes: React.FC<RoutesProps> = ({
@@ -47,7 +56,15 @@ const Routes: React.FC<RoutesProps> = ({
   onDownloadScript,
   onLocationSelect,
   onBaySelect,
-  dispatch
+  dispatch,
+  showActivityDialog,
+  showStepDialog,
+  onShowActivityDialog,
+  onShowStepDialog,
+  onCloseActivityDialog,
+  onCloseStepDialog,
+  onAddActivity,
+  onAddStep,
 }) => {
   const effectiveSelectedNode = (() => {
     if (selectedNode !== undefined) return selectedNode;
@@ -58,14 +75,13 @@ const Routes: React.FC<RoutesProps> = ({
     return (
       <div className="tree-flex">
         <DialogManager
-          // preserved minimal API here; detailed dialog state is still in App.tsx
-          showActivityDialog={false}
-          showStepDialog={false}
-          onCloseActivityDialog={() => {}}
-          onCloseStepDialog={() => {}}
-          onAddActivity={() => {}}
-          onAddStep={() => {}}
-          parentActivityForAdd={undefined}
+          showActivityDialog={showActivityDialog}
+          showStepDialog={showStepDialog}
+          onCloseActivityDialog={onCloseActivityDialog}
+          onCloseStepDialog={onCloseStepDialog}
+          onAddActivity={onAddActivity}
+          onAddStep={onAddStep}
+          parentActivityForAdd={parentActivityForAdd}
         />
         <Sidebar
           script={script}
@@ -84,8 +100,8 @@ const Routes: React.FC<RoutesProps> = ({
           onLocationSelect={onLocationSelect}
           onBaySelect={onBaySelect}
           onCloneSelected={() => dispatch({ type: 'CLONE_SELECTED' })}
-          onShowActivityDialog={() => {}}
-          onShowStepDialog={() => {}}
+          onShowActivityDialog={onShowActivityDialog}
+          onShowStepDialog={onShowStepDialog}
           onSelectScript={() => dispatch({ type: 'SELECT_SCRIPT' })}
           onSelectActivity={(activityId: string) => dispatch({ type: 'SELECT_ACTIVITY', activityId })}
           onSelectStep={(activityId: string, stepId: string) => dispatch({ type: 'SELECT_STEP', activityId, stepId })}

@@ -35,6 +35,15 @@ export interface AppShellProps {
   onLocationSelect: (l: any) => void;
   onBaySelect: (b: any) => void;
   dispatch: any;
+  // Dialog state and handlers
+  showActivityDialog: boolean;
+  showStepDialog: boolean;
+  onShowActivityDialog: () => void;
+  onShowStepDialog: () => void;
+  onCloseActivityDialog: () => void;
+  onCloseStepDialog: () => void;
+  onAddActivity: (activity: Activity) => void;
+  onAddStep: (step: Step, parentActivityId: string) => void;
 }
 
 export const AppShell: React.FC<AppShellProps> = (props) => {
@@ -56,7 +65,15 @@ export const AppShell: React.FC<AppShellProps> = (props) => {
     onDownloadScript,
     onLocationSelect,
     onBaySelect,
-    dispatch
+    dispatch,
+    showActivityDialog,
+    showStepDialog,
+    onShowActivityDialog,
+    onShowStepDialog,
+    onCloseActivityDialog,
+    onCloseStepDialog,
+    onAddActivity,
+    onAddStep,
   } = props;
 
   // Prefer a hydrated selected node object from the top-level App when available
@@ -80,7 +97,7 @@ export const AppShell: React.FC<AppShellProps> = (props) => {
       <Routes
         activeTab={activeTab}
         state={state}
-  selectedNode={effectiveSelectedNode ?? null}
+        selectedNode={effectiveSelectedNode ?? null}
         script={script}
         isValid={isValid}
         validationErrors={validationErrors}
@@ -94,6 +111,14 @@ export const AppShell: React.FC<AppShellProps> = (props) => {
         onLocationSelect={onLocationSelect}
         onBaySelect={onBaySelect}
         dispatch={dispatch}
+        showActivityDialog={showActivityDialog}
+        showStepDialog={showStepDialog}
+        onShowActivityDialog={onShowActivityDialog}
+        onShowStepDialog={onShowStepDialog}
+        onCloseActivityDialog={onCloseActivityDialog}
+        onCloseStepDialog={onCloseStepDialog}
+        onAddActivity={onAddActivity}
+        onAddStep={onAddStep}
       />
     </div>
   );

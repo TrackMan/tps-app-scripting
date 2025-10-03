@@ -574,7 +574,7 @@ export default function App() {
         selectedNode={selectedNode}
         script={script}
         isValid={isValid}
-  validationErrors={validationErrors}
+        validationErrors={validationErrors}
         selections={selections}
         selectedLocation={selectedLocation}
         selectedBayObj={selectedBayObj}
@@ -584,6 +584,14 @@ export default function App() {
         onLocationSelect={handleLocationSelect}
         onBaySelect={handleBaySelect}
         dispatch={dispatch}
+        showActivityDialog={showActivityDialog}
+        showStepDialog={showStepDialog}
+        onShowActivityDialog={() => setShowActivityDialog(true)}
+        onShowStepDialog={() => setShowStepDialog(true)}
+        onCloseActivityDialog={() => setShowActivityDialog(false)}
+        onCloseStepDialog={() => setShowStepDialog(false)}
+        onAddActivity={handleAddActivity}
+        onAddStep={handleAddStep}
       />
     </AppProviders>
   );
