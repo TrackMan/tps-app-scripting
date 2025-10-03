@@ -100,3 +100,38 @@ export const GET_USER_PROFILE = gql`
     __typename
   }
 `;
+
+// =============================================================================
+// COURSE QUERIES
+// =============================================================================
+
+// Find course ID by course identifier
+export const FIND_COURSE_ID = gql`
+  query FindCourseId($courseIdentifiers: String!) {
+    courses(courseIdentifiers: [$courseIdentifiers]) {
+      items {
+        id
+      }
+    }
+  }
+`;
+
+// Get detailed course information including holes and images
+export const GET_COURSE_INFORMATION = gql`
+  query GetCourseInformation($courseId: ID!) {
+    node(id: $courseId) {
+      ... on Course {
+        displayName
+        difficulty
+        description 
+        holes {
+          holeNumber
+          images {
+            url
+            metaDataUrl
+          }
+        }
+      }
+    }
+  }
+`;

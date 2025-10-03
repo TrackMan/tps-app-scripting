@@ -30,6 +30,12 @@ interface Measurement {
   LowPointDistance?: number;
   LowPointHeight?: number;
   LowPointSide?: number;
+  // On-Course Actual values (from ShotFinish event)
+  CarryActual?: number;
+  TotalActual?: number;
+  CurveActual?: number;
+  SideActual?: number;
+  SideTotalActual?: number;
   [key: string]: any;
 }
 
@@ -125,6 +131,13 @@ const MEASUREMENT_TILES: MeasurementTile[] = [
   { title: 'Carry Side', key: 'CarrySide', unitType: 'distance', precision: 1, category: 'Distance' },
   { title: 'Total Side', key: 'TotalSide', unitType: 'distance', precision: 1, category: 'Distance' },
   { title: 'Curve', key: 'Curve', unitType: 'distance', precision: 1, category: 'Distance' },
+  
+  // On Course Distances (Actual values from ShotFinish)
+  { title: 'Carry Actual', key: 'CarryActual', unitType: 'distance', precision: 1, category: 'On Course Distances' },
+  { title: 'Total Actual', key: 'TotalActual', unitType: 'distance', precision: 1, category: 'On Course Distances' },
+  { title: 'Curve Actual', key: 'CurveActual', unitType: 'distance', precision: 1, category: 'On Course Distances' },
+  { title: 'Side Actual', key: 'SideActual', unitType: 'distance', precision: 1, category: 'On Course Distances' },
+  { title: 'Total Side Actual', key: 'SideTotalActual', unitType: 'distance', precision: 1, category: 'On Course Distances' },
   
   // Trajectory
   { title: 'Max Height', key: 'MaxHeight', unitType: 'distance', precision: 1, category: 'Trajectory' },

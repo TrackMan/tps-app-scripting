@@ -1,0 +1,109 @@
+/* Course Info Banner Styles */
+.course-info-banner {
+  background: linear-gradient(135deg, #ff7a00 0%, #ff8d26 100%);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(255, 122, 0, 0.2);
+}
+
+.course-info-banner.loading {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  color: #6b7280;
+}
+
+.course-info-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.course-info-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.course-info-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.course-info-name {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.course-info-difficulty {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.difficulty-value {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.course-info-description {
+  font-size: 13px;
+  opacity: 0.85;
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+.course-info-holes {
+  font-size: 12px;
+  opacity: 0.8;
+  font-weight: 600;
+}
+
+.course-info-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.progress-hole {
+  color: white;
+}
+
+.progress-shot {
+  color: white;
+}
+
+.progress-player {
+  color: white;
+  opacity: 0.9;
+  font-weight: 600;
+}
+
+.progress-separator {
+  color: white;
+  opacity: 0.5;
+  font-weight: 400;
+}
+
+.course-info-loading {
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-block;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

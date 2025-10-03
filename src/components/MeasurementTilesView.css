@@ -21,7 +21,7 @@
   padding: 12px;
   background: white;
   border-radius: 6px;
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid #ff7a00;
   font-size: 14px;
   flex: 1;
   min-width: 200px;
@@ -57,12 +57,12 @@
 }
 
 .unit-toggle-btn.active {
-  background: #3b82f6;
+  background: #ff7a00;
   color: white;
 }
 
 .unit-toggle-btn.active:hover {
-  background: #2563eb;
+  background: #ff8d26;
 }
 
 .measurement-tiles-empty {

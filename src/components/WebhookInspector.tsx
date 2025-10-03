@@ -2,6 +2,8 @@ import React from 'react';
 import './WebhookEventsPanel.css';
 import './WebhookInspector.css';
 import MeasurementTilesView from './MeasurementTilesView';
+import CourseInfoBanner from './CourseInfoBanner';
+import { useActivitySessionState } from '../hooks/useActivitySessionState';
 
 type EventItem = {
   id?: string;
@@ -94,6 +96,9 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
   const customerSessionColors = React.useRef(new Map<string, string>()).current;
   const activitySessionColors = React.useRef(new Map<string, string>()).current;
 
+  // Activity session state management
+  const { processSessionInfo, getSessionData, clearAllSessions } = useActivitySessionState();
+
   // Fetch initial events
   React.useEffect(() => {
     if (!userPath) return;
@@ -104,14 +109,24 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
         if (!r.ok) throw new Error(await r.text());
         const j = await r.json();
         if (!cancelled && Array.isArray(j.events)) {
-          setAllEvents(j.events.map((e: any) => ({ id: e.id, eventType: e.eventType, timestamp: e.timestamp, data: e.data, raw: e.raw, expanded: false })));
+          const events = j.events.map((e: any) => ({ id: e.id, eventType: e.eventType, timestamp: e.timestamp, data: e.data, raw: e.raw, expanded: false }));
+          setAllEvents(events);
+          
+          // Process any SessionInfo events that were already present
+          console.log('[Initial Load] Processing', events.length, 'events for SessionInfo');
+          events.forEach((event: EventItem) => {
+            if (event.eventType === 'TPS.SessionInfo') {
+              console.log('[Initial Load] Found SessionInfo event, processing...');
+              processSessionInfo(event.raw || event);
+            }
+          });
         }
       } catch (err) {
         console.warn('Failed to load events', err);
       }
     })();
     return () => { cancelled = true; };
-  }, [userPath]);
+  }, [userPath, processSessionInfo]);
 
   // SSE subscription
   React.useEffect(() => {
@@ -138,6 +153,13 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
           const data = JSON.parse(ev.data);
           console.log('[SSE] Parsed event:', data.eventType, 'id:', data.id);
           const newItem: EventItem = { id: data.id, eventType: data.eventType, timestamp: data.timestamp, data: data.data, raw: data.raw, expanded: false };
+          
+          // Process SessionInfo events to extract activity/course information
+          if (data.eventType === 'TPS.SessionInfo') {
+            console.log('[SSE] Processing SessionInfo event');
+            processSessionInfo(data.raw || data);
+          }
+          
           setAllEvents(prev => {
             try {
               if (newItem.id) {
@@ -216,7 +238,8 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
     if (typeof clearSignal === 'undefined') return;
     setAllEvents([]);
     setSelectedIndex(null);
-  }, [clearSignal]);
+    clearAllSessions(); // Clear activity session state
+  }, [clearSignal, clearAllSessions]);
 
   // global fallback: listen for 'webhook:clear' events
   React.useEffect(() => {
@@ -228,12 +251,13 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
         if (String(detailPath) === String(userPath)) {
           setAllEvents([]);
           setSelectedIndex(null);
+          clearAllSessions(); // Clear activity session state
         }
       } catch (err) { /* ignore */ }
     };
     window.addEventListener('webhook:clear', handler as EventListener);
     return () => window.removeEventListener('webhook:clear', handler as EventListener);
-  }, [userPath]);
+  }, [userPath, clearAllSessions]);
 
   const select = (idx: number) => {
     setSelectedIndex(idx);
@@ -274,22 +298,152 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
     }
   };
 
-  // Check if event is a StrokeCompletedEvent
-  const isStrokeCompletedEvent = (e: EventItem) => {
+  // Check if event should show measurement tiles
+  const isMeasurementEvent = (e: EventItem) => {
     return e.eventType === 'TPS.Live.OnStrokeCompletedEvent' || 
-           e.eventType.includes('StrokeCompleted');
+           e.eventType === 'TPS.Simulator.ShotStarting' ||
+           e.eventType === 'TPS.Simulator.ShotFinish' ||
+           e.eventType.includes('StrokeCompleted') ||
+           e.eventType.includes('ShotStarting') ||
+           e.eventType.includes('ShotFinish');
   };
 
-  // Extract measurement data from StrokeCompletedEvent
-  const getMeasurementData = (e: EventItem) => {
+  // Extract measurement data from various event types
+  const getMeasurementData = (e: EventItem, eventsList: EventItem[]) => {
     try {
       const payload = getEventModelPayload(e);
-      if (payload && payload.Measurement) {
+      
+      // TPS.Live.OnStrokeCompletedEvent - has full Measurement object
+      if (e.eventType === 'TPS.Live.OnStrokeCompletedEvent' || e.eventType.includes('StrokeCompleted')) {
+        if (payload && payload.Measurement) {
+          return {
+            measurement: payload.Measurement,
+            playerId: payload.PlayerId
+          };
+        }
+      }
+      
+      // TPS.Simulator.ShotStarting - has limited fields
+      if (e.eventType === 'TPS.Simulator.ShotStarting' || e.eventType.includes('ShotStarting')) {
+        // Build a measurement object from available fields
+        const measurement: any = {};
+        if (payload.BallSpeed !== undefined) measurement.BallSpeed = payload.BallSpeed;
+        if (payload.LaunchAngle !== undefined) measurement.LaunchAngle = payload.LaunchAngle;
+        if (payload.LaunchDirection !== undefined) measurement.LaunchDirection = payload.LaunchDirection;
+        
         return {
-          measurement: payload.Measurement,
+          measurement,
           playerId: payload.PlayerId
         };
       }
+      
+      // TPS.Simulator.ShotFinish - merge with previous OnStrokeCompletedEvent
+      if (e.eventType === 'TPS.Simulator.ShotFinish' || e.eventType.includes('ShotFinish')) {
+        // Find the most recent OnStrokeCompletedEvent before this event
+        // NOTE: Newest events are at index 0, so we search FORWARD (increasing indices) to find older events
+        const currentIndex = eventsList.findIndex(evt => evt === e);
+        let strokeCompletedMeasurement: any = {};
+        
+        console.log('[ShotFinish] Current event index:', currentIndex);
+        console.log('[ShotFinish] Events list length:', eventsList.length);
+        
+        // Search forward from current event (toward older events at higher indices)
+        for (let i = currentIndex + 1; i < eventsList.length; i++) {
+          const prevEvent = eventsList[i];
+          console.log(`[ShotFinish] Checking event at index ${i}:`, prevEvent.eventType);
+          
+          if (prevEvent.eventType === 'TPS.Live.OnStrokeCompletedEvent' || 
+              prevEvent.eventType.includes('StrokeCompleted')) {
+            console.log('[ShotFinish] Found matching OnStrokeCompletedEvent at index:', i);
+            const prevPayload = getEventModelPayload(prevEvent);
+            console.log('[ShotFinish] Previous payload:', prevPayload);
+            
+            if (prevPayload && prevPayload.Measurement) {
+              console.log('[ShotFinish] Found measurement with keys:', Object.keys(prevPayload.Measurement));
+              strokeCompletedMeasurement = { ...prevPayload.Measurement };
+              break;
+            } else {
+              console.log('[ShotFinish] No Measurement found in payload');
+            }
+          }
+        }
+        
+        console.log('[ShotFinish] Final measurement before adding Actuals:', Object.keys(strokeCompletedMeasurement));
+        
+        // Add the "Actual" fields from ShotFinish
+        if (payload.Carry !== undefined && payload.Carry !== null) {
+          strokeCompletedMeasurement.CarryActual = payload.Carry;
+        }
+        if (payload.Total !== undefined && payload.Total !== null) {
+          strokeCompletedMeasurement.TotalActual = payload.Total;
+        }
+        if (payload.Curve !== undefined && payload.Curve !== null) {
+          strokeCompletedMeasurement.CurveActual = payload.Curve;
+        }
+        if (payload.Side !== undefined && payload.Side !== null) {
+          strokeCompletedMeasurement.SideActual = payload.Side;
+        }
+        if (payload.SideTotal !== undefined && payload.SideTotal !== null) {
+          strokeCompletedMeasurement.SideTotalActual = payload.SideTotal;
+        }
+        
+        console.log('[ShotFinish] Final merged measurement keys:', Object.keys(strokeCompletedMeasurement));
+        
+        return {
+          measurement: strokeCompletedMeasurement,
+          playerId: payload.PlayerId
+        };
+      }
+      
+      return null;
+    } catch (err) {
+      return null;
+    }
+  };
+
+  /**
+   * Find the most recent ChangePlayer event before the given event in the same ActivitySession.
+   * This allows us to display hole/shot info for all events between ChangePlayer events.
+   */
+  const findRecentChangePlayerData = (event: EventItem, eventsList: EventItem[]) => {
+    try {
+      const { activitySessionId } = getSessionIds(event);
+      if (!activitySessionId) return null;
+
+      // First check if this event itself has the data
+      const payload = getEventModelPayload(event);
+      if (payload?.ActiveHole !== undefined && payload?.ShotNumber !== undefined) {
+        return {
+          hole: payload.ActiveHole,
+          shot: payload.ShotNumber + 1, // Convert to 1-indexed
+          playerName: payload.Name
+        };
+      }
+
+      // Find current event index
+      const currentIdx = eventsList.findIndex(e => e.id === event.id);
+      if (currentIdx === -1) return null;
+
+      // Search forward (to older events) for the most recent ChangePlayer in the same session
+      for (let i = currentIdx + 1; i < eventsList.length; i++) {
+        const prevEvent = eventsList[i];
+        const { activitySessionId: prevSessionId } = getSessionIds(prevEvent);
+        
+        // Only look at events in the same ActivitySession
+        if (prevSessionId !== activitySessionId) continue;
+        
+        if (prevEvent.eventType === 'TPS.Simulator.ChangePlayer') {
+          const prevPayload = getEventModelPayload(prevEvent);
+          if (prevPayload?.ActiveHole !== undefined && prevPayload?.ShotNumber !== undefined) {
+            return {
+              hole: prevPayload.ActiveHole,
+              shot: prevPayload.ShotNumber + 1, // Convert to 1-indexed
+              playerName: prevPayload.Name
+            };
+          }
+        }
+      }
+
       return null;
     } catch (err) {
       return null;
@@ -356,10 +510,33 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
             <h4 className="preview-title">{selectedEvent.eventType}</h4>
             <div className="preview-time">{new Date(selectedEvent.timestamp).toLocaleString()}</div>
             
-            {/* Check if this is a StrokeCompletedEvent - show tiles view instead of JSON */}
+            {/* Display course information if available for this activity session */}
             {(() => {
-              if (isStrokeCompletedEvent(selectedEvent)) {
-                const measurementData = getMeasurementData(selectedEvent);
+              const { activitySessionId } = getSessionIds(selectedEvent);
+              if (activitySessionId) {
+                const sessionData = getSessionData(activitySessionId);
+                if (sessionData && (sessionData.courseInfo || sessionData.isLoadingCourse)) {
+                  // Find the most recent ChangePlayer data for this event
+                  const changePlayerData = findRecentChangePlayerData(selectedEvent, filtered);
+                  
+                  return (
+                    <CourseInfoBanner 
+                      sessionData={sessionData} 
+                      isLoading={sessionData.isLoadingCourse}
+                      eventHole={changePlayerData?.hole}
+                      eventShot={changePlayerData?.shot}
+                      eventPlayerName={changePlayerData?.playerName}
+                    />
+                  );
+                }
+              }
+              return null;
+            })()}
+            
+            {/* Check if this is a measurement event - show tiles view instead of JSON */}
+            {(() => {
+              if (isMeasurementEvent(selectedEvent)) {
+                const measurementData = getMeasurementData(selectedEvent, filtered);
                 if (measurementData && measurementData.measurement) {
                   return (
                     <MeasurementTilesView 
