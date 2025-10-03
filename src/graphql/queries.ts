@@ -65,15 +65,7 @@ export const BAYS_IN_LOCATION_QUERY = gql`
   }
 `;
 
-// =============================================================================
-// LEGACY/DEMO QUERIES (for unused components - can be removed later)
-// =============================================================================
 
-export const TEST_QUERY = gql`
-  query testConnection {
-    __typename
-  }
-`;
 
 export const GET_FACILITIES = gql`
   query getFacilities {

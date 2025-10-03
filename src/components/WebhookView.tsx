@@ -45,7 +45,12 @@ export const WebhookView: React.FC<WebhookViewProps> = ({ selectedDeviceId = nul
 
   const viteEnvBase = (import.meta as any)?.env?.VITE_BACKEND_BASE_URL;
   const windowOrigin = typeof window !== 'undefined' ? window.location.origin : '';
-  const normalizedBase = String(viteEnvBase || windowOrigin || '').replace(/\/$/, '');
+  
+  // Detect if running on localhost to use Vite proxy instead of direct backend URL
+  // This ensures webhook requests go through the proxy to local server with Azure Storage
+  const isLocalhost = windowOrigin.includes('localhost') || windowOrigin.includes('127.0.0.1');
+  const normalizedBase = isLocalhost ? '' : String(viteEnvBase || windowOrigin || '').replace(/\/$/, '');
+  
   const url = (localWebhook || webhookPath) ? `${normalizedBase}/api/webhook/${(localWebhook || webhookPath)}` : null;
 
   // Try to create a webhook path if missing

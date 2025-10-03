@@ -1,6 +1,7 @@
 import React from 'react';
 import './WebhookEventsPanel.css';
 import './WebhookInspector.css';
+import MeasurementTilesView from './MeasurementTilesView';
 
 type EventItem = {
   id?: string;
@@ -273,6 +274,28 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
     }
   };
 
+  // Check if event is a StrokeCompletedEvent
+  const isStrokeCompletedEvent = (e: EventItem) => {
+    return e.eventType === 'TPS.Live.OnStrokeCompletedEvent' || 
+           e.eventType.includes('StrokeCompleted');
+  };
+
+  // Extract measurement data from StrokeCompletedEvent
+  const getMeasurementData = (e: EventItem) => {
+    try {
+      const payload = getEventModelPayload(e);
+      if (payload && payload.Measurement) {
+        return {
+          measurement: payload.Measurement,
+          playerId: payload.PlayerId
+        };
+      }
+      return null;
+    } catch (err) {
+      return null;
+    }
+  };
+
   return (
     <div className="webhook-inspector">
       <div ref={listContainerRef} className="webhook-inspector-list" tabIndex={0} onKeyDown={onListKeyDown}>
@@ -332,8 +355,25 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
           <div>
             <h4 className="preview-title">{selectedEvent.eventType}</h4>
             <div className="preview-time">{new Date(selectedEvent.timestamp).toLocaleString()}</div>
-            {/* Version 1: render JSON fallback of event.data or raw */}
-            <pre className="preview-json">{JSON.stringify(getEventModelPayload(selectedEvent), null, 2)}</pre>
+            
+            {/* Check if this is a StrokeCompletedEvent - show tiles view instead of JSON */}
+            {(() => {
+              if (isStrokeCompletedEvent(selectedEvent)) {
+                const measurementData = getMeasurementData(selectedEvent);
+                if (measurementData && measurementData.measurement) {
+                  return (
+                    <MeasurementTilesView 
+                      measurement={measurementData.measurement}
+                      playerId={measurementData.playerId}
+                    />
+                  );
+                }
+              }
+              // Fallback: render JSON for all other events
+              return (
+                <pre className="preview-json">{JSON.stringify(getEventModelPayload(selectedEvent), null, 2)}</pre>
+              );
+            })()}
           </div>
         ) : (
           <div className="preview-empty">Select an event to preview</div>

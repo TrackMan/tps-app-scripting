@@ -1,4 +1,8 @@
-import path from "path";
+// Load environment variables from .env file
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.join(__dirname, '../.env') });
+
 import fs from "fs";
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
