@@ -62,6 +62,29 @@ const CourseInfoBanner: React.FC<Props> = ({ sessionData, isLoading, eventHole, 
           )}
         </div>
       </div>
+      
+      {/* Display hole image if available */}
+      {eventHole !== undefined && courseInfo?.holes && (
+        <div className="hole-image-container">
+          {(() => {
+            const hole = courseInfo.holes.find(h => h.holeNumber === eventHole);
+            if (hole?.images && hole.images.length > 0) {
+              return (
+                <img 
+                  src={hole.images[0].url} 
+                  alt={`Hole ${eventHole} layout`}
+                  className="hole-image"
+                  onError={(e) => {
+                    // Hide image if it fails to load
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
+                />
+              );
+            }
+            return null;
+          })()}
+        </div>
+      )}
     </div>
   );
 };

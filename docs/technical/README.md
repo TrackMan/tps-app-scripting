@@ -10,6 +10,7 @@
 - [Unit Conversion System](./UNIT_CONVERSION_SYSTEM.md) - Imperial/Metric unit conversion
 - [Device ID Filtering](./DEVICE_ID_FILTERING.md) - Device and bay filtering system
 - [Session Indicators Feature](./SESSION_INDICATORS_FEATURE.md) - Visual session indicators
+- [Hole Image Display](./HOLE_IMAGE_DISPLAY.md) - Visual hole layout images in course info banner
 
 ### Bug Fixes & Improvements
 - [Shot Number Carry-Forward Fix](./SHOT_NUMBER_CARRY_FORWARD_FIX.md) - Making hole/shot persist across events
@@ -207,6 +208,7 @@ const payload = event?.data?.EventModel || event?.EventModel || event;
 2. **Check event handling** → [MEASUREMENT_TILES_MULTI_EVENT.md](./MEASUREMENT_TILES_MULTI_EVENT.md)
 3. **Check filtering** → [DEVICE_ID_FILTERING.md](./DEVICE_ID_FILTERING.md)
 4. **Check recent fixes** → [SHOT_NUMBER_CARRY_FORWARD_FIX.md](./SHOT_NUMBER_CARRY_FORWARD_FIX.md)
+5. **Check course display** → [HOLE_IMAGE_DISPLAY.md](./HOLE_IMAGE_DISPLAY.md)
 
 ### Event Types Reference
 
@@ -223,8 +225,9 @@ const payload = event?.data?.EventModel || event?.EventModel || event;
 **Frontend**:
 - `src/components/WebhookInspector.tsx` - Main event display
 - `src/components/MeasurementTilesView.tsx` - Measurement tiles
-- `src/components/CourseInfoBanner.tsx` - Course info display
+- `src/components/CourseInfoBanner.tsx` - Course info display with hole images
 - `src/hooks/useActivitySessionState.ts` - Session state hook
+- `src/graphql/queries.ts` - GraphQL queries including course/hole data
 
 **Backend**:
 - `server/src/index.ts` - Express server, webhook endpoint
