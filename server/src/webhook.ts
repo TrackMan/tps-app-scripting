@@ -443,6 +443,40 @@ export function registerWebhookRoutes(app: express.Application) {
     const keys = Array.from(eventStore.keys());
     return res.json({ keys, count: keys.length });
   });
+
+  // CDN Proxy: Forward requests to cdn.trackmangolf.com to avoid CORS issues
+  app.get('/cdn-proxy/*', async (req: Request, res: Response) => {
+    try {
+      const cdnPath = req.params[0]; // Everything after /cdn-proxy/
+      const cdnUrl = `https://cdn.trackmangolf.com/${cdnPath}`;
+      
+      console.log(`[CDN Proxy] Fetching: ${cdnUrl}`);
+      
+      const response = await fetch(cdnUrl);
+      
+      if (!response.ok) {
+        console.error(`[CDN Proxy] Failed to fetch ${cdnUrl}: ${response.status}`);
+        return res.status(response.status).send(`Failed to fetch from CDN: ${response.statusText}`);
+      }
+      
+      // Forward the content type from the CDN
+      const contentType = response.headers.get('content-type');
+      if (contentType) {
+        res.setHeader('Content-Type', contentType);
+      }
+      
+      // Set CORS headers to allow frontend access
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET');
+      
+      // Stream the response body
+      const buffer = await response.arrayBuffer();
+      res.send(Buffer.from(buffer));
+    } catch (err) {
+      console.error('[CDN Proxy] Error:', err);
+      res.status(500).send('Failed to proxy CDN request');
+    }
+  });
 }
 
 export { eventStore, lastWebhookDiagnostics, sseClients };
