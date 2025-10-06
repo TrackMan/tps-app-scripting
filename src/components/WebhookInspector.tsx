@@ -3,6 +3,7 @@ import './WebhookEventsPanel.css';
 import './WebhookInspector.css';
 import MeasurementTilesView from './MeasurementTilesView';
 import CourseInfoBanner from './CourseInfoBanner';
+import { ShotData } from './ShotTrajectoryOverlay';
 import { useActivitySessionState } from '../hooks/useActivitySessionState';
 
 type EventItem = {
@@ -88,9 +89,11 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
   const [allEvents, setAllEvents] = React.useState<EventItem[]>([]);
   const [connected, setConnected] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
-  const [showAllEvents, setShowAllEvents] = React.useState(false);
+  const [selectedEventTypes, setSelectedEventTypes] = React.useState<Set<string>>(new Set());
+  const [showEventTypeDropdown, setShowEventTypeDropdown] = React.useState(false);
   const listRef = React.useRef<HTMLUListElement | null>(null);
   const listContainerRef = React.useRef<HTMLDivElement | null>(null);
+  const dropdownRef = React.useRef<HTMLDivElement | null>(null);
   
   // Color maps for session IDs
   const customerSessionColors = React.useRef(new Map<string, string>()).current;
@@ -207,22 +210,48 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
     };
   }, [userPath]);
 
+  // Get unique event types for the filter dropdown
+  const uniqueEventTypes = React.useMemo(() => {
+    const types = new Set<string>();
+    allEvents.forEach(e => types.add(e.eventType));
+    return Array.from(types).sort();
+  }, [allEvents]);
+
   const filtered = React.useMemo(() => {
-    // If "Show All Events" is enabled, bypass Device/Bay filtering
-    if (showAllEvents) return allEvents;
+    let result = allEvents;
     
-    // If no Device/Bay is selected, show all events
-    if (!selectedDeviceId && !selectedBayId) return allEvents;
+    // Filter by Device/Bay if applicable
+    if (selectedDeviceId || selectedBayId) {
+      result = result.filter(e => {
+        const deviceId = getDeviceIdFromEvent(e);
+        if (!deviceId) return false;
+        if (selectedDeviceId && String(deviceId) === String(selectedDeviceId)) return true;
+        if (selectedBayId && String(deviceId) === String(selectedBayId)) return true;
+        return false;
+      });
+    }
     
-    // Filter by selected Device ID (from bay's deviceId field)
-    return allEvents.filter(e => {
-      const deviceId = getDeviceIdFromEvent(e);
-      if (!deviceId) return false;
-      if (selectedDeviceId && String(deviceId) === String(selectedDeviceId)) return true;
-      if (selectedBayId && String(deviceId) === String(selectedBayId)) return true;
-      return false;
-    });
-  }, [allEvents, selectedDeviceId, selectedBayId, showAllEvents]);
+    // Filter by selected event types
+    if (selectedEventTypes.size > 0) {
+      result = result.filter(e => selectedEventTypes.has(e.eventType));
+    }
+    
+    return result;
+  }, [allEvents, selectedDeviceId, selectedBayId, selectedEventTypes]);
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowEventTypeDropdown(false);
+      }
+    };
+    
+    if (showEventTypeDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showEventTypeDropdown]);
 
   // ensure selected item is visible
   React.useEffect(() => {
@@ -261,6 +290,26 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
 
   const select = (idx: number) => {
     setSelectedIndex(idx);
+  };
+
+  const toggleEventType = (eventType: string) => {
+    setSelectedEventTypes(prev => {
+      const next = new Set(prev);
+      if (next.has(eventType)) {
+        next.delete(eventType);
+      } else {
+        next.add(eventType);
+      }
+      return next;
+    });
+  };
+
+  const selectAllEventTypes = () => {
+    setSelectedEventTypes(new Set(uniqueEventTypes));
+  };
+
+  const clearAllEventTypes = () => {
+    setSelectedEventTypes(new Set());
   };
 
   const onListKeyDown = (ev: React.KeyboardEvent) => {
@@ -367,6 +416,8 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
             }
           }
         }
+
+        console.log("MICHAEL", payload);
         
         console.log('[ShotFinish] Final measurement before adding Actuals:', Object.keys(strokeCompletedMeasurement));
         
@@ -385,6 +436,14 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
         }
         if (payload.SideTotal !== undefined && payload.SideTotal !== null) {
           strokeCompletedMeasurement.SideTotalActual = payload.SideTotal;
+        }
+        
+        // Add position fields for trajectory visualization
+        if (payload.StartingPosition) {
+          strokeCompletedMeasurement.StartingPosition = payload.StartingPosition;
+        }
+        if (payload.FinishingPosition) {
+          strokeCompletedMeasurement.FinishingPosition = payload.FinishingPosition;
         }
         
         console.log('[ShotFinish] Final merged measurement keys:', Object.keys(strokeCompletedMeasurement));
@@ -450,22 +509,121 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
     }
   };
 
+  /**
+   * Find all ShotFinish events for the given hole in the same ActivitySession,
+   * up to and including the current event (for progressive display).
+   * Returns an array of shots with start/finish positions and shot numbers.
+   */
+  const findAllShotsForHole = (event: EventItem, eventsList: EventItem[], holeNumber: number) => {
+    try {
+      const { activitySessionId } = getSessionIds(event);
+      if (!activitySessionId) return [];
+
+      const shots: Array<{ startPosition: any; finishPosition: any; shotNumber?: number }> = [];
+      
+      // Find the index of the current event
+      const currentIdx = eventsList.findIndex(e => e.id === event.id);
+      if (currentIdx === -1) return [];
+      
+      // Search from the current event forward (toward older events at higher indices)
+      // This way we only show shots that happened at or before the current event
+      for (let i = currentIdx; i < eventsList.length; i++) {
+        const evt = eventsList[i];
+        const { activitySessionId: evtSessionId } = getSessionIds(evt);
+        
+        // Only look at events in the same ActivitySession
+        if (evtSessionId !== activitySessionId) continue;
+        
+        // Check if this is a ShotFinish event
+        if (evt.eventType === 'TPS.Simulator.ShotFinish') {
+          const payload = getEventModelPayload(evt);
+          
+          // Check if it's for the correct hole
+          const eventHole = payload?.ActiveHole;
+          if (eventHole === holeNumber) {
+            const startPos = payload?.StartingPosition;
+            const finishPos = payload?.FinishingPosition;
+            
+            // Only include if we have both positions
+            if (startPos && finishPos) {
+              // Try to find the shot number from nearby ChangePlayer events
+              const changePlayerData = findRecentChangePlayerData(evt, eventsList);
+              shots.push({
+                startPosition: startPos,
+                finishPosition: finishPos,
+                shotNumber: changePlayerData?.shot
+              });
+            }
+          }
+        }
+      }
+      
+      // Sort by shot number ascending (if available)
+      // Shots without numbers go to the end
+      shots.sort((a, b) => {
+        if (a.shotNumber !== undefined && b.shotNumber !== undefined) {
+          return a.shotNumber - b.shotNumber;
+        }
+        if (a.shotNumber !== undefined) return -1;
+        if (b.shotNumber !== undefined) return 1;
+        return 0;
+      });
+      
+      console.log(`[findAllShotsForHole] Found ${shots.length} shots for hole ${holeNumber}`);
+      
+      return shots;
+    } catch (err) {
+      console.error('[WebhookInspector] Error finding shots for hole:', err);
+      return [];
+    }
+  };
+
   return (
     <div className="webhook-inspector">
       <div ref={listContainerRef} className="webhook-inspector-list" tabIndex={0} onKeyDown={onListKeyDown}>
         <div className="webhook-events-header">
           <strong>Events</strong>
           <span className={`webhook-events-status ${connected ? 'live' : ''}`}>{connected ? 'live' : 'disconnected'}</span>
-          {(selectedDeviceId || selectedBayId) && (
-            <label style={{ marginLeft: 'auto', fontSize: '0.85em', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-              <input 
-                type="checkbox" 
-                checked={showAllEvents} 
-                onChange={(e) => setShowAllEvents(e.target.checked)}
-              />
-              Show All Events
-            </label>
-          )}
+          
+          {/* Event Type Filter Dropdown */}
+          <div className="event-type-filter" ref={dropdownRef}>
+            <button 
+              className="event-type-filter-button"
+              onClick={() => setShowEventTypeDropdown(!showEventTypeDropdown)}
+              title="Filter by event type"
+            >
+              <svg className="filter-icon" width="16" height="16" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 4 L28 4 L18 16 L18 26 L14 28 L14 16 Z"/>
+              </svg>
+              {selectedEventTypes.size > 0 && (
+                <span className="event-type-filter-badge">{selectedEventTypes.size}</span>
+              )}
+            </button>
+            
+            {showEventTypeDropdown && (
+              <div className="event-type-dropdown">
+                <div className="event-type-dropdown-header">
+                  <strong>Filter Event Types</strong>
+                  <div className="event-type-dropdown-actions">
+                    <button onClick={selectAllEventTypes}>All</button>
+                    <button onClick={clearAllEventTypes}>None</button>
+                  </div>
+                </div>
+                <div className="event-type-dropdown-list">
+                  {uniqueEventTypes.map(eventType => (
+                    <label key={eventType} className="event-type-option">
+                      <input
+                        type="checkbox"
+                        checked={selectedEventTypes.has(eventType)}
+                        onChange={() => toggleEventType(eventType)}
+                      />
+                      <span className="event-type-label">{eventType}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <ul className="webhook-events-ul" ref={listRef}>
           {filtered.length === 0 ? (
@@ -519,6 +677,11 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
                   // Find the most recent ChangePlayer data for this event
                   const changePlayerData = findRecentChangePlayerData(selectedEvent, filtered);
                   
+                  // Find all shots for the current hole
+                  const shots: ShotData[] = changePlayerData?.hole 
+                    ? findAllShotsForHole(selectedEvent, filtered, changePlayerData.hole)
+                    : [];
+                  
                   return (
                     <CourseInfoBanner 
                       sessionData={sessionData} 
@@ -526,6 +689,7 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
                       eventHole={changePlayerData?.hole}
                       eventShot={changePlayerData?.shot}
                       eventPlayerName={changePlayerData?.playerName}
+                      shots={shots}
                     />
                   );
                 }

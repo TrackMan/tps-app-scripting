@@ -1,5 +1,7 @@
 import React from 'react';
 import { CourseInfo, ActivitySessionData } from '../hooks/useActivitySessionState';
+import ShotTrajectoryOverlay, { ShotData } from './ShotTrajectoryOverlay';
+import { Vector3 } from '../utils/projectionUtils';
 import './CourseInfoBanner.css';
 
 interface Props {
@@ -9,9 +11,18 @@ interface Props {
   eventHole?: number;
   eventShot?: number;
   eventPlayerName?: string;
+  // Shot trajectory data (array of all shots on this hole)
+  shots?: ShotData[];
 }
 
-const CourseInfoBanner: React.FC<Props> = ({ sessionData, isLoading, eventHole, eventShot, eventPlayerName }) => {
+const CourseInfoBanner: React.FC<Props> = ({ 
+  sessionData, 
+  isLoading, 
+  eventHole, 
+  eventShot, 
+  eventPlayerName,
+  shots
+}) => {
   if (isLoading) {
     return (
       <div className="course-info-banner loading">
@@ -27,7 +38,6 @@ const CourseInfoBanner: React.FC<Props> = ({ sessionData, isLoading, eventHole, 
   return (
     <div className="course-info-banner">
       <div className="course-info-content">
-        <div className="course-info-icon">🏌️</div>
         <div className="course-info-details">
           {courseInfo && (
             <>
@@ -63,22 +73,41 @@ const CourseInfoBanner: React.FC<Props> = ({ sessionData, isLoading, eventHole, 
         </div>
       </div>
       
-      {/* Display hole image if available */}
+      {/* Display hole image with optional shot trajectory */}
       {eventHole !== undefined && courseInfo?.holes && (
         <div className="hole-image-container">
           {(() => {
             const hole = courseInfo.holes.find(h => h.holeNumber === eventHole);
             if (hole?.images && hole.images.length > 0) {
+              const imageUrl = hole.images[0].url;
+              const metaDataUrl = hole.images[0].metaDataUrl;
+              
+              // If we have trajectory data AND metadata, use the overlay component
+              if (shots && shots.length > 0 && metaDataUrl) {
+                return (
+                  <ShotTrajectoryOverlay
+                    imageUrl={imageUrl}
+                    metaDataUrl={metaDataUrl}
+                    shots={shots}
+                  />
+                );
+              }
+              
+              // Otherwise, just show the image (with same rotation wrapper)
               return (
-                <img 
-                  src={hole.images[0].url} 
-                  alt={`Hole ${eventHole} layout`}
-                  className="hole-image"
-                  onError={(e) => {
-                    // Hide image if it fails to load
-                    (e.target as HTMLElement).style.display = 'none';
-                  }}
-                />
+                <div className="shot-trajectory-container">
+                  <div className="rotation-wrapper">
+                    <img 
+                      src={imageUrl} 
+                      alt={`Hole ${eventHole} layout`}
+                      className="hole-image"
+                      onError={(e) => {
+                        // Hide image if it fails to load
+                        (e.target as HTMLElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                </div>
               );
             }
             return null;

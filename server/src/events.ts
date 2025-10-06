@@ -112,11 +112,8 @@ export interface GivenMulliganEvent extends BaseEvent {
   Mulligan: MulliganReport;
 }
 
-export interface Vector3 {
-  X: number;
-  Y: number;
-  Z: number;
-}
+// Vector3 is a tuple array [x, y, z]
+export type Vector3 = [number, number, number];
 
 export interface ShotStartingEvent extends BaseEvent {
   PlayerId: string;
@@ -402,7 +399,7 @@ export function isGivenMulligan(o: any): o is GivenMulliganEvent {
 }
 
 export function isVector3(o: any): o is Vector3 {
-  return isObject(o) && hasNumber(o, 'X') && hasNumber(o, 'Y') && hasNumber(o, 'Z');
+  return Array.isArray(o) && o.length === 3 && typeof o[0] === 'number' && typeof o[1] === 'number' && typeof o[2] === 'number';
 }
 
 export function isShotStarting(o: any): o is ShotStartingEvent {

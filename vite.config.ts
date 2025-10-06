@@ -16,6 +16,13 @@ export default defineConfig({
         secure: false,
         ws: true,
       },
+      // Proxy CDN requests for hole metadata to avoid CORS issues in development
+      '/cdn-proxy': {
+        target: 'https://cdn.trackmangolf.com',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/cdn-proxy/, ''),
+      },
     },
   },
   build: {

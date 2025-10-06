@@ -6,6 +6,12 @@
   border-radius: 8px;
   margin-bottom: 16px;
   box-shadow: 0 2px 8px rgba(255, 122, 0, 0.2);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  min-height: 420px;
+  max-height: 420px;
+  overflow: hidden;
 }
 
 .course-info-banner.loading {
@@ -15,13 +21,11 @@
 
 .course-info-content {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
-}
-
-.course-info-icon {
-  font-size: 32px;
-  line-height: 1;
+  flex: 1;
+  min-width: 0;
+  padding-top: 8px;
 }
 
 .course-info-details {
@@ -110,16 +114,15 @@
 
 /* Hole Image Styles */
 .hole-image-container {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  height: 100%;
+  max-height: 396px;
 }
 
 .hole-image {
   max-width: 100%;
-  max-height: 300px;
   object-fit: contain;
 }

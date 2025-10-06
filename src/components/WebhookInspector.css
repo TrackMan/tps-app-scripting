@@ -21,3 +21,23 @@
 /* Remove ugly default focus ring on the left list, but keep a subtle ring for keyboard users */
 .webhook-inspector-list:focus{outline: none; box-shadow: none}
 .webhook-inspector-list:focus-visible{outline: none; box-shadow: 0 0 0 3px rgba(0,120,212,0.15);}
+
+/* Event Type Filter Dropdown */
+.event-type-filter{position:relative;margin-left:8px}
+.event-type-filter-button{background:#f0f0f0;border:1px solid #ddd;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:4px;position:relative;transition:background 0.2s}
+.event-type-filter-button:hover{background:#e8e8e8}
+.filter-icon{color:#555;transition:color 0.2s}
+.event-type-filter-button:hover .filter-icon{color:#333}
+.event-type-filter-badge{background:#ff7a00;color:white;border-radius:10px;padding:2px 6px;font-size:11px;font-weight:bold;min-width:18px;text-align:center}
+.event-type-dropdown{position:absolute;top:100%;left:0;margin-top:4px;background:white;border:1px solid #ddd;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,0.15);min-width:280px;max-width:400px;z-index:1000}
+.event-type-dropdown-header{padding:12px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
+.event-type-dropdown-header strong{font-size:14px}
+.event-type-dropdown-actions{display:flex;gap:6px}
+.event-type-dropdown-actions button{background:#f0f0f0;border:1px solid #ddd;border-radius:4px;padding:4px 10px;font-size:12px;cursor:pointer;transition:background 0.2s}
+.event-type-dropdown-actions button:hover{background:#e0e0e0}
+.event-type-dropdown-list{max-height:400px;overflow-y:auto;padding:8px}
+.event-type-option{display:flex;align-items:center;padding:6px 8px;cursor:pointer;border-radius:4px;transition:background 0.2s}
+.event-type-option:hover{background:#f7fbff}
+.event-type-option input[type="checkbox"]{margin-right:8px;cursor:pointer}
+.event-type-label{font-size:13px;color:#333;-webkit-user-select:none;user-select:none}
+
