@@ -3,8 +3,9 @@
   padding: 12px;
   background: #f8f9fa;
   border-radius: 8px;
-  max-height: calc(100vh - 200px);
+  flex: 1;
   overflow-y: auto;
+  min-height: 0;
 }
 
 /* Controls Section */

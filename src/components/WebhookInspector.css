@@ -12,7 +12,8 @@
 .event-session-indicators{display:flex;gap:6px;margin-top:6px;align-items:center}
 .session-dot{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,0.1)}
 .no-events{padding:12px;color:#666}
-.webhook-inspector-preview{flex:1;padding:12px;overflow:auto;min-width:0}
+.webhook-inspector-preview{flex:1;padding:12px;overflow:hidden;min-width:0;display:flex;flex-direction:column}
+.webhook-inspector-preview > div{display:flex;flex-direction:column;flex:1;min-height:0}
 .preview-title{margin-top:0}
 .preview-time{margin-bottom:8px;color:#666}
 .preview-json{background:#fafafa;padding:12px;border-radius:6px;overflow:auto}

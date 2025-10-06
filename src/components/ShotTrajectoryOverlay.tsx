@@ -199,7 +199,7 @@ const ShotTrajectoryOverlay: React.FC<Props> = ({
                     x2={shot.finish.x}
                     y2={shot.finish.y}
                     stroke="rgba(0, 0, 0, 0.3)"
-                    strokeWidth="7"
+                    strokeWidth="12"
                     strokeLinecap="round"
                   />
                   
@@ -207,7 +207,7 @@ const ShotTrajectoryOverlay: React.FC<Props> = ({
                   <path
                     d={curvePath}
                     stroke="white"
-                    strokeWidth="7"
+                    strokeWidth="12"
                     strokeLinecap="round"
                     fill="none"
                     opacity="0.9"
