@@ -88,9 +88,11 @@ const getDeviceIdFromEvent = (e: EventItem) => {
 const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, selectedBayId = null, clearSignal }) => {
   const [allEvents, setAllEvents] = React.useState<EventItem[]>([]);
   const [connected, setConnected] = React.useState(false);
+  const [isLoadingEvents, setIsLoadingEvents] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
   const [selectedEventTypes, setSelectedEventTypes] = React.useState<Set<string>>(new Set());
   const [showEventTypeDropdown, setShowEventTypeDropdown] = React.useState(false);
+  const [newEventIds, setNewEventIds] = React.useState<Set<string>>(new Set());
   const listRef = React.useRef<HTMLUListElement | null>(null);
   const listContainerRef = React.useRef<HTMLDivElement | null>(null);
   const dropdownRef = React.useRef<HTMLDivElement | null>(null);
@@ -106,6 +108,7 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
   React.useEffect(() => {
     if (!userPath) return;
     let cancelled = false;
+    setIsLoadingEvents(true);
     (async () => {
       try {
         const r = await fetch(`/api/webhook/${encodeURIComponent(userPath)}/events`);
@@ -126,6 +129,8 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
         }
       } catch (err) {
         console.warn('Failed to load events', err);
+      } finally {
+        if (!cancelled) setIsLoadingEvents(false);
       }
     })();
     return () => { cancelled = true; };
@@ -156,6 +161,19 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
           const data = JSON.parse(ev.data);
           console.log('[SSE] Parsed event:', data.eventType, 'id:', data.id);
           const newItem: EventItem = { id: data.id, eventType: data.eventType, timestamp: data.timestamp, data: data.data, raw: data.raw, expanded: false };
+          
+          // Mark this event as new for the glow animation
+          if (newItem.id) {
+            setNewEventIds(prev => new Set(prev).add(newItem.id!));
+            // Remove the "new" flag after 500ms
+            setTimeout(() => {
+              setNewEventIds(prev => {
+                const next = new Set(prev);
+                next.delete(newItem.id!);
+                return next;
+              });
+            }, 500);
+          }
           
           // Process SessionInfo events to extract activity/course information
           if (data.eventType === 'TPS.SessionInfo') {
@@ -584,7 +602,14 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
       <div ref={listContainerRef} className="webhook-inspector-list" tabIndex={0} onKeyDown={onListKeyDown}>
         <div className="webhook-events-header">
           <strong>Events</strong>
-          <span className={`webhook-events-status ${connected ? 'live' : ''}`}>{connected ? 'live' : 'disconnected'}</span>
+          <span className={`webhook-events-status ${connected ? 'live' : ''}`}>
+            {isLoadingEvents ? (
+              <span className="loading-spinner">
+                <span className="loading-spinner-icon"></span>
+                <span className="loading-text">loading</span>
+              </span>
+            ) : (connected ? 'live' : 'disconnected')}
+          </span>
           
           {/* Event Type Filter Dropdown */}
           <div className="event-type-filter" ref={dropdownRef}>
@@ -627,7 +652,12 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
           </div>
         </div>
         <ul className="webhook-events-ul" ref={listRef}>
-          {visibleEvents.length === 0 ? (
+          {isLoadingEvents ? (
+            <li className="loading-events-message">
+              <div className="loading-events-spinner"></div>
+              <div>Loading events...</div>
+            </li>
+          ) : visibleEvents.length === 0 ? (
             <li className="no-events">No events yet.</li>
           ) : (
             allEvents.map((e, allIdx) => {
@@ -641,8 +671,14 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
               const customerColor = getColorForId(customerSessionId, customerSessionColors);
               const activityColor = getColorForId(activitySessionId, activitySessionColors);
               
+              const isNew = e.id && newEventIds.has(e.id);
+              
               return (
-                <li key={e.id || allIdx} className={`webhook-event-item ${selectedIndex === visibleIdx ? 'selected' : ''}`} onClick={() => select(visibleIdx)}>
+                <li 
+                  key={e.id || allIdx} 
+                  className={`webhook-event-item ${selectedIndex === visibleIdx ? 'selected' : ''} ${isNew ? 'new-event' : ''}`} 
+                  onClick={() => select(visibleIdx)}
+                >
                   <div className="event-type">{e.eventType}</div>
                   <div className="event-meta">{new Date(e.timestamp).toLocaleString()}</div>
                   <div className="event-session-indicators">
