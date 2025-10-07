@@ -217,27 +217,30 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
     return Array.from(types).sort();
   }, [allEvents]);
 
-  const filtered = React.useMemo(() => {
-    let result = allEvents;
-    
+  // Check if an event should be visible based on filters
+  const isEventVisible = React.useCallback((e: EventItem) => {
     // Filter by Device/Bay if applicable
     if (selectedDeviceId || selectedBayId) {
-      result = result.filter(e => {
-        const deviceId = getDeviceIdFromEvent(e);
-        if (!deviceId) return false;
-        if (selectedDeviceId && String(deviceId) === String(selectedDeviceId)) return true;
-        if (selectedBayId && String(deviceId) === String(selectedBayId)) return true;
+      const deviceId = getDeviceIdFromEvent(e);
+      if (!deviceId) return false;
+      if (selectedDeviceId && String(deviceId) !== String(selectedDeviceId) &&
+          !(selectedBayId && String(deviceId) === String(selectedBayId))) {
         return false;
-      });
+      }
     }
     
     // Filter by selected event types
-    if (selectedEventTypes.size > 0) {
-      result = result.filter(e => selectedEventTypes.has(e.eventType));
+    if (selectedEventTypes.size > 0 && !selectedEventTypes.has(e.eventType)) {
+      return false;
     }
     
-    return result;
-  }, [allEvents, selectedDeviceId, selectedBayId, selectedEventTypes]);
+    return true;
+  }, [selectedDeviceId, selectedBayId, selectedEventTypes]);
+
+  // Get visible events for selection indexing
+  const visibleEvents = React.useMemo(() => {
+    return allEvents.filter(isEventVisible);
+  }, [allEvents, isEventVisible]);
 
   // Close dropdown when clicking outside
   React.useEffect(() => {
@@ -260,7 +263,7 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
     if (el && typeof el.scrollIntoView === 'function') {
       el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
-  }, [selectedIndex, filtered]);
+  }, [selectedIndex, visibleEvents]);
 
   // clear local events when requested
   React.useEffect(() => {
@@ -313,19 +316,19 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
   };
 
   const onListKeyDown = (ev: React.KeyboardEvent) => {
-    if (filtered.length === 0) return;
+    if (visibleEvents.length === 0) return;
     if (ev.key === 'ArrowDown') {
       ev.preventDefault();
       if (selectedIndex === null) setSelectedIndex(0);
-      else setSelectedIndex(Math.min(filtered.length - 1, selectedIndex + 1));
+      else setSelectedIndex(Math.min(visibleEvents.length - 1, selectedIndex + 1));
     } else if (ev.key === 'ArrowUp') {
       ev.preventDefault();
-      if (selectedIndex === null) setSelectedIndex(filtered.length - 1);
+      if (selectedIndex === null) setSelectedIndex(visibleEvents.length - 1);
       else setSelectedIndex(Math.max(0, selectedIndex - 1));
     }
   };
 
-  const selectedEvent = selectedIndex === null ? null : filtered[selectedIndex];
+  const selectedEvent = selectedIndex === null ? null : visibleEvents[selectedIndex];
 
   const getEventModelPayload = (e: EventItem) => {
     try {
@@ -417,8 +420,6 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
           }
         }
 
-        console.log("MICHAEL", payload);
-        
         console.log('[ShotFinish] Final measurement before adding Actuals:', Object.keys(strokeCompletedMeasurement));
         
         // Add the "Actual" fields from ShotFinish
@@ -626,16 +627,22 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
           </div>
         </div>
         <ul className="webhook-events-ul" ref={listRef}>
-          {filtered.length === 0 ? (
+          {visibleEvents.length === 0 ? (
             <li className="no-events">No events yet.</li>
           ) : (
-            filtered.map((e, idx) => {
+            allEvents.map((e, allIdx) => {
+              const isVisible = isEventVisible(e);
+              if (!isVisible) return null; // Skip rendering hidden items
+              
+              // Find the visible index for this event
+              const visibleIdx = visibleEvents.findIndex(ve => ve === e);
+              
               const { customerSessionId, activitySessionId } = getSessionIds(e);
               const customerColor = getColorForId(customerSessionId, customerSessionColors);
               const activityColor = getColorForId(activitySessionId, activitySessionColors);
               
               return (
-                <li key={e.id || idx} className={`webhook-event-item ${selectedIndex === idx ? 'selected' : ''}`} onClick={() => select(idx)}>
+                <li key={e.id || allIdx} className={`webhook-event-item ${selectedIndex === visibleIdx ? 'selected' : ''}`} onClick={() => select(visibleIdx)}>
                   <div className="event-type">{e.eventType}</div>
                   <div className="event-meta">{new Date(e.timestamp).toLocaleString()}</div>
                   <div className="event-session-indicators">
@@ -675,11 +682,11 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
                 const sessionData = getSessionData(activitySessionId);
                 if (sessionData && (sessionData.courseInfo || sessionData.isLoadingCourse)) {
                   // Find the most recent ChangePlayer data for this event
-                  const changePlayerData = findRecentChangePlayerData(selectedEvent, filtered);
+                  const changePlayerData = findRecentChangePlayerData(selectedEvent, allEvents);
                   
                   // Find all shots for the current hole
                   const shots: ShotData[] = changePlayerData?.hole 
-                    ? findAllShotsForHole(selectedEvent, filtered, changePlayerData.hole)
+                    ? findAllShotsForHole(selectedEvent, allEvents, changePlayerData.hole)
                     : [];
                   
                   return (
@@ -700,7 +707,7 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
             {/* Check if this is a measurement event - show tiles view instead of JSON */}
             {(() => {
               if (isMeasurementEvent(selectedEvent)) {
-                const measurementData = getMeasurementData(selectedEvent, filtered);
+                const measurementData = getMeasurementData(selectedEvent, allEvents);
                 if (measurementData && measurementData.measurement) {
                   return (
                     <MeasurementTilesView 

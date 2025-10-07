@@ -298,7 +298,7 @@ export function registerWebhookRoutes(app: express.Application) {
   // Combines in-memory cache with Table Storage for complete history.
   app.get('/api/webhook/:userPath/events', async (req: Request, res: Response) => {
     const userPath = req.params.userPath;
-    const limit = parseInt(req.query.limit as string) || 200;
+    const limit = parseInt(req.query.limit as string) || 2000;
     const includeStorage = req.query.storage !== 'false'; // Allow disabling via ?storage=false
 
     // Start with in-memory events (fast)
