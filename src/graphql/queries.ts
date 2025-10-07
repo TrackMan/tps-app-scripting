@@ -1,3 +1,5 @@
+import { gql } from 'urql';
+
 // Query to get current user profile after login
 export const GET_ME = gql`
   query getMe {
@@ -11,7 +13,6 @@ export const GET_ME = gql`
     }
   }
 `;
-import { gql } from 'urql';
 
 // =============================================================================
 // MAIN APPLICATION QUERIES
@@ -132,6 +133,19 @@ export const GET_COURSE_INFORMATION = gql`
           }
         }
       }
+    }
+  }
+`;
+
+// =============================================================================
+// MUTATIONS
+// =============================================================================
+
+// Execute app script on bay
+export const EXECUTE_SCRIPT_MUTATION = gql`
+  mutation ExecuteAppScript($bayId: ID!, $script: String!) {
+    sendAppScriptToBay(input: { bayIds: [$bayId], script: $script }) {
+      result
     }
   }
 `;

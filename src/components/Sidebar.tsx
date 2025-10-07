@@ -1,10 +1,12 @@
 import React from 'react';
+import { useMutation } from 'urql';
 import { ScriptData, Activity, Step } from '../types';
 import { TreeView } from './TreeView';
 import { BaySelector } from './BaySelector';
 import { LocationSelector } from './LocationSelector';
 import { CollapsibleSection } from './CollapsibleSection';
 import { LoadScriptButton, DownloadButton, CloneSelectedButton, AddActivityButton, AddStepButton } from './buttons';
+import { EXECUTE_SCRIPT_MUTATION } from '../graphql/queries';
 
 interface Bay {
   id: string;
@@ -72,37 +74,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const [executing, setExecuting] = React.useState(false);
   const [execMessage, setExecMessage] = React.useState<string | null>(null);
+  const [, executeMutation] = useMutation(EXECUTE_SCRIPT_MUTATION);
 
-  const canExecute = isValid && !!selectedBayObj?.dbId;
+  const canExecute = isValid && !!selectedBayObj?.id;
 
   async function handleExecuteScript() {
     if (!canExecute || !selectedBayObj) return;
     setExecuting(true);
     setExecMessage(null);
     try {
-      const { ENV_URLS } = await import('../lib/env');
-      const endpoint = `${ENV_URLS.rest || ENV_URLS.backendBase + '/api'}/remote/tps/execute-script`;
-      const body = {
-        Name: `Script - ${new Date().toLocaleString()}`,
-        Kind: 'Embedded',
-        Script: JSON.stringify(script, null, 2),
-        BayIds: [selectedBayObj.dbId],
-      };
-      // Acquire token (reuse authService)
-      const { authService } = await import('../lib/auth-service');
-      const token = await authService.getAccessToken();
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
+      const result = await executeMutation({
+        bayId: selectedBayObj.id,
+        script: JSON.stringify(script, null, 2),
       });
-      if (!res.ok) {
-        const errTxt = await res.text();
-        throw new Error(`${res.status} ${res.statusText}: ${errTxt}`);
+      
+      if (result.error) {
+        throw new Error(result.error.message);
       }
+      
       setExecMessage('✅ Script execution requested successfully');
     } catch (e: any) {
       setExecMessage(`❌ Failed: ${e.message || e}`);

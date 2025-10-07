@@ -1,0 +1,367 @@
+{
+    "id": "fb811021-3588-47ea-a1ba-7c43c15cc463-open-range-script",
+    "startMode": "Overwrite",
+    "endMode": "Wait",
+    "activities": [
+        {
+            "nodeType": "RangeAnalysisScriptedActivity",
+            "id": "fb811021-3588-47ea-a1ba-7c43c15cc463-open-range-1",
+            "introMessage": {
+                "header": "Open Range Assessment",
+                "description": "You will be hitting 3 shots with 4 different clubs",
+                "seconds": 3
+            },
+            "endMessage": {
+                "header": "Great Job!",
+                "description": "You have completed the open range assessment. We will now analyze your data and generate your personalized under load assessment.",
+                "seconds": 3
+            },
+            "steps": [
+                {
+                    "nodeType": "RangeAnalysisScriptedStep",
+                    "id": "fb811021-3588-47ea-a1ba-7c43c15cc463-open-range-step-1",
+                    "introMessage": {
+                        "header": "Open Range - Pitching Wedge",
+                        "description": "Hit 3 shots with your Pitching Wedge.",
+                        "seconds": 7
+                    },
+                    "successMessage": {
+                        "header": "Great Job!",
+                        "description": "You have completed the open range swings for Pitching Wedge.",
+                        "seconds": 3
+                    },
+                    "failMessage": {
+                        "header": "Failed",
+                        "description": "",
+                        "seconds": 3
+                    },
+                    "logic": {
+                        "nodeType": "RangeAnalysisScriptedLogic",
+                        "setup": {
+                            "nodeType": "RangeAnalysisScriptedSetup",
+                            "club": "_PW",
+                            "distance": 100
+                        },
+                        "successCondition": {
+                            "nodeType": "RangeAnalysisScriptedConditions",
+                            "shots": 3
+                        },
+                        "skipOnSuccess": true
+                    },
+                    "ui": {
+                        "nodeType": "RangeAnalysisScriptedUI",
+                        "activeDataTiles": [
+                            "Total",
+                            "Carry",
+                            "ClubSpeed",
+                            "BallSpeed",
+                            "AttackAngle"
+                        ],
+                        "shotListParameters": [
+                            "Total",
+                            "Carry",
+                            "ClubSpeed",
+                            "BallSpeed"
+                        ],
+                        "defaultShotListParameter": "Total",
+                        "beforeShot": {
+                            "removeFrames": [
+                                "Player",
+                                "StrokesGainedSummaryTile",
+                                "StrokesGainedShotResult",
+                                "TargetCarry"
+                            ],
+                            "disableFrames": [
+                                "Tiles",
+                                "ShotList",
+                                "GoToSetup",
+                                "Minimap"
+                            ],
+                            "addFrames": []
+                        },
+                        "duringShot": {
+                            "removeFrames": [
+                                "LandingCamera",
+                                "BroadcastTiles",
+                                "GoToSetup",
+                                "ClubDelivery",
+                                "Tiles",
+                                "Player",
+                                "Minimap"
+                            ],
+                            "disableFrames": [],
+                            "addFrames": []
+                        },
+                        "afterShot": {
+                            "removeFrames": [
+                                "GoToSetup",
+                                "StrokesGainedSummaryTile",
+                                "StrokesGainedShotResult"
+                            ],
+                            "disableFrames": [],
+                            "addFrames": []
+                        }
+                    }
+                },
+                {
+                    "nodeType": "RangeAnalysisScriptedStep",
+                    "id": "fb811021-3588-47ea-a1ba-7c43c15cc463-open-range-step-2",
+                    "introMessage": {
+                        "header": "Open Range - 7 Iron",
+                        "description": "Hit 3 shots with your 7 Iron.",
+                        "seconds": 7
+                    },
+                    "successMessage": {
+                        "header": "Great Job!",
+                        "description": "You have completed the open range swings for 7 Iron.",
+                        "seconds": 3
+                    },
+                    "failMessage": {
+                        "header": "Failed",
+                        "description": "",
+                        "seconds": 3
+                    },
+                    "logic": {
+                        "nodeType": "RangeAnalysisScriptedLogic",
+                        "setup": {
+                            "nodeType": "RangeAnalysisScriptedSetup",
+                            "club": "_7I",
+                            "distance": 100
+                        },
+                        "successCondition": {
+                            "nodeType": "RangeAnalysisScriptedConditions",
+                            "shots": 3
+                        },
+                        "skipOnSuccess": true
+                    },
+                    "ui": {
+                        "nodeType": "RangeAnalysisScriptedUI",
+                        "activeDataTiles": [
+                            "Total",
+                            "Carry",
+                            "ClubSpeed",
+                            "BallSpeed",
+                            "AttackAngle"
+                        ],
+                        "shotListParameters": [
+                            "Total",
+                            "Carry",
+                            "ClubSpeed",
+                            "BallSpeed"
+                        ],
+                        "defaultShotListParameter": "Total",
+                        "beforeShot": {
+                            "removeFrames": [
+                                "Player",
+                                "StrokesGainedSummaryTile",
+                                "StrokesGainedShotResult",
+                                "TargetCarry"
+                            ],
+                            "disableFrames": [
+                                "Tiles",
+                                "ShotList",
+                                "GoToSetup",
+                                "Minimap"
+                            ],
+                            "addFrames": []
+                        },
+                        "duringShot": {
+                            "removeFrames": [
+                                "LandingCamera",
+                                "BroadcastTiles",
+                                "GoToSetup",
+                                "ClubDelivery",
+                                "Tiles",
+                                "Player",
+                                "Minimap"
+                            ],
+                            "disableFrames": [],
+                            "addFrames": []
+                        },
+                        "afterShot": {
+                            "removeFrames": [
+                                "GoToSetup",
+                                "StrokesGainedSummaryTile",
+                                "StrokesGainedShotResult"
+                            ],
+                            "disableFrames": [],
+                            "addFrames": []
+                        }
+                    }
+                },
+                {
+                    "nodeType": "RangeAnalysisScriptedStep",
+                    "id": "fb811021-3588-47ea-a1ba-7c43c15cc463-open-range-step-3",
+                    "introMessage": {
+                        "header": "Open Range - 4 Hybrid",
+                        "description": "Hit 3 shots with your 4 Hybrid.",
+                        "seconds": 7
+                    },
+                    "successMessage": {
+                        "header": "Great Job!",
+                        "description": "You have completed the open range swings for 4 Hybrid.",
+                        "seconds": 3
+                    },
+                    "failMessage": {
+                        "header": "Failed",
+                        "description": "",
+                        "seconds": 3
+                    },
+                    "logic": {
+                        "nodeType": "RangeAnalysisScriptedLogic",
+                        "setup": {
+                            "nodeType": "RangeAnalysisScriptedSetup",
+                            "club": "_4H",
+                            "distance": 130
+                        },
+                        "successCondition": {
+                            "nodeType": "RangeAnalysisScriptedConditions",
+                            "shots": 3
+                        },
+                        "skipOnSuccess": true
+                    },
+                    "ui": {
+                        "nodeType": "RangeAnalysisScriptedUI",
+                        "activeDataTiles": [
+                            "Total",
+                            "Carry",
+                            "ClubSpeed",
+                            "BallSpeed",
+                            "AttackAngle"
+                        ],
+                        "shotListParameters": [
+                            "Total",
+                            "Carry",
+                            "ClubSpeed",
+                            "BallSpeed"
+                        ],
+                        "defaultShotListParameter": "Total",
+                        "beforeShot": {
+                            "removeFrames": [
+                                "Player",
+                                "StrokesGainedSummaryTile",
+                                "StrokesGainedShotResult",
+                                "TargetCarry"
+                            ],
+                            "disableFrames": [
+                                "Tiles",
+                                "ShotList",
+                                "GoToSetup",
+                                "Minimap"
+                            ],
+                            "addFrames": []
+                        },
+                        "duringShot": {
+                            "removeFrames": [
+                                "LandingCamera",
+                                "BroadcastTiles",
+                                "GoToSetup",
+                                "ClubDelivery",
+                                "Tiles",
+                                "Player",
+                                "Minimap"
+                            ],
+                            "disableFrames": [],
+                            "addFrames": []
+                        },
+                        "afterShot": {
+                            "removeFrames": [
+                                "GoToSetup",
+                                "StrokesGainedSummaryTile",
+                                "StrokesGainedShotResult"
+                            ],
+                            "disableFrames": [],
+                            "addFrames": []
+                        }
+                    }
+                },
+                {
+                    "nodeType": "RangeAnalysisScriptedStep",
+                    "id": "fb811021-3588-47ea-a1ba-7c43c15cc463-open-range-step-4",
+                    "introMessage": {
+                        "header": "Open Range - Driver",
+                        "description": "Hit 3 shots with your Driver.",
+                        "seconds": 7
+                    },
+                    "successMessage": {
+                        "header": "Great Job!",
+                        "description": "You have completed the open range swings for Driver.",
+                        "seconds": 3
+                    },
+                    "failMessage": {
+                        "header": "Failed",
+                        "description": "",
+                        "seconds": 3
+                    },
+                    "logic": {
+                        "nodeType": "RangeAnalysisScriptedLogic",
+                        "setup": {
+                            "nodeType": "RangeAnalysisScriptedSetup",
+                            "club": "Drv",
+                            "distance": 200
+                        },
+                        "successCondition": {
+                            "nodeType": "RangeAnalysisScriptedConditions",
+                            "shots": 3
+                        },
+                        "skipOnSuccess": true
+                    },
+                    "ui": {
+                        "nodeType": "RangeAnalysisScriptedUI",
+                        "activeDataTiles": [
+                            "Total",
+                            "Carry",
+                            "ClubSpeed",
+                            "BallSpeed",
+                            "AttackAngle"
+                        ],
+                        "shotListParameters": [
+                            "Total",
+                            "Carry",
+                            "ClubSpeed",
+                            "BallSpeed"
+                        ],
+                        "defaultShotListParameter": "Total",
+                        "beforeShot": {
+                            "removeFrames": [
+                                "Player",
+                                "StrokesGainedSummaryTile",
+                                "StrokesGainedShotResult",
+                                "TargetCarry"
+                            ],
+                            "disableFrames": [
+                                "Tiles",
+                                "ShotList",
+                                "GoToSetup",
+                                "Minimap"
+                            ],
+                            "addFrames": []
+                        },
+                        "duringShot": {
+                            "removeFrames": [
+                                "LandingCamera",
+                                "BroadcastTiles",
+                                "GoToSetup",
+                                "ClubDelivery",
+                                "Tiles",
+                                "Player",
+                                "Minimap"
+                            ],
+                            "disableFrames": [],
+                            "addFrames": []
+                        },
+                        "afterShot": {
+                            "removeFrames": [
+                                "GoToSetup",
+                                "StrokesGainedSummaryTile",
+                                "StrokesGainedShotResult"
+                            ],
+                            "disableFrames": [],
+                            "addFrames": []
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
