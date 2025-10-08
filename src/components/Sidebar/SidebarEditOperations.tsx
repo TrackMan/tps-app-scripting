@@ -1,6 +1,6 @@
 import React from 'react';
 import { CollapsibleSection } from '../CollapsibleSection';
-import { TreeView } from '../TreeView';
+import { TreeView } from './TreeView';
 import { CloneSelectedButton, AddActivityButton, AddStepButton } from '../buttons';
 import { ScriptData, Activity, Step } from '../../types';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { CollapsibleSection } from '../CollapsibleSection';
-import { LocationSelector } from '../LocationSelector';
-import { BaySelector } from '../BaySelector';
+import { LocationSelector } from './LocationSelector';
+import { BaySelector } from './BaySelector';
 import { Bay, Location } from '../../types/sidebarTypes';
 
 interface SidebarBayOperationsProps {

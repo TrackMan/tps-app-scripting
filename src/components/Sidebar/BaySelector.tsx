@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from 'urql';
-import { BAYS_IN_LOCATION_QUERY } from '../graphql/queries';
+import { BAYS_IN_LOCATION_QUERY } from '../../graphql/queries';
 
 interface Bay {
   id: string;

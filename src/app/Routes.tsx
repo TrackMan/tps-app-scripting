@@ -1,5 +1,5 @@
 import React from 'react';
-import { DialogManager } from '../components/DialogManager';
+import { DialogManager } from '../components/Dialogs';
 import { Sidebar } from '../components/Sidebar';
 import { ScriptEditor } from '../components/ScriptEditor';
 import { NodeEditor } from '../components/NodeEditor';

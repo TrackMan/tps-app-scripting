@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-import { Step } from '../types';
-import { createStep } from '../factories';
+import { Step } from '../../types';
+import { createStep } from '../../factories';
 
 interface StepDialogProps {
   open: boolean;

@@ -1,7 +1,7 @@
 import React from 'react';
-import { CourseInfo, ActivitySessionData } from '../hooks/useActivitySessionState';
+import { CourseInfo, ActivitySessionData } from '../../hooks/useActivitySessionState';
 import ShotTrajectoryOverlay, { ShotData } from './ShotTrajectoryOverlay';
-import { Vector3 } from '../utils/projectionUtils';
+import { Vector3 } from '../../utils/projectionUtils';
 import './CourseInfoBanner.css';
 
 interface Props {

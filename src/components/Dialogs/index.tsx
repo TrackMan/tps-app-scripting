@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Step } from '../types';
+import { Activity, Step } from '../../types';
 import { ActivityDialog } from './ActivityDialog';
 import { StepDialog } from './StepDialog';
 

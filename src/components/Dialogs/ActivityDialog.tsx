@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-import { Activity } from '../types';
-import { createActivity } from '../factories';
+import { Activity } from '../../types';
+import { createActivity } from '../../factories';
 
 interface ActivityDialogProps {
   open: boolean;

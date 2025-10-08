@@ -1,6 +1,6 @@
 import React from 'react';
-import { Step } from '../types';
-import { HoleSelector } from './HoleSelector';
+import { Step } from '../../types';
+import { HoleSelector } from '../HoleSelector';
 
 interface SetupEditorProps {
   step: Step;

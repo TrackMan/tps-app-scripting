@@ -1,9 +1,9 @@
 import React from 'react';
 import '../WebhookView/WebhookEventsPanel.css';
 import './WebhookInspector.css';
-import MeasurementTilesView from '../MeasurementTilesView';
-import CourseInfoBanner from '../CourseInfoBanner';
-import { ShotData } from '../ShotTrajectoryOverlay';
+import MeasurementTilesView from './MeasurementTilesView';
+import CourseInfoBanner from './CourseInfoBanner';
+import { ShotData } from './ShotTrajectoryOverlay';
 import { useActivitySessionState } from '../../hooks/useActivitySessionState';
 import { getEventDisplayName, getEventDescription, hasEventMetadata } from '../../utils/eventMetadata';
 import { EventItem } from '../../types/webhookTypes';

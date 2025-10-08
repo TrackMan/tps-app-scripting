@@ -2,7 +2,7 @@ import React from 'react';
 import { TopBar } from '../components/TopBar';
 import { TabBar } from '../components/TabBar';
 import { Sidebar } from '../components/Sidebar';
-import { DialogManager } from '../components/DialogManager';
+import { DialogManager } from '../components/Dialogs';
 import { ScriptEditor } from '../components/ScriptEditor';
 import { NodeEditor } from '../components/NodeEditor';
 import { DocViewer } from '../components/DocViewer';

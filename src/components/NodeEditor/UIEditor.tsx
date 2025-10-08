@@ -1,5 +1,5 @@
 import React from 'react';
-import { Step, RangeAnalysisScriptedStep, PerformanceCenterScriptedStep, ParameterName, UIFrameName, UIFrameAction } from '../types';
+import { Step, RangeAnalysisScriptedStep, PerformanceCenterScriptedStep, ParameterName, UIFrameName, UIFrameAction } from '../../types';
 import './UIEditor.css';
 
 interface UIEditorProps {

@@ -6,10 +6,9 @@ import { Sidebar } from './components/Sidebar';
 // ...existing code...
 import { ScriptEditor } from './components/ScriptEditor';
 import { NodeEditor } from './components/NodeEditor';
-import { DialogManager } from './components/DialogManager';
+import { DialogManager } from './components/Dialogs';
 import { DocViewer } from './components/DocViewer';
 import WebhookView from './components/WebhookView';
-import { EnvironmentDebug } from './components/EnvironmentDebug';
 import { Activity, Step, ScriptData, isActivity, isStep, LogicNode } from './types';
 import { normalizeScript } from './normalizer';
 import { createActivity, createStep } from './factories';

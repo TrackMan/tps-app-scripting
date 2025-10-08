@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Activity, Step, isActivity, isStep } from '../types';
+import { Activity, Step, isActivity, isStep } from '../../types';
 import { SubTabBar } from './SubTabBar';
 import { SetupEditor } from './SetupEditor';
 import { UIEditor } from './UIEditor';

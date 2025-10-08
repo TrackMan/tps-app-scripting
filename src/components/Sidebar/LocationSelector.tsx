@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from 'urql';
-import { LOCATIONS_QUERY } from '../graphql/queries';
+import { LOCATIONS_QUERY } from '../../graphql/queries';
 
 interface Location {
   id: string;

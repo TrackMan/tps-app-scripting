@@ -1,5 +1,5 @@
 import React from 'react';
-import { getBuildInfo, formatBuildInfo } from '../utils/buildInfo';
+import { getBuildInfo, formatBuildInfo } from '../../utils/buildInfo';
 
 export const BuildVersion: React.FC = () => {
   const buildInfo = getBuildInfo();

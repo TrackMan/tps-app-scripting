@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Vector3, projectWorldToPixel, loadHoleMetadata, PixelCoordinate } from '../utils/projectionUtils';
+import { Vector3, projectWorldToPixel, loadHoleMetadata, PixelCoordinate } from '../../utils/projectionUtils';
 import './ShotTrajectoryOverlay.css';
 
 export interface ShotData {

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FacilitySelectorPortal } from './FacilitySelector';
+import { FacilitySelectorPortal } from '../FacilitySelector';
 import { BuildVersion } from './BuildVersion';
-import { useAuth } from '../lib/AuthProvider';
+import { useAuth } from '../../lib/AuthProvider';
 
 interface Facility {
   id: string;
