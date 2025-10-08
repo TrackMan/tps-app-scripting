@@ -1,5 +1,5 @@
 import React from 'react';
-import '../WebhookEventsPanel.css';
+import '../WebhookView/WebhookEventsPanel.css';
 import './WebhookInspector.css';
 import MeasurementTilesView from '../MeasurementTilesView';
 import CourseInfoBanner from '../CourseInfoBanner';

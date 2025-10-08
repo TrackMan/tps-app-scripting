@@ -1,8 +1,7 @@
 import React from 'react';
 import { useQuery, useMutation } from 'urql';
-import { GET_USER_PROPERTIES_QUERY, APP_SCRIPT_APPLICATION, SET_USER_PROPERTIES_MUTATION, SetUserPropertiesVariables, SetUserPropertiesData } from '../graphql/userProperties';
-import WebhookInspector from './WebhookInspector';
-import './WebhookView.css';
+import { GET_USER_PROPERTIES_QUERY, APP_SCRIPT_APPLICATION, SET_USER_PROPERTIES_MUTATION, SetUserPropertiesVariables, SetUserPropertiesData } from '../../graphql/userProperties';
+import WebhookInspector from '../WebhookInspector';
 import './WebhookView.css';
 
 interface WebhookViewProps {
