@@ -92,8 +92,8 @@
 }
 
 .facility-tab.active {
-  color: #EC691A;
-  border-bottom-color: #EC691A;
+  color: var(--trackman-orange);
+  border-bottom-color: var(--trackman-orange);
   background: white;
 }
 
@@ -103,7 +103,7 @@
 }
 
 .facility-tab.active .facility-tab-count {
-  color: #EC691A;
+  color: var(--trackman-orange);
 }
 
 /* Facility List Container */
@@ -183,7 +183,7 @@
 }
 
 .facility-checkmark {
-  color: #EC691A;
+  color: var(--trackman-orange);
   flex-shrink: 0;
   margin-left: 12px;
   display: flex;

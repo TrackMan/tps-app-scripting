@@ -1,3 +1,6 @@
+/* Import TrackMan Brand Colors */
+@import './colors.css';
+
 body {
   margin: 0;
   font-family: sans-serif;
@@ -30,7 +33,7 @@ h1 {
   border-radius: 4px;
 }
 .doc-toc button.active {
-  background: #007acc;
+  background: var(--trackman-orange);
   color: white;
 }
 .doc-content-area {
@@ -44,6 +47,25 @@ h1 {
   border-radius: 4px;
   border: 1px solid #ddd;
   line-height: 1.6;
+}
+
+.doc-markdown-box a,
+.markdown-content a {
+  color: var(--trackman-orange);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.doc-markdown-box a:hover,
+.markdown-content a:hover {
+  color: var(--trackman-orange-hover);
+  text-decoration: underline;
+}
+
+.doc-markdown-box a:visited,
+.markdown-content a:visited {
+  color: var(--trackman-orange);
 }
 
 /* Topbar avatar/menu helpers */
@@ -89,7 +111,7 @@ h1 {
   width: 16px;
   height: 16px;
   border: 2px solid #ddd;
-  border-top: 2px solid #007acc;
+  border-top: 2px solid var(--trackman-orange);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-right: 8px;

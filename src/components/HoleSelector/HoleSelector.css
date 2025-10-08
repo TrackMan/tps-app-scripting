@@ -2,7 +2,7 @@
 :root {
   --background-black-70: rgba(34, 34, 34, 0.7);
   --backgroundbackground-inverse-hover: rgba(238, 238, 238, 1);
-  --borderborder-interactive: rgba(236, 105, 26, 1);
+  --borderborder-interactive: var(--trackman-orange);
   --grayscalebackground-black: rgba(34, 34, 34, 1);
   --grayscalegray: rgba(160, 160, 160, 1);
   --grayscaletext-element: rgba(65, 65, 65, 1);
@@ -39,7 +39,7 @@
   --lato-20-bold-line-height: 28px;
   --TM-text-shadow-22-32pt: 0px 1px 2px 0px rgba(0, 0, 0, 0.5);
   --tpsaction-grey: rgba(49, 49, 49, 1);
-  --uitrackman-orange: rgba(236, 105, 26, 1);
+  --uitrackman-orange: var(--trackman-orange);
 }
 
 /* HoleSelector Main Container */

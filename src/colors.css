@@ -1,0 +1,55 @@
+/**
+ * TrackMan Brand Colors - CSS Custom Properties
+ * 
+ * OFFICIAL TrackMan Orange: #ec691a (rgb(236, 105, 26))
+ * 
+ * This file defines all brand colors as CSS variables.
+ * Import this file in your CSS to use these colors.
+ * 
+ * Usage:
+ *   background: var(--trackman-orange);
+ *   border-color: var(--trackman-orange-hover);
+ */
+
+:root {
+  /* ========== TrackMan Orange (Primary Brand Color) ========== */
+  --trackman-orange: #ec691a;              /* Official TrackMan Orange */
+  --trackman-orange-hover: #d35a15;        /* Hover state (15% darker) */
+  --trackman-orange-active: #ba4b11;       /* Active/pressed state (30% darker) */
+  --trackman-orange-light: rgba(236, 105, 26, 0.1);  /* Light tint for backgrounds */
+  --trackman-orange-shadow: rgba(236, 105, 26, 0.55); /* Shadow color */
+  
+  /* ========== Semantic Colors ========== */
+  --color-success: #10b981;    /* Green - success states */
+  --color-error: #ef4444;      /* Red - error states */
+  --color-warning: #f59e0b;    /* Amber - warning states */
+  --color-info: #3b82f6;       /* Blue - informational (non-interactive) */
+  
+  /* ========== Neutral Colors ========== */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  
+  /* ========== Text Colors ========== */
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --text-inverse: #ffffff;
+  
+  /* ========== Background Colors ========== */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  
+  /* ========== Border Colors ========== */
+  --border-light: #e5e7eb;
+  --border-medium: #d1d5db;
+  --border-dark: #9ca3af;
+}

@@ -22,7 +22,7 @@
   padding: 12px;
   background: white;
   border-radius: 6px;
-  border-left: 4px solid #ff7a00;
+  border-left: 4px solid var(--trackman-orange);
   font-size: 14px;
   flex: 1;
   min-width: 200px;
@@ -58,7 +58,7 @@
 }
 
 .unit-toggle-btn.active {
-  background: #ff7a00;
+  background: var(--trackman-orange);
   color: white;
 }
 

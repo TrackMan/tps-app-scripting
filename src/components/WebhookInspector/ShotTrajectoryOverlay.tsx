@@ -131,7 +131,7 @@ const ShotTrajectoryOverlay: React.FC<Props> = ({
 
   // Shot colors - use different colors for each shot
   const shotColors = [
-    '#ff7a00', // Orange (shot 1)
+    '#ec691a', // Orange (shot 1) - TrackMan Orange
     '#3b82f6', // Blue (shot 2)
     '#10b981', // Green (shot 3)
     '#f59e0b', // Amber (shot 4)
