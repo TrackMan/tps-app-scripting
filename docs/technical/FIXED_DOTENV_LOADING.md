@@ -1,19 +1,19 @@
-# ✅ Fixed: Server Now Loads .env File!
+#  Fixed: Server Now Loads .env File!
 
 ## What Was Wrong
 
 The server wasn't loading environment variables from the `server/.env` file because:
-- ❌ `ts-node-dev` doesn't automatically load `.env` files
-- ❌ No `dotenv` package was installed
-- ❌ No code to load the `.env` file
+-  `ts-node-dev` doesn't automatically load `.env` files
+-  No `dotenv` package was installed
+-  No code to load the `.env` file
 
 Result: `AZURE_STORAGE_CONNECTION_STRING` was never read, even though it was in the file!
 
 ## What I Fixed
 
-1. ✅ Added `dotenv` package to `server/package.json`
-2. ✅ Added code to load `.env` at server startup in `server/src/index.ts`
-3. ✅ Installed the package with `npm install`
+1.  Added `dotenv` package to `server/package.json`
+2.  Added code to load `.env` at server startup in `server/src/index.ts`
+3.  Installed the package with `npm install`
 
 ## What You Need to Do Now
 
@@ -31,13 +31,13 @@ npm run dev
 You should now see:
 
 ```
-✅ Azure Table Storage connected: WebhookEvents
+ Azure Table Storage connected: WebhookEvents
 ```
 
 Instead of:
 
 ```
-⚠️  AZURE_STORAGE_CONNECTION_STRING not set. Table Storage disabled.
+️  AZURE_STORAGE_CONNECTION_STRING not set. Table Storage disabled.
 ```
 
 ### Step 3: Test It
@@ -63,7 +63,7 @@ Should return:
 1. Open http://localhost:5000
 2. Login and select a bay
 3. Go to **Webhook** tab
-4. **You should now see events from Azure Storage!** 🎉
+4. **You should now see events from Azure Storage!** 
 
 ## Quick Test Command
 
@@ -75,9 +75,9 @@ This time all tests should pass!
 
 ## Files Modified
 
-1. ✅ `server/src/index.ts` - Added dotenv.config()
-2. ✅ `server/package.json` - Added dotenv dependency
-3. ✅ Ran `npm install` in server directory
+1.  `server/src/index.ts` - Added dotenv.config()
+2.  `server/package.json` - Added dotenv dependency
+3.  Ran `npm install` in server directory
 
 ## Why This Happened
 
@@ -88,4 +88,4 @@ You had **TWO `.env` files**:
 
 You correctly added the connection string to `server/.env`, but the server code wasn't configured to load it!
 
-Now it is! 🚀
+Now it is! 

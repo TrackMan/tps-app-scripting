@@ -1,26 +1,26 @@
 # Troubleshooting Guide - Common Issues and Solutions
 
-## 🔧 Overview
+##  Overview
 
 This guide helps you diagnose and fix common issues when using the TrackMan App Scripting Editor. Find quick solutions to validation errors, facility connection problems, UI configuration issues, and more.
 
 ---
 
-## 🚨 Quick Problem Identification
+##  Quick Problem Identification
 
 ### Error Types and Visual Indicators
 
 | Indicator | Problem Type | Urgency | Next Action |
 |-----------|--------------|---------|-------------|
-| ❌ **Red X** | Validation errors | High | Must fix before use |
-| ⚠️ **Yellow Warning** | Warnings/suggestions | Medium | Should fix for best experience |
-| ✅ **Green Check** | All good | None | Ready to use |
-| 🔄 **Loading Spinner** | Network/processing | Wait | May indicate connection issues |
-| 🚫 **Connection Error** | Network failure | High | Check internet/authentication |
+|  **Red X** | Validation errors | High | Must fix before use |
+| ️ **Yellow Warning** | Warnings/suggestions | Medium | Should fix for best experience |
+|  **Green Check** | All good | None | Ready to use |
+|  **Loading Spinner** | Network/processing | Wait | May indicate connection issues |
+|  **Connection Error** | Network failure | High | Check internet/authentication |
 
 ---
 
-## 📝 Validation Errors
+##  Validation Errors
 
 ### Common Validation Issues
 
@@ -75,7 +75,7 @@ Location: UI Configuration section
 ### Step-by-Step Validation Fixing
 
 1. **Identify the Error**
-   - Look for red ❌ indicators in the tree
+   - Look for red  indicators in the tree
    - Click on validation messages to jump to problems
    - Note the specific error message
 
@@ -91,7 +91,7 @@ Location: UI Configuration section
 
 4. **Re-validate**
    - Save your changes
-   - Check for green ✅ validation status
+   - Check for green  validation status
    - Address any remaining issues
 
 ![Validation Process](screenshots/validation-process.png)
@@ -99,7 +99,7 @@ Location: UI Configuration section
 
 ---
 
-## 🌐 Facility Connection Issues
+##  Facility Connection Issues
 
 ### Authentication Problems
 
@@ -182,7 +182,7 @@ Symptoms:
 
 ---
 
-## 🎨 UI Configuration Issues
+##  UI Configuration Issues
 
 ### Parameter Display Problems
 
@@ -276,7 +276,7 @@ Problem: Text too small, colors hard to see, poor contrast
 
 ---
 
-## 🔄 Import/Export Problems
+##  Import/Export Problems
 
 ### Script Loading Issues
 
@@ -349,7 +349,7 @@ Symptoms:
 
 ---
 
-## ⚡ Performance Issues
+##  Performance Issues
 
 ### Slow Loading
 
@@ -400,7 +400,7 @@ Symptoms:
 
 ---
 
-## 🧪 Testing and Debugging
+##  Testing and Debugging
 
 ### Debug Tools and Techniques
 
@@ -483,7 +483,7 @@ Gather this information:
 
 ---
 
-## 📋 Prevention and Best Practices
+##  Prevention and Best Practices
 
 ### Avoiding Common Issues
 
@@ -510,7 +510,7 @@ Gather this information:
 
 ---
 
-## 🔄 Issue Resolution Workflow
+##  Issue Resolution Workflow
 
 ### Standard Troubleshooting Process
 

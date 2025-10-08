@@ -178,10 +178,10 @@ After implementing Solution 1 or 2:
 
 ## Current Status
 
-✅ Backend SSE fixes deployed (X-Accel-Buffering, keepalive, flush)
-✅ Table Storage working (events appear immediately)
-❌ Front Door/Proxy still buffering SSE responses
-❌ Need to configure Front Door routing rule
+ Backend SSE fixes deployed (X-Accel-Buffering, keepalive, flush)
+ Table Storage working (events appear immediately)
+ Front Door/Proxy still buffering SSE responses
+ Need to configure Front Door routing rule
 
 ## Next Steps
 

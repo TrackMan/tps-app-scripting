@@ -102,7 +102,7 @@ az webapp restart \
 
 2. Look for this line:
    ```
-   ✅ Azure Table Storage initialized: WebhookEvents
+    Azure Table Storage initialized: WebhookEvents
    ```
 
 3. Send a test webhook event and verify it appears in:

@@ -1,12 +1,12 @@
 # Screenshots and Visual Guide
 
-## 📸 Overview
+##  Overview
 
 This document outlines the screenshots and visual elements referenced throughout the TrackMan App Scripting Editor documentation. Screenshots should be taken at high resolution and clearly show the relevant interface elements.
 
 ---
 
-## 🖼️ Required Screenshots
+## ️ Required Screenshots
 
 ### General Interface Screenshots
 
@@ -177,7 +177,7 @@ This document outlines the screenshots and visual elements referenced throughout
 
 ---
 
-## 📐 Screenshot Guidelines
+##  Screenshot Guidelines
 
 ### Technical Specifications
 
@@ -209,7 +209,7 @@ This document outlines the screenshots and visual elements referenced throughout
 
 ---
 
-## 🎨 Screenshot Editing Guidelines
+##  Screenshot Editing Guidelines
 
 ### Annotations and Callouts
 
@@ -240,7 +240,7 @@ This document outlines the screenshots and visual elements referenced throughout
 
 ---
 
-## 📁 File Organization
+##  File Organization
 
 ### Directory Structure
 ```
@@ -275,7 +275,7 @@ docs/
 
 ---
 
-## 🔄 Maintenance and Updates
+##  Maintenance and Updates
 
 ### When to Update Screenshots
 
@@ -301,7 +301,7 @@ docs/
 
 ---
 
-## 📝 Alt Text and Accessibility
+##  Alt Text and Accessibility
 
 ### Writing Alt Text
 
@@ -329,7 +329,7 @@ Poor Alt Text:
 
 ---
 
-## 📊 Usage Analytics
+##  Usage Analytics
 
 ### Tracking Screenshot Effectiveness
 

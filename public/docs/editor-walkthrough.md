@@ -265,16 +265,16 @@ Now that the basic script works, let's add some improvements:
    - Click Download to get a JSON file
    - This can be shared with others or used as backup
 
-## Congratulations! 🎉
+## Congratulations! 
 
 You've successfully created a complete interactive script! You now understand:
 
-- ✅ How to add and configure activities
-- ✅ How to connect activities in logical flows
-- ✅ How to work with variables and user input
-- ✅ How to create conditional logic and loops
-- ✅ How to test and debug scripts
-- ✅ How to save and share your work
+-  How to add and configure activities
+-  How to connect activities in logical flows
+-  How to work with variables and user input
+-  How to create conditional logic and loops
+-  How to test and debug scripts
+-  How to save and share your work
 
 ## What's Next?
 
@@ -327,4 +327,4 @@ Create a form that:
 
 These patterns can be combined in countless ways to create sophisticated scripts for any purpose. The visual editor makes it easy to see and modify the logic flow, enabling rapid development and testing.
 
-Happy scripting! 🚀
+Happy scripting! 

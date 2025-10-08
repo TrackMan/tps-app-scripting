@@ -10,30 +10,30 @@ Hole and shot information was only visible when viewing `TPS.Simulator.ChangePla
 Timeline (newest to oldest):
 ┌─────────────────────────────────────────────────────────┐
 │ Event 1: ChangePlayer (Hole: 1, Shot: 0)               │
-│          Banner: "Hole 1 • Shot 1 • Player 1" ✓         │
+│          Banner: "Hole 1 • Shot 1 • Player 1"          │
 ├─────────────────────────────────────────────────────────┤
 │ Event 2: ShotStarting                                   │
-│          Banner: Course info only (no hole/shot) ✗      │
+│          Banner: Course info only (no hole/shot)       │
 ├─────────────────────────────────────────────────────────┤
 │ Event 3: OnStrokeCompletedEvent                         │
-│          Banner: Course info only (no hole/shot) ✗      │
+│          Banner: Course info only (no hole/shot)       │
 ├─────────────────────────────────────────────────────────┤
 │ Event 4: ShotFinish                                     │
-│          Banner: Course info only (no hole/shot) ✗      │
+│          Banner: Course info only (no hole/shot)       │
 ├─────────────────────────────────────────────────────────┤
 │ Event 5: ChangePlayer (Hole: 1, Shot: 1)               │
-│          Banner: "Hole 1 • Shot 2 • Player 1" ✓         │
+│          Banner: "Hole 1 • Shot 2 • Player 1"          │
 └─────────────────────────────────────────────────────────┘
 ```
 
 ### User Experience Impact
 
 When navigating through events:
-- Click on ChangePlayer → See hole/shot ✓
-- Click on next event (ShotStarting) → Hole/shot disappears ✗
-- Click on next event (OnStrokeCompletedEvent) → Still no hole/shot ✗
-- Click on next event (ShotFinish) → Still no hole/shot ✗
-- Click on next ChangePlayer → Hole/shot appears again ✓
+- Click on ChangePlayer → See hole/shot 
+- Click on next event (ShotStarting) → Hole/shot disappears 
+- Click on next event (OnStrokeCompletedEvent) → Still no hole/shot 
+- Click on next event (ShotFinish) → Still no hole/shot 
+- Click on next ChangePlayer → Hole/shot appears again 
 
 This made it difficult to understand which hole/shot each event belonged to.
 
@@ -130,33 +130,33 @@ const changePlayerData = findRecentChangePlayerData(selectedEvent, filtered);
 Timeline (newest to oldest):
 ┌─────────────────────────────────────────────────────────┐
 │ Event 1: ChangePlayer (Hole: 1, Shot: 0)               │
-│          Banner: "Hole 1 • Shot 1 • Player 1" ✓         │
+│          Banner: "Hole 1 • Shot 1 • Player 1"          │
 ├─────────────────────────────────────────────────────────┤
 │ Event 2: ShotStarting                                   │
-│          Banner: "Hole 1 • Shot 1 • Player 1" ✓         │
+│          Banner: "Hole 1 • Shot 1 • Player 1"          │
 │          (carried forward from Event 1)                 │
 ├─────────────────────────────────────────────────────────┤
 │ Event 3: OnStrokeCompletedEvent                         │
-│          Banner: "Hole 1 • Shot 1 • Player 1" ✓         │
+│          Banner: "Hole 1 • Shot 1 • Player 1"          │
 │          (carried forward from Event 1)                 │
 ├─────────────────────────────────────────────────────────┤
 │ Event 4: ShotFinish                                     │
-│          Banner: "Hole 1 • Shot 1 • Player 1" ✓         │
+│          Banner: "Hole 1 • Shot 1 • Player 1"          │
 │          (carried forward from Event 1)                 │
 ├─────────────────────────────────────────────────────────┤
 │ Event 5: ChangePlayer (Hole: 1, Shot: 1)               │
-│          Banner: "Hole 1 • Shot 2 • Player 1" ✓         │
+│          Banner: "Hole 1 • Shot 2 • Player 1"          │
 └─────────────────────────────────────────────────────────┘
 ```
 
 ### New Behavior
 
 When navigating through events:
-- Click on ChangePlayer → See "Hole 1 • Shot 1" ✓
-- Click on ShotStarting → Still see "Hole 1 • Shot 1" ✓
-- Click on OnStrokeCompletedEvent → Still see "Hole 1 • Shot 1" ✓
-- Click on ShotFinish → Still see "Hole 1 • Shot 1" ✓
-- Click on next ChangePlayer → See "Hole 1 • Shot 2" ✓
+- Click on ChangePlayer → See "Hole 1 • Shot 1" 
+- Click on ShotStarting → Still see "Hole 1 • Shot 1" 
+- Click on OnStrokeCompletedEvent → Still see "Hole 1 • Shot 1" 
+- Click on ShotFinish → Still see "Hole 1 • Shot 1" 
+- Click on next ChangePlayer → See "Hole 1 • Shot 2" 
 
 **Every event now shows which hole/shot it belongs to!**
 
@@ -186,13 +186,13 @@ When navigating through events:
 
 To verify the fix works:
 
-1. ✅ Refresh browser to load updated code
-2. ✅ Navigate to a course play activity with multiple events
-3. ✅ Click on a ChangePlayer event → Should show hole/shot
-4. ✅ Click on the next event (non-ChangePlayer) → Should STILL show same hole/shot
-5. ✅ Continue clicking through events → Hole/shot persists until next ChangePlayer
-6. ✅ Click on next ChangePlayer with new ShotNumber → Should update to new shot number
-7. ✅ Events after that should carry forward the NEW shot number
+1.  Refresh browser to load updated code
+2.  Navigate to a course play activity with multiple events
+3.  Click on a ChangePlayer event → Should show hole/shot
+4.  Click on the next event (non-ChangePlayer) → Should STILL show same hole/shot
+5.  Continue clicking through events → Hole/shot persists until next ChangePlayer
+6.  Click on next ChangePlayer with new ShotNumber → Should update to new shot number
+7.  Events after that should carry forward the NEW shot number
 
 ## Files Modified
 

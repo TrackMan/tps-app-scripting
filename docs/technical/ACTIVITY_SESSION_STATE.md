@@ -210,7 +210,7 @@ When a course play activity is active, all events in that session will show a ba
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ 🏌️  Ballyneety Golf Club                               │
+│ ️  Ballyneety Golf Club                               │
 │     Difficulty: CHAMPIONSHIP                            │
 │     A challenging parkland course in County Limerick   │
 │     18 holes                                            │

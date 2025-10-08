@@ -56,12 +56,12 @@ npm run dev
 
 You should see this message in the console:
 ```
-✅ Azure Table Storage connected: WebhookEvents
+ Azure Table Storage connected: WebhookEvents
 ```
 
 Instead of:
 ```
-⚠️  AZURE_STORAGE_CONNECTION_STRING not set. Table Storage disabled.
+️  AZURE_STORAGE_CONNECTION_STRING not set. Table Storage disabled.
 ```
 
 ---
@@ -200,7 +200,7 @@ const r = await fetch(`/api/webhook/${encodeURIComponent(userPath)}/events?limit
 
 ## Security Notes
 
-### ⚠️ Important: .gitignore
+### ️ Important: .gitignore
 
 Make sure `server/.env` is in your `.gitignore` to avoid committing secrets!
 
@@ -251,12 +251,12 @@ Example for 1 million events:
 
 ## Next Steps
 
-1. ✅ Get connection string from Azure
-2. ✅ Update `server/.env` with connection string
-3. ✅ Restart local server
-4. ✅ Verify storage is enabled in console logs
-5. ✅ Check webhook tab shows historical events
-6. ✅ Test that new events are persisted
+1.  Get connection string from Azure
+2.  Update `server/.env` with connection string
+3.  Restart local server
+4.  Verify storage is enabled in console logs
+5.  Check webhook tab shows historical events
+6.  Test that new events are persisted
 
 ## Need Help?
 

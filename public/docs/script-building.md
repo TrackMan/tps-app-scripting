@@ -1,12 +1,12 @@
 # Script Building Workflow - Complete Guide
 
-## 📋 Overview
+##  Overview
 
 This guide provides detailed, step-by-step instructions for building complete TrackMan scripts from start to finish. Follow these workflows to create professional, engaging training experiences.
 
 ---
 
-## 🏗️ Planning Your Script
+## ️ Planning Your Script
 
 ### 1. Define Your Training Objectives
 
@@ -38,11 +38,11 @@ Training Script Structure Planning
 
 ---
 
-## 🎯 Building Range Analysis Scripts
+##  Building Range Analysis Scripts
 
 ### Step 1: Create the Foundation Activity
 
-1. **Click "➕ Add Activity"**
+1. **Click " Add Activity"**
 2. **Select "Range Analysis Activity"**
 3. **Configure Basic Properties**:
    ```
@@ -57,7 +57,7 @@ Training Script Structure Planning
 ### Step 2: Add Technical Analysis Steps
 
 #### Driver Analysis Step
-1. **Select your activity and click "➕ Add Step"**
+1. **Select your activity and click " Add Step"**
 2. **Configure the step**:
    ```
    Name: "Driver Swing Analysis"
@@ -101,12 +101,12 @@ Training Script Structure Planning
 1. **Select your driver step**
 2. **Open "UI Configuration" section**
 3. **Select relevant parameters**:
-   - ✅ Club Speed
-   - ✅ Ball Speed  
-   - ✅ Launch Angle
-   - ✅ Spin Rate
-   - ✅ Carry Distance
-   - ✅ Smash Factor
+   -  Club Speed
+   -  Ball Speed  
+   -  Launch Angle
+   -  Spin Rate
+   -  Carry Distance
+   -  Smash Factor
 
 4. **Add Frame Actions**:
    ```
@@ -124,11 +124,11 @@ Training Script Structure Planning
 
 ---
 
-## 🏌️ Building Performance Center Scripts
+## ️ Building Performance Center Scripts
 
 ### Step 1: Create Game-Based Activity
 
-1. **Click "➕ Add Activity"**
+1. **Click " Add Activity"**
 2. **Select "Performance Center Activity"**
 3. **Configure for challenge-based training**:
    ```
@@ -182,10 +182,10 @@ Training Script Structure Planning
 
 1. **Select your approach shot step**
 2. **Choose Performance Center parameters**:
-   - ✅ Distance to Target
-   - ✅ Shot Accuracy Score
-   - ✅ Trajectory Height
-   - ✅ Landing Angle
+   -  Distance to Target
+   -  Shot Accuracy Score
+   -  Trajectory Height
+   -  Landing Angle
 
 3. **Add competitive frame actions**:
    ```
@@ -204,7 +204,7 @@ Training Script Structure Planning
 
 ---
 
-## 🔄 Advanced Workflow Techniques
+##  Advanced Workflow Techniques
 
 ### Creating Progressive Difficulty
 
@@ -247,36 +247,36 @@ For comprehensive training sessions:
 
 ```
 Complete Training Session (45-60 minutes)
-├── 🔥 Warm-up Activity (5-10 minutes)
+├──  Warm-up Activity (5-10 minutes)
 │   ├── Easy swings step
 │   └── Basic target step
-├── 📊 Assessment Activity (10-15 minutes)  
+├──  Assessment Activity (10-15 minutes)  
 │   ├── Current skill evaluation
 │   └── Weakness identification
-├── 🎯 Focused Training Activity (20-25 minutes)
+├──  Focused Training Activity (20-25 minutes)
 │   ├── Primary skill development
 │   ├── Technique refinement  
 │   └── Consistency building
-├── 🏆 Challenge Activity (10-15 minutes)
+├──  Challenge Activity (10-15 minutes)
 │   ├── Apply new skills
 │   └── Competitive element
-└── 📝 Summary Activity (5 minutes)
+└──  Summary Activity (5 minutes)
     └── Results review and next steps
 ```
 
 ---
 
-## 🎨 Message Writing Best Practices
+##  Message Writing Best Practices
 
 ### Intro Messages
 
 **Structure**: Context + Task + Encouragement
 
 ```
-❌ Poor Example:
+ Poor Example:
 "Hit some balls with your driver."
 
-✅ Good Example:  
+ Good Example:  
 "Now let's work on your driver consistency. Hit 8-10 tee shots focusing on your setup and tempo. Don't worry about distance - focus on solid contact and good balance through impact."
 ```
 
@@ -285,10 +285,10 @@ Complete Training Session (45-60 minutes)
 **Structure**: Acknowledgment + Results + Next Steps
 
 ```
-❌ Poor Example:
+ Poor Example:
 "Step completed."
 
-✅ Good Example:
+ Good Example:
 "Excellent work! You achieved 85% accuracy with your approach shots. Your distance control has improved significantly. Next, we'll work on different lies and course conditions to further develop your skills."
 ```
 
@@ -305,7 +305,7 @@ Struggling users: Positive reinforcement and simplified goals
 
 ---
 
-## 🔍 Validation and Testing Workflow
+##  Validation and Testing Workflow
 
 ### Pre-deployment Checklist
 
@@ -337,7 +337,7 @@ Struggling users: Positive reinforcement and simplified goals
 
 ---
 
-## 📊 Performance Optimization
+##  Performance Optimization
 
 ### Optimal Script Length
 
@@ -362,7 +362,7 @@ Struggling users: Positive reinforcement and simplified goals
 
 ---
 
-## 🚀 Deployment and Maintenance
+##  Deployment and Maintenance
 
 ### Deployment Checklist
 
@@ -383,7 +383,7 @@ Struggling users: Positive reinforcement and simplified goals
 
 ---
 
-## 💡 Pro Tips and Advanced Techniques
+##  Pro Tips and Advanced Techniques
 
 ### Creating Memorable Experiences
 

@@ -114,7 +114,7 @@ Added styles for the image container and image:
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│ 🏌️  Adare Manor                                     │
+│ ️  Adare Manor                                     │
 │     Difficulty: 4                                   │
 │     The Golf Course at Adare Manor...              │
 │     18 holes                                        │
@@ -209,8 +209,8 @@ Potential improvements:
 ## Files Modified
 
 ### Frontend Components
-- ✅ `src/components/CourseInfoBanner.tsx` - Added hole image display logic
-- ✅ `src/components/CourseInfoBanner.css` - Added image styling
+-  `src/components/CourseInfoBanner.tsx` - Added hole image display logic
+-  `src/components/CourseInfoBanner.css` - Added image styling
 
 ### GraphQL Queries
 - ℹ️ `src/graphql/queries.ts` - No changes (already includes hole images in `GET_COURSE_INFORMATION`)
@@ -243,18 +243,18 @@ Potential improvements:
 
 ## Accessibility
 
-- ✅ **Alt Text**: Descriptive alt text includes hole number
-- ✅ **Semantic HTML**: Uses standard `<img>` element
-- ✅ **Responsive**: Works on all screen sizes
-- ⚠️ **Screen Readers**: Consider adding more context
-- ⚠️ **Keyboard Navigation**: Image is not interactive (good for display)
+-  **Alt Text**: Descriptive alt text includes hole number
+-  **Semantic HTML**: Uses standard `<img>` element
+-  **Responsive**: Works on all screen sizes
+- ️ **Screen Readers**: Consider adding more context
+- ️ **Keyboard Navigation**: Image is not interactive (good for display)
 
 ## Browser Compatibility
 
-- ✅ Modern browsers (Chrome, Firefox, Safari, Edge)
-- ✅ CSS features (flexbox, border-radius, box-shadow)
-- ✅ Error handling via `onError` event
-- ✅ Object-fit support (IE11 may need polyfill)
+-  Modern browsers (Chrome, Firefox, Safari, Edge)
+-  CSS features (flexbox, border-radius, box-shadow)
+-  Error handling via `onError` event
+-  Object-fit support (IE11 may need polyfill)
 
 ---
 

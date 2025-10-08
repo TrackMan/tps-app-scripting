@@ -173,7 +173,7 @@ If auto-save exists:
 
 **Console logs:**
 ```
-📝 Script auto-saved to browser cache
+ Script auto-saved to browser cache
 ```
 
 Happens 500ms after last change, user doesn't notice any performance impact.
@@ -189,7 +189,7 @@ Auto-save is cleared since user explicitly saved their work.
 ```typescript
 catch (error) {
   if (error.name === 'QuotaExceededError') {
-    console.warn('⚠️ localStorage quota exceeded. Consider clearing old data.');
+    console.warn('️ localStorage quota exceeded. Consider clearing old data.');
   }
 }
 ```
@@ -249,9 +249,9 @@ if (!metadata.script || !metadata.script.activities) {
 
 ### Browser Compatibility
 
-- ✅ **localStorage**: Supported in all modern browsers
-- ✅ **requestIdleCallback**: Supported in Chrome, Edge, Firefox
-- ✅ **Fallback**: Works in browsers without `requestIdleCallback`
+-  **localStorage**: Supported in all modern browsers
+-  **requestIdleCallback**: Supported in Chrome, Edge, Firefox
+-  **Fallback**: Works in browsers without `requestIdleCallback`
 
 ## Performance Impact
 
@@ -362,6 +362,6 @@ When working with auto-save:
 ---
 
 **Feature Added**: October 8, 2025
-**Status**: ✅ Implemented and tested
+**Status**:  Implemented and tested
 **Performance Impact**: None (non-blocking, debounced)
 **User Impact**: Prevents data loss, improves confidence

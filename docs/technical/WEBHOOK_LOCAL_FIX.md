@@ -1,12 +1,12 @@
-# 🔧 Fix: Webhook Tab Not Showing Events Locally
+#  Fix: Webhook Tab Not Showing Events Locally
 
 ## The Root Cause
 
 Your local frontend is configured to use the **cloud backend** (`VITE_BACKEND_BASE_URL=https://dr-cloud-api-dev.trackmangolfdev.com`), which means:
 
-1. ✅ GraphQL queries work (they go to cloud)
-2. ✅ Auth works (goes to cloud)
-3. ❌ **Webhook events DON'T show** because:
+1.  GraphQL queries work (they go to cloud)
+2.  Auth works (goes to cloud)
+3.  **Webhook events DON'T show** because:
    - The `WebhookView` component uses `VITE_BACKEND_BASE_URL` directly
    - This **bypasses the Vite proxy** that routes `/api` to your local server
    - So it's fetching from the cloud server, not your local Azure Storage
@@ -24,13 +24,13 @@ VITE_LOGIN_BASE_URL=https://tm-login-dev.trackmangolfdev.com
 ```
 
 **Pros:**
-- ✅ Uses your local server and local Azure Storage connection
-- ✅ Can see events in real-time as they're stored
-- ✅ Full local development experience
+-  Uses your local server and local Azure Storage connection
+-  Can see events in real-time as they're stored
+-  Full local development experience
 
 **Cons:**
-- ❌ Requires local backend server running
-- ❌ Requires local Azure Storage connection string
+-  Requires local backend server running
+-  Requires local Azure Storage connection string
 
 ---
 
@@ -50,11 +50,11 @@ VITE_LOGIN_BASE_URL=https://tm-login-dev.trackmangolfdev.com
 - Vite proxy intercepts `/api/*` requests and forwards them to `localhost:4000`
 
 **Pros:**
-- ✅ Uses local server for webhooks
-- ✅ Can still use cloud for other services if needed
+-  Uses local server for webhooks
+-  Can still use cloud for other services if needed
 
 **Cons:**
-- ❌ All API requests now go through proxy
+-  All API requests now go through proxy
 
 ---
 
@@ -75,12 +75,12 @@ const url = (localWebhook || webhookPath) ? `${normalizedBase}/api/webhook/${(lo
 ```
 
 **Pros:**
-- ✅ Automatically detects localhost
-- ✅ Uses proxy for localhost, direct URLs for deployed
-- ✅ Best of both worlds
+-  Automatically detects localhost
+-  Uses proxy for localhost, direct URLs for deployed
+-  Best of both worlds
 
 **Cons:**
-- ❌ Requires code change
+-  Requires code change
 
 ---
 
@@ -127,8 +127,8 @@ After applying the fix:
 2. Go to Webhook tab
 3. Look for request to `/api/webhook/YOUR_PATH/events`
 4. Check the request URL:
-   - ✅ Should be: `http://localhost:4000/api/webhook/...`
-   - ❌ Not: `https://dr-cloud-api-dev.trackmangolfdev.com/api/webhook/...`
+   -  Should be: `http://localhost:4000/api/webhook/...`
+   -  Not: `https://dr-cloud-api-dev.trackmangolfdev.com/api/webhook/...`
 
 5. Check response JSON:
    ```json
@@ -165,7 +165,7 @@ Local Backend (localhost:4000)
   ↓
 Azure Storage (with your connection string)
   ↓
-Shows ALL events from cloud deployment! ✅
+Shows ALL events from cloud deployment! 
 ```
 
 ---
@@ -187,10 +187,10 @@ VITE_BACKEND_BASE_URL=https://dr-cloud-api-dev.trackmangolfdev.com
 ```
 
 This way:
-- ✅ `.env` has production-like defaults
-- ✅ `.env.local` overrides for local dev
-- ✅ Other developers can have their own `.env.local`
-- ✅ No accidental commits of local settings
+-  `.env` has production-like defaults
+-  `.env.local` overrides for local dev
+-  Other developers can have their own `.env.local`
+-  No accidental commits of local settings
 
 ---
 

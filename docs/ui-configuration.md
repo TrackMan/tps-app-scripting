@@ -1,6 +1,6 @@
 # UI Configuration Guide - Custom Interfaces
 
-## 🎨 Overview
+##  Overview
 
 The UI Configuration feature allows you to create custom user interfaces for your TrackMan scripts. This powerful tool lets you control exactly what parameters users see, how they interact with the data, and what actions they can take during training.
 
@@ -9,7 +9,7 @@ The UI Configuration feature allows you to create custom user interfaces for you
 
 ---
 
-## 🚀 Getting Started with UI Configuration
+##  Getting Started with UI Configuration
 
 ### When to Use UI Configuration
 
@@ -26,7 +26,7 @@ The UI Configuration feature allows you to create custom user interfaces for you
 
 ---
 
-## 📊 Range Analysis UI Configuration
+##  Range Analysis UI Configuration
 
 ### Available Parameters
 
@@ -50,10 +50,10 @@ The Range Analysis UI offers comprehensive shot analysis parameters:
 #### Beginner-Friendly Setup
 ```
 Selected Parameters:
-✅ Ball Speed
-✅ Club Speed  
-✅ Carry Distance
-✅ Smash Factor
+ Ball Speed
+ Club Speed  
+ Carry Distance
+ Smash Factor
 
 Goal: Focus on basic contact quality and distance
 ```
@@ -63,14 +63,14 @@ Goal: Focus on basic contact quality and distance
 #### Advanced Technical Analysis
 ```
 Selected Parameters:
-✅ Ball Speed
-✅ Club Speed
-✅ Launch Angle
-✅ Spin Rate
-✅ Attack Angle
-✅ Club Path
-✅ Face Angle
-✅ Smash Factor
+ Ball Speed
+ Club Speed
+ Launch Angle
+ Spin Rate
+ Attack Angle
+ Club Path
+ Face Angle
+ Smash Factor
 
 Goal: Complete swing analysis and optimization
 ```
@@ -80,12 +80,12 @@ Goal: Complete swing analysis and optimization
 #### Distance Training Focus
 ```
 Selected Parameters:
-✅ Ball Speed
-✅ Club Speed
-✅ Carry Distance
-✅ Total Distance
-✅ Launch Angle
-✅ Smash Factor
+ Ball Speed
+ Club Speed
+ Carry Distance
+ Total Distance
+ Launch Angle
+ Smash Factor
 
 Goal: Optimize distance through efficiency and launch conditions
 ```
@@ -112,7 +112,7 @@ Goal: Optimize distance through efficiency and launch conditions
 
 ---
 
-## 🎯 Performance Center UI Configuration
+##  Performance Center UI Configuration
 
 ### Available Parameters
 
@@ -134,10 +134,10 @@ Performance Center UI focuses on game-situation metrics:
 #### Target Challenge Setup
 ```
 Selected Parameters:
-✅ Distance to Target
-✅ Shot Accuracy
-✅ Points Scored
-✅ Target Zone
+ Distance to Target
+ Shot Accuracy
+ Points Scored
+ Target Zone
 
 Goal: Competitive target-based training
 ```
@@ -147,10 +147,10 @@ Goal: Competitive target-based training
 #### Course Management Training
 ```
 Selected Parameters:
-✅ Distance to Target
-✅ Trajectory Height
-✅ Landing Angle
-✅ Carry vs Roll
+ Distance to Target
+ Trajectory Height
+ Landing Angle
+ Carry vs Roll
 
 Goal: Strategic shot-making and course conditions
 ```
@@ -158,17 +158,17 @@ Goal: Strategic shot-making and course conditions
 #### Consistency Development
 ```
 Selected Parameters:
-✅ Distance to Target
-✅ Shot Accuracy
-✅ Consistency Index
-✅ Target Zone
+ Distance to Target
+ Shot Accuracy
+ Consistency Index
+ Target Zone
 
 Goal: Develop repeatable, accurate shots
 ```
 
 ---
 
-## ⚡ Frame Actions - Interactive Elements
+##  Frame Actions - Interactive Elements
 
 ### What Are Frame Actions?
 
@@ -265,7 +265,7 @@ Frame Action Sequence:
 
 ---
 
-## 🎭 User Experience Design Principles
+##  User Experience Design Principles
 
 ### Layout and Visual Hierarchy
 
@@ -318,7 +318,7 @@ Tertiary Display (Small, supplementary):
 
 ---
 
-## 🔧 Advanced Configuration Techniques
+##  Advanced Configuration Techniques
 
 ### Dynamic Parameter Selection
 
@@ -372,7 +372,7 @@ Step 4: Comparative analysis (historical data, trends)
 
 ---
 
-## 📱 Platform-Specific Considerations
+##  Platform-Specific Considerations
 
 ### TrackMan System Integration
 
@@ -421,7 +421,7 @@ Group Training:
 
 ---
 
-## 🧪 Testing and Iteration
+##  Testing and Iteration
 
 ### UI Testing Process
 
@@ -468,7 +468,7 @@ Solution: Standardize layouts within activities, maintain visual consistency
 
 ---
 
-## 📊 Performance Metrics and Analytics
+##  Performance Metrics and Analytics
 
 ### Measuring UI Effectiveness
 
@@ -505,9 +505,9 @@ Measure: Completion rates, user satisfaction, learning outcomes
 
 ---
 
-## 🎯 Best Practices Summary
+##  Best Practices Summary
 
-### DO These Things ✅
+### DO These Things 
 
 - **Start with fewer parameters** and add complexity gradually
 - **Use consistent layouts** across similar training steps
@@ -518,7 +518,7 @@ Measure: Completion rates, user satisfaction, learning outcomes
 - **Use appropriate colors** for different types of information
 - **Keep performance smooth** by limiting parameter count
 
-### DON'T Do These Things ❌
+### DON'T Do These Things 
 
 - **Overwhelm beginners** with too many technical parameters
 - **Use inconsistent layouts** between similar steps
@@ -531,7 +531,7 @@ Measure: Completion rates, user satisfaction, learning outcomes
 
 ---
 
-## 🚀 Next Steps
+##  Next Steps
 
 Once you've mastered UI configuration:
 

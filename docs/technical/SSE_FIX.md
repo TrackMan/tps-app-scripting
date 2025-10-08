@@ -17,7 +17,7 @@ res.writeHead(200, {
   'Content-Type': 'text/event-stream',
   'Cache-Control': 'no-cache',
   Connection: 'keep-alive',
-  'X-Accel-Buffering': 'no', // ✅ NEW: Disable buffering for Azure/nginx proxies
+  'X-Accel-Buffering': 'no', //  NEW: Disable buffering for Azure/nginx proxies
 });
 ```
 
@@ -84,7 +84,7 @@ Event arrives at webhook → Stored in memory → Stored in Table Storage
                                                            ↓
                                                   (sent after minutes)
                                                            ↓
-                                           UI updates after delay ❌
+                                           UI updates after delay 
 ```
 
 ### After Fix
@@ -93,7 +93,7 @@ Event arrives at webhook → Stored in memory → Stored in Table Storage
                                     ↓
                          SSE broadcast (unbuffered)
                                     ↓
-                         UI updates immediately ✅
+                         UI updates immediately 
 ```
 
 ### Verification Steps
@@ -187,7 +187,7 @@ az webapp update \
 
 ## Performance Impact
 
-✅ **No negative impact:**
+ **No negative impact:**
 - Headers add ~50 bytes to response (negligible)
 - Keepalive ping is just a comment line every 30s (~20 bytes/30s)
 - Flush call is nearly instant on modern systems
@@ -196,8 +196,8 @@ az webapp update \
 ## Related Issues
 
 This fix addresses the delay seen between:
-- Webhook receipt → Table Storage (instant) ✅
-- Table Storage → UI display (was minutes, now instant) ✅
+- Webhook receipt → Table Storage (instant) 
+- Table Storage → UI display (was minutes, now instant) 
 
 The issue was **not** with storage or event handling, but with the SSE transport layer being buffered by Azure's proxy.
 

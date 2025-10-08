@@ -1,6 +1,6 @@
 # Quick Start Guide - TrackMan App Scripting Editor
 
-## 🚀 Getting Started in 5 Minutes
+##  Getting Started in 5 Minutes
 
 This guide will help you create your first TrackMan script quickly and easily.
 
@@ -18,14 +18,14 @@ This guide will help you create your first TrackMan script quickly and easily.
 *Quick facility selection to get started*
 
 ### Step 3: Create Your First Activity
-1. Click the **"➕ Add Activity"** button
+1. Click the **" Add Activity"** button
 2. Choose **"Range Analysis"** for technical training
 3. Give it a name like **"Driver Practice"**
 4. Add an intro message: *"Let's work on your driver technique"*
 
 ### Step 4: Add a Training Step
 1. Click on your new activity in the tree
-2. Click **"➕ Add Step"**
+2. Click **" Add Step"**
 3. Name it **"Tee Shots"**
 4. Set the intro message: *"Hit 5 tee shots focusing on your setup"*
 
@@ -38,12 +38,12 @@ This guide will help you create your first TrackMan script quickly and easily.
 
 ### Step 6: Test and Save
 1. Check for the **green checkmark** (validation passed)
-2. Click **"💾 Download Script"** to save your work
+2. Click **" Download Script"** to save your work
 3. Your first script is ready!
 
 ---
 
-## 🎯 Common Workflows
+##  Common Workflows
 
 ### Creating a Range Analysis Script
 **Best for**: Technical improvement, swing analysis, data-driven training
@@ -69,7 +69,7 @@ This guide will help you create your first TrackMan script quickly and easily.
 
 ---
 
-## 💡 Pro Tips for Beginners
+##  Pro Tips for Beginners
 
 ### Script Structure
 - **Start with 1 activity, 2-3 steps** - keep it simple
@@ -88,7 +88,7 @@ This guide will help you create your first TrackMan script quickly and easily.
 
 ---
 
-## 🔧 Essential Features Overview
+##  Essential Features Overview
 
 ### The Tree View (Left Panel)
 - **Script**: Overall configuration
@@ -105,24 +105,24 @@ This guide will help you create your first TrackMan script quickly and easily.
 ### The Top Bar
 - **Facility Selection**: Choose your TrackMan location
 - **Import/Export**: Load and save scripts
-- **Validation Status**: Green ✅ = ready to use
+- **Validation Status**: Green  = ready to use
 
 ---
 
-## 📝 Your First Complete Script
+##  Your First Complete Script
 
 Here's a template you can follow:
 
 ```
-📄 My Training Script
-├── 🎯 Warm-up Activity
+ My Training Script
+├──  Warm-up Activity
 │   ├── Easy Swings (10 shots, focus on rhythm)
 │   └── Target Practice (hit 5 to center target)
-├── 🏌️ Main Training Activity  
+├── ️ Main Training Activity  
 │   ├── Driver Distance (5 shots, measure consistency)
 │   ├── Iron Accuracy (10 shots to various targets)
 │   └── Short Game (chip shots, different lies)
-└── 🏁 Assessment Activity
+└──  Assessment Activity
     └── Skills Test (combine all elements learned)
 ```
 
@@ -136,16 +136,16 @@ Here's a template you can follow:
 
 ---
 
-## 🚨 Common Mistakes to Avoid
+##  Common Mistakes to Avoid
 
-### ❌ Don't Do This
+###  Don't Do This
 - Create too many activities at once
 - Use vague names like "Step 1", "Step 2"
 - Set impossible success criteria
 - Skip intro messages
 - Forget to validate before saving
 
-### ✅ Do This Instead
+###  Do This Instead
 - Start with 1-2 activities, add more later
 - Use descriptive names like "Driver Accuracy Challenge"
 - Set achievable but meaningful goals
@@ -170,7 +170,7 @@ Here's a template you can follow:
 
 ---
 
-## 🎉 Next Steps
+##  Next Steps
 
 Once you've created your first script:
 
@@ -180,7 +180,7 @@ Once you've created your first script:
 4. **Share with colleagues** for feedback and iteration
 5. **Read the full User Guide** for comprehensive features
 
-**Happy scripting!** 🏌️‍♂️
+**Happy scripting!** ️‍️
 
 ---
 

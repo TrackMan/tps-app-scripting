@@ -10,7 +10,7 @@ When viewing a `ShotFinish` event with both `StartingPosition` and `FinishingPos
 
 ```
 ┌──────────────────────────────────────────────┐
-│ 🏌️  Adare Manor                              │
+│ ️  Adare Manor                              │
 │     Hole 1 • Shot 1 • Player 1              │
 │     ────────────────────────────────────     │
 │     [  Hole Image with Trajectory  ]        │
@@ -343,20 +343,20 @@ holes {
 ## Edge Cases
 
 ### Missing Data
-- ✅ No `StartingPosition` → No trajectory
-- ✅ No `FinishingPosition` → No trajectory
-- ✅ No `metaDataUrl` → Plain image only
-- ✅ Hole not found → Plain image only
+-  No `StartingPosition` → No trajectory
+-  No `FinishingPosition` → No trajectory
+-  No `metaDataUrl` → Plain image only
+-  Hole not found → Plain image only
 
 ### Projection Issues
-- ✅ Point not projectable (w ≈ 0) → Filtered out
-- ✅ Point off-image → `isVisible: false`, no line drawn
-- ✅ Both points off-image → No trajectory
+-  Point not projectable (w ≈ 0) → Filtered out
+-  Point off-image → `isVisible: false`, no line drawn
+-  Both points off-image → No trajectory
 
 ### Network Issues
-- ✅ Metadata 404 → Error message shown
-- ✅ Metadata parse error → Error logged, graceful fallback
-- ✅ Slow network → Loading indicator displayed
+-  Metadata 404 → Error message shown
+-  Metadata parse error → Error logged, graceful fallback
+-  Slow network → Loading indicator displayed
 
 ## Future Enhancements
 
@@ -386,14 +386,14 @@ holes {
 ## Files Created/Modified
 
 ### New Files
-- ✅ `src/utils/projectionUtils.ts` - Matrix math and projection utilities
-- ✅ `src/components/ShotTrajectoryOverlay.tsx` - Trajectory rendering component
-- ✅ `src/components/ShotTrajectoryOverlay.css` - Trajectory overlay styles
-- ✅ `docs/technical/SHOT_TRAJECTORY_VISUALIZATION.md` - This documentation
+-  `src/utils/projectionUtils.ts` - Matrix math and projection utilities
+-  `src/components/ShotTrajectoryOverlay.tsx` - Trajectory rendering component
+-  `src/components/ShotTrajectoryOverlay.css` - Trajectory overlay styles
+-  `docs/technical/SHOT_TRAJECTORY_VISUALIZATION.md` - This documentation
 
 ### Modified Files
-- ✅ `src/components/CourseInfoBanner.tsx` - Added trajectory props and conditional rendering
-- ✅ `src/components/WebhookInspector.tsx` - Extract and pass trajectory data
+-  `src/components/CourseInfoBanner.tsx` - Added trajectory props and conditional rendering
+-  `src/components/WebhookInspector.tsx` - Extract and pass trajectory data
 
 ### Existing Files (Unchanged)
 - ℹ️ `src/graphql/queries.ts` - Already includes `metaDataUrl` in `GET_COURSE_INFORMATION`

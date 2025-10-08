@@ -2,7 +2,7 @@
 
 **Date:** October 2, 2025  
 **Feature:** Persistent webhook event storage using Azure Table Storage  
-**Status:** ✅ Implemented, ready for deployment
+**Status:**  Implemented, ready for deployment
 
 ## Overview
 
@@ -152,10 +152,10 @@ AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=tpsap
 ### Behavior Without Configuration
 
 If `AZURE_STORAGE_CONNECTION_STRING` is **not set**:
-- ⚠️ Warning logged on startup
-- ✅ Server continues to work (memory-only mode)
-- ✅ No errors thrown
-- ✅ API responses show `storageEnabled: false`
+- ️ Warning logged on startup
+-  Server continues to work (memory-only mode)
+-  No errors thrown
+-  API responses show `storageEnabled: false`
 
 This ensures backward compatibility and graceful degradation.
 
@@ -213,7 +213,7 @@ az webapp log tail \
   --resource-group tps-app-scripting-rg
 
 # Look for:
-# ✅ Azure Table Storage initialized: WebhookEvents
+#  Azure Table Storage initialized: WebhookEvents
 ```
 
 ## Testing
@@ -267,23 +267,23 @@ az webapp log tail \
 - Event size: ~1 KB average
 - 10,000 events/month = 10 MB storage
 - Cost: $0.0005/month for storage + $0.004/month for operations
-- **Total: < $0.01/month** 💰
+- **Total: < $0.01/month** 
 
 ## Benefits
 
-✅ **Persistent History:** Events survive server restarts and redeployments  
-✅ **Unlimited Storage:** No 200-event cap (only limited by Azure quota)  
-✅ **Debugging:** Query old events for troubleshooting  
-✅ **Compliance:** Audit trail of all webhook events  
-✅ **Cost-Effective:** Pennies per month  
-✅ **Graceful Degradation:** Works without configuration (memory-only)  
-✅ **No Breaking Changes:** Existing API contracts maintained  
+ **Persistent History:** Events survive server restarts and redeployments  
+ **Unlimited Storage:** No 200-event cap (only limited by Azure quota)  
+ **Debugging:** Query old events for troubleshooting  
+ **Compliance:** Audit trail of all webhook events  
+ **Cost-Effective:** Pennies per month  
+ **Graceful Degradation:** Works without configuration (memory-only)  
+ **No Breaking Changes:** Existing API contracts maintained  
 
 ## Migration Notes
 
 ### Backward Compatibility
 
-✅ **100% backward compatible**
+ **100% backward compatible**
 - Existing API endpoints work identically
 - Response format enhanced (added fields, didn't remove)
 - In-memory storage still works independently
@@ -302,7 +302,7 @@ No migration needed:
 
 Look for in server logs:
 ```
-✅ Azure Table Storage initialized: WebhookEvents
+ Azure Table Storage initialized: WebhookEvents
 Received 5 event(s) for webhook 39a1ebb6-...
 ```
 
@@ -310,8 +310,8 @@ Received 5 event(s) for webhook 39a1ebb6-...
 
 Look for in server logs:
 ```
-⚠️  AZURE_STORAGE_CONNECTION_STRING not set
-❌ Failed to persist event to Table Storage: [error]
+️  AZURE_STORAGE_CONNECTION_STRING not set
+ Failed to persist event to Table Storage: [error]
 ```
 
 API responses will show:
@@ -391,11 +391,11 @@ Created comprehensive documentation:
 
 ## Conclusion
 
-✅ **Implementation Complete**  
-✅ **Tested Locally**  
-✅ **Documentation Complete**  
-✅ **Zero Breaking Changes**  
-✅ **Graceful Degradation**  
+ **Implementation Complete**  
+ **Tested Locally**  
+ **Documentation Complete**  
+ **Zero Breaking Changes**  
+ **Graceful Degradation**  
 
 Ready to:
 1. Create Azure Storage Account

@@ -6,13 +6,13 @@ The Measurement Tiles View now supports **automatic unit conversion** between Im
 
 ## Features
 
-### ✅ Unit System Toggle
+###  Unit System Toggle
 - **Imperial** (default): mph, yards, inches, degrees, rpm
 - **Metric**: m/s, meters, centimeters, degrees, rpm
 - Toggle button in the header
 - Preference saved to localStorage
 
-### ✅ Automatic Conversion
+###  Automatic Conversion
 
 #### Speed (m/s ↔ mph)
 - **SI Input**: meters per second (m/s)
@@ -211,9 +211,9 @@ const testMeasurement = {
 
 ## Browser Compatibility
 
-- ✅ Modern browsers (Chrome, Firefox, Edge, Safari)
-- ✅ localStorage support required
-- ✅ Fallback to imperial if localStorage unavailable
+-  Modern browsers (Chrome, Firefox, Edge, Safari)
+-  localStorage support required
+-  Fallback to imperial if localStorage unavailable
 
 ## Future Enhancements
 
@@ -227,17 +227,17 @@ Possible improvements:
 
 ## Files Modified
 
-- ✅ `src/components/MeasurementTilesView.tsx` - Added conversion logic and toggle
-- ✅ `src/components/MeasurementTilesView.css` - Styled toggle buttons
+-  `src/components/MeasurementTilesView.tsx` - Added conversion logic and toggle
+-  `src/components/MeasurementTilesView.css` - Styled toggle buttons
 
 ## API Assumptions
 
 The component assumes API data is in SI units:
-- ✅ Speed in m/s
-- ✅ Distance in meters
-- ✅ Small distances in meters (converted to in/cm)
-- ✅ Angles in degrees
-- ✅ Spin in rpm
-- ✅ Time in seconds
+-  Speed in m/s
+-  Distance in meters
+-  Small distances in meters (converted to in/cm)
+-  Angles in degrees
+-  Spin in rpm
+-  Time in seconds
 
 If API format changes, update `convertValue()` function accordingly.

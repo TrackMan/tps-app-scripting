@@ -72,7 +72,7 @@ Script
 
 Activities are top-level containers that group related training steps:
 
-1. **Add Activity**: Click the "➕ Add Activity" button
+1. **Add Activity**: Click the " Add Activity" button
 2. **Choose Type**: Select between Range Analysis or Performance Center
 3. **Configure Properties**:
    - **Name**: Descriptive title for the activity
@@ -87,7 +87,7 @@ Activities are top-level containers that group related training steps:
 Steps are individual training tasks within an activity:
 
 1. **Select Activity**: Click on an activity in the tree
-2. **Add Step**: Click "➕ Add Step" button
+2. **Add Step**: Click " Add Step" button
 3. **Configure Step Properties**:
    - **Name**: Clear, actionable title
    - **Intro Message**: Instructions for the user
@@ -167,7 +167,7 @@ Frame actions are custom buttons that appear in the user interface:
 
 To load a previously created script:
 
-1. **Click Import**: Use the "📂 Load Script" button in the top bar
+1. **Click Import**: Use the " Load Script" button in the top bar
 2. **Select File**: Choose a `.json` script file from your computer
 3. **Review Structure**: The script will load in the tree view
 4. **Validate**: Check for any validation errors in the right panel
@@ -180,7 +180,7 @@ To load a previously created script:
 To save your completed script:
 
 1. **Validate First**: Ensure your script has no validation errors
-2. **Click Export**: Use the "💾 Download Script" button
+2. **Click Export**: Use the " Download Script" button
 3. **Choose Location**: Save the `.json` file to your desired location
 4. **Test Script**: Load the exported file to verify it works correctly
 
@@ -188,9 +188,9 @@ To save your completed script:
 
 The editor provides real-time validation:
 
-- **✅ Green Checkmark**: Script is valid and ready to use
-- **❌ Red X**: Script has errors that need fixing
-- **⚠️ Yellow Warning**: Script has warnings but can still be used
+- ** Green Checkmark**: Script is valid and ready to use
+- ** Red X**: Script has errors that need fixing
+- **️ Yellow Warning**: Script has warnings but can still be used
 
 Click on validation messages to jump directly to the problematic area.
 

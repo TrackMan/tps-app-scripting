@@ -4,7 +4,7 @@ Welcome to the comprehensive documentation for the TrackMan App Scripting system
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### For New Users
 - **[Quick Start Guide](quick-start.md)** - Get up and running in 5 minutes
@@ -17,9 +17,9 @@ Welcome to the comprehensive documentation for the TrackMan App Scripting system
 
 ---
 
-## 📚 Complete Documentation Library
+##  Complete Documentation Library
 
-### 📖 User Guides
+###  User Guides
 | Guide | Description | Audience |
 |-------|-------------|----------|
 | **[Quick Start](quick-start.md)** | 5-minute introduction to creating your first script | New users |
@@ -28,7 +28,7 @@ Welcome to the comprehensive documentation for the TrackMan App Scripting system
 | **[UI Configuration Guide](ui-configuration.md)** | Custom interface design and parameter selection | Advanced users |
 | **[Troubleshooting Guide](troubleshooting.md)** | Common issues and solutions | All users |
 
-### 🛠️ Technical Resources
+### ️ Technical Resources
 | Resource | Description | Audience |
 |----------|-------------|----------|
 | **[Schema Reference](../schema/)** | JSON schema specifications and validation rules | Developers |
@@ -37,7 +37,7 @@ Welcome to the comprehensive documentation for the TrackMan App Scripting system
 
 ---
 
-## 🎯 Quick Navigation by Task
+##  Quick Navigation by Task
 
 ### "I want to..."
 
@@ -63,19 +63,19 @@ Welcome to the comprehensive documentation for the TrackMan App Scripting system
 
 ---
 
-## 📋 System Overview
+##  System Overview
 
 ### Core Concepts
 
 **App Scripting** orchestrates multi-app training flows across **Range Analysis** and **Performance Center** using JSON.
 
 #### Key Features
-- ✅ **Visual Script Builder**: Drag-and-drop interface for creating training flows
-- ✅ **Real-time Validation**: JSON Schema validation with immediate feedback
-- ✅ **Custom UI Configuration**: Design interfaces tailored to specific training goals
-- ✅ **Facility Integration**: Direct connection to TrackMan facilities and bays
-- ✅ **Versioned Schema**: Stable schema evolution under `schema/<version>/`
-- ✅ **Import/Export**: Load existing scripts and save completed ones
+-  **Visual Script Builder**: Drag-and-drop interface for creating training flows
+-  **Real-time Validation**: JSON Schema validation with immediate feedback
+-  **Custom UI Configuration**: Design interfaces tailored to specific training goals
+-  **Facility Integration**: Direct connection to TrackMan facilities and bays
+-  **Versioned Schema**: Stable schema evolution under `schema/<version>/`
+-  **Import/Export**: Load existing scripts and save completed ones
 
 #### Script Structure
 ```
@@ -92,7 +92,7 @@ TrackMan Script
 
 ---
 
-## 🏗️ Architecture
+## ️ Architecture
 
 ### Schema System
 - **Versioned Schema**: Located under `schema/<semver>/`
@@ -109,7 +109,7 @@ TrackMan Script
 
 ---
 
-## 🎨 User Interface Design
+##  User Interface Design
 
 ### Range Analysis Scripts
 Perfect for technical improvement and swing analysis:
@@ -127,7 +127,7 @@ Ideal for game-like scenarios and skill challenges:
 
 ---
 
-## 🔧 Development Workflow
+##  Development Workflow
 
 ### Script Creation Process
 1. **Planning**: Define training objectives and user experience
@@ -146,7 +146,7 @@ Ideal for game-like scenarios and skill challenges:
 
 ---
 
-## 📊 Examples and Templates
+##  Examples and Templates
 
 ### Included Examples
 | File | Type | Description | Complexity |
@@ -181,13 +181,13 @@ Ideal for game-like scenarios and skill challenges:
 
 ---
 
-## 🔄 Version History and Updates
+##  Version History and Updates
 
 ### Current Version: 1.2.0
-- ✅ **UI Editor**: Custom interface configuration
-- ✅ **Enhanced Validation**: Improved error reporting and debugging
-- ✅ **Examples**: Comprehensive demo scripts with UI configuration
-- ✅ **Documentation**: Complete user guides and troubleshooting
+-  **UI Editor**: Custom interface configuration
+-  **Enhanced Validation**: Improved error reporting and debugging
+-  **Examples**: Comprehensive demo scripts with UI configuration
+-  **Documentation**: Complete user guides and troubleshooting
 
 ### Previous Versions
 - **v1.1.0**: Added UI configuration capabilities
@@ -201,7 +201,7 @@ Ideal for game-like scenarios and skill challenges:
 
 ---
 
-## 📞 Quick Support Contacts
+##  Quick Support Contacts
 
 For technical issues:
 - **Documentation Issues**: Check [Troubleshooting Guide](troubleshooting.md)

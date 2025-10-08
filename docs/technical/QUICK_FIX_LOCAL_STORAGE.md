@@ -1,11 +1,11 @@
-# 🔧 Quick Fix: Localhost Not Reading Azure Events
+#  Quick Fix: Localhost Not Reading Azure Events
 
 ## The Problem
 Your localhost isn't reading webhook events from Azure Storage because the connection string is missing from your local `.env` file.
 
 ## The Solution (Choose One)
 
-### ⚡ Option 1: Automated Setup (Easiest)
+###  Option 1: Automated Setup (Easiest)
 
 **Double-click this file:**
 ```
@@ -17,13 +17,13 @@ This will automatically:
 - Update your `server\.env` file
 - Show you what to do next
 
-### 🖥️ Option 2: PowerShell Script
+### ️ Option 2: PowerShell Script
 
 ```powershell
 .\scripts\get-azure-storage-connection.ps1
 ```
 
-### 🌐 Option 3: Azure Portal (Manual)
+###  Option 3: Azure Portal (Manual)
 
 1. Go to [Azure Portal](https://portal.azure.com)
 2. Navigate to: **tps-app-scripting-rg** → **tpsappscriptingstorage**
@@ -34,7 +34,7 @@ This will automatically:
 AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=tpsappscriptingstorage;AccountKey=...;EndpointSuffix=core.windows.net
 ```
 
-### 💻 Option 4: Azure CLI
+###  Option 4: Azure CLI
 
 ```bash
 az storage account show-connection-string \
@@ -53,10 +53,10 @@ Then paste the result into `server\.env`
 ```
 
 This checks:
-- ✅ .env file exists
-- ✅ Connection string is configured
-- ✅ Dependencies are installed
-- ✅ Server can connect to Azure
+-  .env file exists
+-  Connection string is configured
+-  Dependencies are installed
+-  Server can connect to Azure
 
 ## Start Server
 
@@ -67,12 +67,12 @@ npm run dev
 
 **Look for:**
 ```
-✅ Azure Table Storage connected: WebhookEvents
+ Azure Table Storage connected: WebhookEvents
 ```
 
 **NOT:**
 ```
-⚠️  AZURE_STORAGE_CONNECTION_STRING not set. Table Storage disabled.
+️  AZURE_STORAGE_CONNECTION_STRING not set. Table Storage disabled.
 ```
 
 ## Test It Works
@@ -83,10 +83,10 @@ npm run dev
 
 ## Files Created
 
-- 📄 `LOCAL_AZURE_STORAGE_SETUP.md` - Detailed guide
-- 📄 `setup-local-storage.bat` - Automated setup
-- 📄 `scripts/get-azure-storage-connection.ps1` - Get connection string
-- 📄 `scripts/verify-local-storage.ps1` - Verify configuration
+-  `LOCAL_AZURE_STORAGE_SETUP.md` - Detailed guide
+-  `setup-local-storage.bat` - Automated setup
+-  `scripts/get-azure-storage-connection.ps1` - Get connection string
+-  `scripts/verify-local-storage.ps1` - Verify configuration
 
 ## Still Having Issues?
 

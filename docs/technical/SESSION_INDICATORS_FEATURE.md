@@ -191,11 +191,11 @@ This helps when you need to reference the actual ID values.
 
 ## Benefits
 
-✅ **Visual grouping** - Quickly identify related events without reading IDs  
-✅ **Session boundaries** - Easily spot when a new session starts  
-✅ **Activity transitions** - See when activities change within a session  
-✅ **Pattern recognition** - Identify event sequences by color patterns  
-✅ **Debugging** - Trace event flow through sessions and activities  
+ **Visual grouping** - Quickly identify related events without reading IDs  
+ **Session boundaries** - Easily spot when a new session starts  
+ **Activity transitions** - See when activities change within a session  
+ **Pattern recognition** - Identify event sequences by color patterns  
+ **Debugging** - Trace event flow through sessions and activities  
 
 ## Migration from Bay Display
 

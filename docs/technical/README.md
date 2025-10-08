@@ -2,7 +2,7 @@
 
 > **Note for AI Assistants**: This folder contains technical documentation about features, fixes, and implementation details. Always check here for context about past work before making changes.
 
-## 📁 Quick Navigation
+##  Quick Navigation
 
 ### Core Features
 - [Activity Session State](./ACTIVITY_SESSION_STATE.md) - Session state management across events
@@ -45,7 +45,7 @@
 
 ---
 
-## 📚 Documentation by Topic
+##  Documentation by Topic
 
 ### Event Handling & State Management
 
@@ -187,7 +187,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 ---
 
-## 🔍 Common Patterns
+##  Common Patterns
 
 ### Event List Ordering
 **Important**: Events are ordered with **newest at index 0**.
@@ -217,7 +217,7 @@ const payload = event?.data?.EventModel || event?.EventModel || event;
 
 ---
 
-## 🎯 Quick Reference for AI Assistants
+##  Quick Reference for AI Assistants
 
 ### Before Making Changes
 
@@ -231,11 +231,11 @@ const payload = event?.data?.EventModel || event?.EventModel || event;
 
 | Event Type | Has Measurement? | Has Hole/Shot? | Purpose |
 |------------|------------------|----------------|---------|
-| `TPS.SessionInfo` | ❌ | ❌ | Activity/Course info |
-| `TPS.Simulator.ChangePlayer` | ❌ | ✅ | Hole/Shot/Player tracking |
-| `TPS.Simulator.ShotStarting` | ✅ (limited) | ❌ | Initial shot data |
-| `TPS.Live.OnStrokeCompletedEvent` | ✅ (full) | ❌ | Complete measurement |
-| `TPS.Simulator.ShotFinish` | ✅ (merged + actuals) | ❌ | Final shot data |
+| `TPS.SessionInfo` |  |  | Activity/Course info |
+| `TPS.Simulator.ChangePlayer` |  |  | Hole/Shot/Player tracking |
+| `TPS.Simulator.ShotStarting` |  (limited) |  | Initial shot data |
+| `TPS.Live.OnStrokeCompletedEvent` |  (full) |  | Complete measurement |
+| `TPS.Simulator.ShotFinish` |  (merged + actuals) |  | Final shot data |
 
 ### Key Files to Know
 
@@ -253,7 +253,7 @@ const payload = event?.data?.EventModel || event?.EventModel || event;
 
 ---
 
-## 📝 Adding New Documentation
+##  Adding New Documentation
 
 When you create new technical documentation:
 
@@ -292,7 +292,7 @@ When you create new technical documentation:
 
 ---
 
-## 🔄 Update History
+##  Update History
 
 - **2025-10-03**: Created technical docs folder and index
 - **2025-10-03**: Added shot number carry-forward fix
@@ -304,7 +304,7 @@ When you create new technical documentation:
 
 ---
 
-## 💡 Tips for Future Work
+##  Tips for Future Work
 
 ### When Adding Features
 1. Check if session state needs updating

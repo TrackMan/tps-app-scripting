@@ -10,7 +10,7 @@ Define and validate JSON scripts that orchestrate multi-app training flows acros
 * **Docs:** Authoring guide, schema reference, and example scripts
 * **Tooling:** Node (AJV) validators + CI workflow
 
-> 📚 **Technical Documentation**: For implementation details, bug fixes, and feature documentation, see [`docs/technical/`](./docs/technical/README.md)
+>  **Technical Documentation**: For implementation details, bug fixes, and feature documentation, see [`docs/technical/`](./docs/technical/README.md)
 
 ---
 

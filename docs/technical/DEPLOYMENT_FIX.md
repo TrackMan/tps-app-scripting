@@ -1,12 +1,12 @@
-# 🔧 Deployment Fix - Azure 504 Gateway Timeout Issue
+#  Deployment Fix - Azure 504 Gateway Timeout Issue
 
 **Date**: October 2, 2025  
 **Issue**: https://app-scripting-editor.trackmangolfdev.com/ returns 504 Gateway Timeout  
-**Status**: ✅ FIXED - Changes ready to commit and push
+**Status**:  FIXED - Changes ready to commit and push
 
 ---
 
-## 🐛 Root Cause Analysis
+##  Root Cause Analysis
 
 ### Problem 1: **Wrong Dockerfile Used**
 - GitHub Actions was building with `./Dockerfile` (nginx-only frontend)
@@ -25,7 +25,7 @@
 
 ---
 
-## ✅ Changes Made
+##  Changes Made
 
 ### 1. **Fixed `.github/workflows/docker-build.yml`**
 
@@ -33,7 +33,7 @@
 ```yaml
 - name: Build & push API image
   with:
-    file: ./Dockerfile  # ❌ Wrong file!
+    file: ./Dockerfile  #  Wrong file!
 ```
 
 **After**:
@@ -47,38 +47,38 @@
 # Step 2: Build API image (depends on editor image)
 - name: Build & push API image (Node/Express + SPA)
   with:
-    file: ./server/Dockerfile  # ✅ Correct file!
+    file: ./server/Dockerfile  #  Correct file!
     tags: app-scripting-editor-api:latest
 ```
 
 **Changes**:
-- ✅ Added two-stage build: frontend first, then API
-- ✅ Builds in correct order with proper dependencies
-- ✅ Both images tagged and pushed to ACR
+-  Added two-stage build: frontend first, then API
+-  Builds in correct order with proper dependencies
+-  Both images tagged and pushed to ACR
 
 ### 2. **Fixed `server/Dockerfile`**
 
 **Before**:
 ```dockerfile
 COPY server/ ./server
-WORKDIR /srv/server  # ❌ Creates nested path
+WORKDIR /srv/server  #  Creates nested path
 RUN npm run build
 ```
 
 **After**:
 ```dockerfile
-COPY server/ ./  # ✅ Copy to current directory
+COPY server/ ./  #  Copy to current directory
 RUN npm run build
 ```
 
 **Changes**:
-- ✅ Fixed build context paths to avoid nested directories
-- ✅ Added default value for REGISTRY arg
-- ✅ Fixed package.json copy in final stage
+-  Fixed build context paths to avoid nested directories
+-  Added default value for REGISTRY arg
+-  Fixed package.json copy in final stage
 
 ---
 
-## 🚀 Deployment Steps
+##  Deployment Steps
 
 ### **To Fix Immediately:**
 
@@ -111,17 +111,17 @@ RUN npm run build
 
 ---
 
-## 📊 Expected Results
+##  Expected Results
 
 After deployment:
-- ✅ `/api/health` returns `200 OK` with `{"status":"ok"}`
-- ✅ `/` loads the React frontend
-- ✅ Frontend can call backend APIs
-- ✅ No more 504 Gateway Timeout errors
+-  `/api/health` returns `200 OK` with `{"status":"ok"}`
+-  `/` loads the React frontend
+-  Frontend can call backend APIs
+-  No more 504 Gateway Timeout errors
 
 ---
 
-## 🔍 How to Verify in Azure
+##  How to Verify in Azure
 
 ### Check Azure App Service Logs:
 ```bash
@@ -159,7 +159,7 @@ az webapp config appsettings list \
 
 ---
 
-## 🛡️ Prevention
+## ️ Prevention
 
 To prevent this issue in the future:
 
@@ -170,7 +170,7 @@ To prevent this issue in the future:
 
 ---
 
-## 📝 Additional Notes
+##  Additional Notes
 
 ### Image Architecture:
 - **app-scripting-editor**: Standalone nginx image with React frontend (for testing)
@@ -187,7 +187,7 @@ To prevent this issue in the future:
 
 ---
 
-## ✅ Checklist
+##  Checklist
 
 - [x] Fixed `.github/workflows/docker-build.yml` to build both images in order
 - [x] Fixed `server/Dockerfile` build context paths
@@ -201,4 +201,4 @@ To prevent this issue in the future:
 
 ---
 
-**Status**: Ready to deploy! Push the changes to fix the issue. 🚀
+**Status**: Ready to deploy! Push the changes to fix the issue. 

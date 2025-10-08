@@ -1,8 +1,8 @@
 # Azure Deployment Setup Guide
 
 ## Current Status
-✅ **Docker Build Fixed**: The platform-specific dependency issue has been resolved  
-⚠️ **Deployment Issue**: Azure authentication needs to be configured
+ **Docker Build Fixed**: The platform-specific dependency issue has been resolved  
+️ **Deployment Issue**: Azure authentication needs to be configured
 
 ## Deployment Options
 

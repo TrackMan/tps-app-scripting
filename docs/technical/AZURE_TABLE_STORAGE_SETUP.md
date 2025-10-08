@@ -182,13 +182,13 @@ Clears all events for a webhook path from both memory and storage.
 - Storage: 10 MB = $0.0005/month
 - Write operations: 10,000 = $0.0036/month
 - Read operations: ~1,000 = $0.0004/month
-- **Total: ~$0.004/month** 📉
+- **Total: ~$0.004/month** 
 
 **Example Usage: 1 million events/month**
 - Storage: 1 GB = $0.045/month
 - Write operations: 1,000,000 = $0.036/month
 - Read operations: ~100,000 = $0.004/month
-- **Total: ~$0.085/month** 📉
+- **Total: ~$0.085/month** 
 
 ## Local Development
 
@@ -222,12 +222,12 @@ For local development, you can use:
 
 The server logs will show:
 ```
-✅ Azure Table Storage initialized: WebhookEvents
+ Azure Table Storage initialized: WebhookEvents
 ```
 
 Or if disabled:
 ```
-⚠️  AZURE_STORAGE_CONNECTION_STRING not set. Table Storage disabled. Events will only be stored in-memory.
+️  AZURE_STORAGE_CONNECTION_STRING not set. Table Storage disabled. Events will only be stored in-memory.
 ```
 
 ### Azure Portal Metrics
@@ -274,9 +274,9 @@ export default async function cleanup(context: InvocationContext): Promise<void>
 ## Security
 
 ### Connection String Protection
-- ✅ **Never commit** connection strings to git
-- ✅ Use App Service **Application Settings** (encrypted at rest)
-- ✅ Consider **Managed Identity** for production (no connection string needed)
+-  **Never commit** connection strings to git
+-  Use App Service **Application Settings** (encrypted at rest)
+-  Consider **Managed Identity** for production (no connection string needed)
 
 ### Managed Identity Setup (Advanced)
 ```bash
@@ -352,9 +352,9 @@ If you already have events in memory and want to backfill Table Storage:
 ## Backup and Disaster Recovery
 
 **Table Storage Benefits:**
-- ✅ **Geo-redundant** (if using GRS SKU)
-- ✅ **Durable** (automatic replication)
-- ✅ **Point-in-time restore** (if enabled)
+-  **Geo-redundant** (if using GRS SKU)
+-  **Durable** (automatic replication)
+-  **Point-in-time restore** (if enabled)
 
 **Manual Backup:**
 ```bash
