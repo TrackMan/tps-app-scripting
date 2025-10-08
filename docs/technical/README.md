@@ -23,9 +23,23 @@
 
 ### Infrastructure & Setup
 - [Local Azure Storage Setup](./LOCAL_AZURE_STORAGE_SETUP.md) - Local Azure Table Storage configuration
+- [Azure Table Storage Setup](./AZURE_TABLE_STORAGE_SETUP.md) - Production Azure Table Storage setup
+- [Azure Storage Quick Setup](./AZURE_STORAGE_QUICK_SETUP.md) - Quick Azure Storage configuration guide
 - [Quick Fix Local Storage](./QUICK_FIX_LOCAL_STORAGE.md) - Quick local storage setup
 - [Storage Implementation Summary](./STORAGE_IMPLEMENTATION_SUMMARY.md) - Overview of storage implementation
 - [Fixed Webhook Summary](./FIXED_WEBHOOK_SUMMARY.md) - Webhook system overview
+
+### Deployment & DevOps
+- [Azure Deployment Setup](./AZURE_DEPLOYMENT_SETUP.md) - Azure Static Web App deployment configuration
+- [Azure Front Door](./AZURE_FRONTDOOR.md) - Azure Front Door setup and configuration
+- [Docker Deployment](./DOCKER_DEPLOYMENT.md) - Docker containerization and deployment
+- [Deployment Fix](./DEPLOYMENT_FIX.md) - Deployment troubleshooting and fixes
+- [Debugging Enhancement](./DEBUGGING_ENHANCEMENT.md) - Development debugging tools and features
+
+### Component Documentation
+- [Measurement Tiles View](./MEASUREMENT_TILES_VIEW.md) - MeasurementTilesView component documentation
+- [Component Refactoring October 2025](./COMPONENT_REFACTORING_2025_10.md) - Dependency-based component reorganization
+- [Documentation Organization](./DOCUMENTATION_ORGANIZATION_SUMMARY.md) - Documentation structure overview
 
 ---
 
