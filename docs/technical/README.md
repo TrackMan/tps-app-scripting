@@ -13,6 +13,7 @@
 - [Hole Image Display](./HOLE_IMAGE_DISPLAY.md) - Visual hole layout images in course info banner
 - [Shot Trajectory Visualization](./SHOT_TRAJECTORY_VISUALIZATION.md) - 3D→2D shot path overlay on hole images
 - [Auto-Save Feature](./AUTO_SAVE_FEATURE.md) - Browser cache persistence to prevent data loss
+- [Webhook Event Backend Cache](./WEBHOOK_CACHE_BACKEND.md) - In-memory LRU cache for instant webhook event loading
 
 ### Bug Fixes & Improvements
 - [Shot Number Carry-Forward Fix](./SHOT_NUMBER_CARRY_FORWARD_FIX.md) - Making hole/shot persist across events

@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import eventsLib, { classifyEventPayload, KnownEventPayload } from './events';
 import { webhookEventStorage } from './storage';
+import { webhookEventCache } from './cache';
 
 // In-memory event store per webhook path (newest items at start). This is ephemeral and
 // will be lost if the server restarts. We keep a modest cap per path.
@@ -202,6 +203,9 @@ export function registerWebhookRoutes(app: express.Application) {
       const trimmed = combined.slice(0, EVENT_STORE_CAP);
       eventStore.set(userPath, trimmed);
 
+      // Update cache with new events (deduplicate automatically)
+      webhookEventCache.merge(userPath, minimalRecords);
+
       // Persist to Azure Table Storage (async, don't block webhook response)
       for (const record of minimalRecords) {
         webhookEventStorage.storeEvent(userPath, record).catch(err => {
@@ -300,12 +304,75 @@ export function registerWebhookRoutes(app: express.Application) {
     const userPath = req.params.userPath;
     const limit = parseInt(req.query.limit as string) || 2000;
     const includeStorage = req.query.storage !== 'false'; // Allow disabling via ?storage=false
+    const includeCache = req.query.cache !== 'false'; // Allow disabling via ?cache=false
 
+    // 1. Check cache first (instant response)
+    if (includeCache) {
+      const cached = webhookEventCache.get(userPath);
+      if (cached) {
+        const isStale = webhookEventCache.isStale(userPath);
+        
+        // If cache is fresh, return immediately
+        if (!isStale) {
+          return res.json({
+            count: cached.length,
+            events: cached.slice(0, limit),
+            source: 'cache',
+            storageEnabled: webhookEventStorage.isEnabled(),
+          });
+        }
+        
+        // If cache is stale, return it but trigger background refresh
+        if (includeStorage) {
+          // Non-blocking background refresh
+          (async () => {
+            try {
+              const { events: storageEvents } = await webhookEventStorage.getEvents(userPath, { limit });
+              webhookEventCache.merge(userPath, storageEvents);
+              
+              // Notify SSE clients of cache update
+              const clients = sseClients.get(userPath);
+              if (clients && clients.size > 0) {
+                const message = `data: ${JSON.stringify({ 
+                  type: 'cache-refreshed',
+                  count: storageEvents.length,
+                  timestamp: new Date().toISOString()
+                })}\n\n`;
+                clients.forEach(client => {
+                  try {
+                    client.write(message);
+                  } catch (err) {
+                    console.error('Error notifying SSE client:', err);
+                  }
+                });
+              }
+            } catch (err) {
+              console.error('Background cache refresh failed:', err);
+            }
+          })();
+        }
+        
+        // Return stale cache immediately while refresh happens in background
+        return res.json({
+          count: cached.length,
+          events: cached.slice(0, limit),
+          source: 'cache-stale',
+          storageEnabled: webhookEventStorage.isEnabled(),
+        });
+      }
+    }
+
+    // 2. Cache miss - fall back to original behavior
     // Start with in-memory events (fast)
     const inMemoryEvents = eventStore.get(userPath) || [];
     
     // If we have enough in memory or storage is disabled, return immediately
     if (inMemoryEvents.length >= limit || !includeStorage) {
+      // Update cache for next time
+      if (includeCache && inMemoryEvents.length > 0) {
+        webhookEventCache.set(userPath, inMemoryEvents);
+      }
+      
       return res.json({ 
         count: inMemoryEvents.length, 
         events: inMemoryEvents.slice(0, limit),
@@ -314,7 +381,7 @@ export function registerWebhookRoutes(app: express.Application) {
       });
     }
 
-    // Query Table Storage for more history
+    // 3. Query Table Storage for more history
     try {
       const { events: storageEvents } = await webhookEventStorage.getEvents(userPath, { limit });
       
@@ -337,6 +404,11 @@ export function registerWebhookRoutes(app: express.Application) {
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
         .slice(0, limit);
 
+      // Update cache with merged results
+      if (includeCache && mergedEvents.length > 0) {
+        webhookEventCache.set(userPath, mergedEvents);
+      }
+
       return res.json({ 
         count: mergedEvents.length, 
         events: mergedEvents,
@@ -346,6 +418,10 @@ export function registerWebhookRoutes(app: express.Application) {
     } catch (err) {
       console.error('Error querying storage:', err);
       // Fallback to in-memory only
+      if (includeCache && inMemoryEvents.length > 0) {
+        webhookEventCache.set(userPath, inMemoryEvents);
+      }
+      
       return res.json({ 
         count: inMemoryEvents.length, 
         events: inMemoryEvents.slice(0, limit),
@@ -442,6 +518,19 @@ export function registerWebhookRoutes(app: express.Application) {
   app.get('/__diag/webhook-keys', (_req: Request, res: Response) => {
     const keys = Array.from(eventStore.keys());
     return res.json({ keys, count: keys.length });
+  });
+
+  // Cache stats endpoint - monitor cache performance
+  app.get('/api/webhook/cache/stats', (_req: Request, res: Response) => {
+    const stats = webhookEventCache.getStats();
+    return res.json(stats);
+  });
+
+  // Clear cache for specific path
+  app.delete('/api/webhook/:userPath/cache', (req: Request, res: Response) => {
+    const userPath = req.params.userPath;
+    webhookEventCache.clear(userPath);
+    return res.json({ success: true, message: `Cache cleared for ${userPath}` });
   });
 
   // CDN Proxy: Forward requests to cdn.trackmangolf.com to avoid CORS issues
