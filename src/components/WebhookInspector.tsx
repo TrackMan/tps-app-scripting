@@ -5,6 +5,7 @@ import MeasurementTilesView from './MeasurementTilesView';
 import CourseInfoBanner from './CourseInfoBanner';
 import { ShotData } from './ShotTrajectoryOverlay';
 import { useActivitySessionState } from '../hooks/useActivitySessionState';
+import { getEventDisplayName, getEventDescription, hasEventMetadata } from '../utils/eventMetadata';
 
 type EventItem = {
   id?: string;
@@ -679,7 +680,12 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
                   className={`webhook-event-item ${selectedIndex === visibleIdx ? 'selected' : ''} ${isNew ? 'new-event' : ''}`} 
                   onClick={() => select(visibleIdx)}
                 >
-                  <div className="event-type">{e.eventType}</div>
+                  <div 
+                    className={`event-type ${!hasEventMetadata(e.eventType) ? 'unknown-event' : ''}`}
+                    title={getEventDescription(e.eventType) ? `${e.eventType}\n${getEventDescription(e.eventType)}` : e.eventType}
+                  >
+                    {getEventDisplayName(e.eventType)}
+                  </div>
                   <div className="event-meta">{new Date(e.timestamp).toLocaleString()}</div>
                   <div className="event-session-indicators">
                     {customerColor && (
@@ -709,7 +715,14 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
         {selectedEvent ? (
           <div>
             <div className="preview-header">
-              <h4 className="preview-title">{selectedEvent.eventType}</h4>
+              <h4 
+                className="preview-title" 
+                title={getEventDescription(selectedEvent.eventType) 
+                  ? `${selectedEvent.eventType}\n${getEventDescription(selectedEvent.eventType)}` 
+                  : selectedEvent.eventType}
+              >
+                {getEventDisplayName(selectedEvent.eventType)}
+              </h4>
               <div className="preview-time">{new Date(selectedEvent.timestamp).toLocaleString()}</div>
             </div>
             {/* Display course information if available for this activity session */}
