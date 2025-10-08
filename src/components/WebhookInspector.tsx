@@ -708,9 +708,10 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
       <div className="webhook-inspector-preview">
         {selectedEvent ? (
           <div>
-            <h4 className="preview-title">{selectedEvent.eventType}</h4>
-            <div className="preview-time">{new Date(selectedEvent.timestamp).toLocaleString()}</div>
-            
+            <div className="preview-header">
+              <h4 className="preview-title">{selectedEvent.eventType}</h4>
+              <div className="preview-time">{new Date(selectedEvent.timestamp).toLocaleString()}</div>
+            </div>
             {/* Display course information if available for this activity session */}
             {(() => {
               const { activitySessionId } = getSessionIds(selectedEvent);
