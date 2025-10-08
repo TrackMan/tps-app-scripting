@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from 'urql';
-import { FACILITIES_QUERY } from '../graphql/queries';
-import { debugEnvironment } from '../lib/debug-env';
+import { FACILITIES_QUERY } from '../../graphql/queries';
+import { debugEnvironment } from '../../lib/debug-env';
 import './FacilitySelectorPortal.css';
 
 interface Facility {

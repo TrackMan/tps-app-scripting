@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from 'urql';
-import { GET_FACILITIES_WITH_ACCESS, TEST_QUERY } from '../graphql/queries';
-import { debugEnvironment } from '../lib/debug-env';
+import { GET_FACILITIES_WITH_ACCESS } from '../../graphql/queries';
+import { debugEnvironment } from '../../lib/debug-env';
 
 
 interface Facility {
@@ -25,11 +25,6 @@ export const FacilityDropdown: React.FC<FacilityDropdownProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
   
-  // Test basic connection first
-  const [testResult] = useQuery({
-    query: TEST_QUERY,
-  });
-
   const [result] = useQuery({
     query: GET_FACILITIES_WITH_ACCESS,
   });

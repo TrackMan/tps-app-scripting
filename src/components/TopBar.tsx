@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FacilitySelectorPortal } from './FacilitySelectorPortal';
+import { FacilitySelectorPortal } from './FacilitySelector';
 import { BuildVersion } from './BuildVersion';
 import { useAuth } from '../lib/AuthProvider';
 
