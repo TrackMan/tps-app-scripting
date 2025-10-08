@@ -1,20 +1,20 @@
 import React from 'react';
-import './WebhookEventsPanel.css';
+import '../WebhookEventsPanel.css';
 import './WebhookInspector.css';
-import MeasurementTilesView from './MeasurementTilesView';
-import CourseInfoBanner from './CourseInfoBanner';
-import { ShotData } from './ShotTrajectoryOverlay';
-import { useActivitySessionState } from '../hooks/useActivitySessionState';
-import { getEventDisplayName, getEventDescription, hasEventMetadata } from '../utils/eventMetadata';
-import { EventItem } from '../types/webhookTypes';
-import { getColorForId } from '../utils/sessionColorUtils';
-import { getSessionIds, getDeviceIdFromEvent, getEventModelPayload } from '../utils/webhookEventUtils';
+import MeasurementTilesView from '../MeasurementTilesView';
+import CourseInfoBanner from '../CourseInfoBanner';
+import { ShotData } from '../ShotTrajectoryOverlay';
+import { useActivitySessionState } from '../../hooks/useActivitySessionState';
+import { getEventDisplayName, getEventDescription, hasEventMetadata } from '../../utils/eventMetadata';
+import { EventItem } from '../../types/webhookTypes';
+import { getColorForId } from '../../utils/sessionColorUtils';
+import { getSessionIds, getDeviceIdFromEvent, getEventModelPayload } from '../../utils/webhookEventUtils';
 import { 
   isMeasurementEvent, 
   getMeasurementData, 
   findRecentChangePlayerData, 
   findAllShotsForHole 
-} from '../utils/measurementDataUtils';
+} from '../../utils/measurementDataUtils';
 
 interface Props {
   userPath: string;
