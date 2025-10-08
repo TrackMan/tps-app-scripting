@@ -4,11 +4,11 @@ The webhook server provides endpoints for receiving and viewing webhook events f
 
 ## Features
 
-- 🔗 **Webhook ingestion** - Receives Azure EventGrid webhook events
-- 💾 **Hybrid storage** - In-memory cache + Azure Table Storage persistence
-- 📡 **Server-Sent Events** - Real-time event streaming to web clients
-- 🔍 **Event inspection** - Browse and search webhook history
-- 🎯 **Event classification** - TypeScript types for all event payloads
+-  **Webhook ingestion** - Receives Azure EventGrid webhook events
+-  **Hybrid storage** - In-memory cache + Azure Table Storage persistence
+-  **Server-Sent Events** - Real-time event streaming to web clients
+-  **Event inspection** - Browse and search webhook history
+-  **Event classification** - TypeScript types for all event payloads
 
 ## Quick Start
 
@@ -56,7 +56,7 @@ The server uses a **hybrid storage approach**:
    - Survives restarts and deployments
    - Optional - gracefully degrades to memory-only if not configured
 
-📚 **Full setup guide:** See [`AZURE_TABLE_STORAGE_SETUP.md`](../AZURE_TABLE_STORAGE_SETUP.md) in the root directory.
+ **Full setup guide:** See [`AZURE_TABLE_STORAGE_SETUP.md`](../AZURE_TABLE_STORAGE_SETUP.md) in the root directory.
 
 ## API Endpoints
 
@@ -172,7 +172,7 @@ Or use webhook.site to capture and forward real webhooks.
 
 **Events not persisting after restart:**
 - Check if `AZURE_STORAGE_CONNECTION_STRING` is set
-- Look for `✅ Azure Table Storage initialized` in logs
+- Look for ` Azure Table Storage initialized` in logs
 
 **Storage errors:**
 - Verify connection string format
