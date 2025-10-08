@@ -16,6 +16,7 @@ import { validateScript, formatErrors, getValidatorStatus } from './validator';
 import { repairActivities } from './lib/repairSteps';
 import { editorReducer, initialEditorState, getSelectedNode } from './editorReducer';
 import { usePersistedSelections } from './hooks/usePersistedSelections';
+import { useAutoSaveScript, loadAutoSavedScript, clearAutoSavedScript, hasAutoSavedScript } from './hooks/useAutoSaveScript';
 import AppProviders from './app/Providers';
 import AppShell from './app/AppShell';
 
@@ -62,9 +63,37 @@ export default function App() {
   
   // Track if we've initialized from persistence to prevent re-initialization
   const hasInitializedFromPersistence = useRef(false);
+  const hasRestoredAutoSave = useRef(false);
   
   const { script } = state;
   const { isValid, errors: validationErrors } = state.validation;
+
+  // Enable auto-save to browser's localStorage (debounced, async)
+  useAutoSaveScript(script, true);
+
+  // Restore auto-saved script on mount (only once)
+  useEffect(() => {
+    if (hasRestoredAutoSave.current) return;
+    
+    const autoSaved = loadAutoSavedScript();
+    if (autoSaved) {
+      // Ask user if they want to restore
+      const restore = window.confirm(
+        'A previously edited script was found in browser cache. Would you like to restore it?\n\n' +
+        'Click OK to restore, or Cancel to start fresh.'
+      );
+      
+      if (restore) {
+        dispatch({ type: 'LOAD_SCRIPT', script: autoSaved });
+        console.log('✅ Restored auto-saved script from browser cache');
+      } else {
+        // User chose not to restore, clear the auto-save
+        clearAutoSavedScript();
+      }
+    }
+    
+    hasRestoredAutoSave.current = true;
+  }, []); // Run only once on mount
 
   // Immediate authentication check and redirect
   useEffect(() => {
@@ -322,6 +351,10 @@ export default function App() {
       
       // Cleanup
       URL.revokeObjectURL(url);
+      
+      // Clear auto-save since user explicitly saved
+      clearAutoSavedScript();
+      
       console.log('Script downloaded successfully:', filename);
     } catch (error) {
       console.error('Error downloading script:', error);

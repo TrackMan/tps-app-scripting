@@ -12,6 +12,7 @@
 - [Session Indicators Feature](./SESSION_INDICATORS_FEATURE.md) - Visual session indicators
 - [Hole Image Display](./HOLE_IMAGE_DISPLAY.md) - Visual hole layout images in course info banner
 - [Shot Trajectory Visualization](./SHOT_TRAJECTORY_VISUALIZATION.md) - 3D→2D shot path overlay on hole images
+- [Auto-Save Feature](./AUTO_SAVE_FEATURE.md) - Browser cache persistence to prevent data loss
 
 ### Bug Fixes & Improvements
 - [Shot Number Carry-Forward Fix](./SHOT_NUMBER_CARRY_FORWARD_FIX.md) - Making hole/shot persist across events
