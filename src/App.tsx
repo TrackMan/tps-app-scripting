@@ -71,9 +71,42 @@ export default function App() {
   // Enable auto-save to browser's localStorage (debounced, async)
   useAutoSaveScript(script, true);
 
+  // Function to clear all facility/location/bay selections (for environment switching)
+  const handleClearSelections = async () => {
+    console.log('🧹 Clearing all facility/location/bay selections...');
+    try {
+      // Clear backend-persisted selections
+      await saveSelection('FACILITY_ID', null);
+      await saveSelection('LOCATION_ID', null);
+      await saveSelection('BAY_ID', null);
+      
+      // Clear local state
+      setSelectedFacility(null);
+      setSelectedFacilityId(null);
+      setSelectedLocation(null);
+      setSelectedBayId(null);
+      setSelectedBayObj(null);
+      
+      console.log('✅ All selections cleared successfully');
+    } catch (error) {
+      console.error('❌ Error clearing selections:', error);
+      throw error;
+    }
+  };
+
   // Restore auto-saved script on mount (only once)
   useEffect(() => {
     if (hasRestoredAutoSave.current) return;
+    
+    // Check if we're in the middle of an environment switch
+    const isSwitchingEnvironment = localStorage.getItem('environment-switching') === 'true';
+    if (isSwitchingEnvironment) {
+      console.log('🔄 Environment switch detected, clearing auto-save and skipping restore prompt');
+      clearAutoSavedScript();
+      localStorage.removeItem('environment-switching');
+      hasRestoredAutoSave.current = true;
+      return;
+    }
     
     const autoSaved = loadAutoSavedScript();
     if (autoSaved) {
@@ -600,6 +633,7 @@ export default function App() {
         selectedFacility={selectedFacility}
         selectedFacilityId={selectedFacilityId}
         onFacilitySelect={handleFacilitySelect}
+        onClearSelections={handleClearSelections}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         state={state}

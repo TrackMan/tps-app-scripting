@@ -33,6 +33,7 @@
 
 ### Deployment & DevOps
 - [Azure Deployment Setup](./AZURE_DEPLOYMENT_SETUP.md) - Azure Static Web App deployment configuration
+- [Azure Environment Variables](./AZURE_ENVIRONMENT_VARIABLES.md) - Environment variables for Azure App Service deployment
 - [Azure Front Door](./AZURE_FRONTDOOR.md) - Azure Front Door setup and configuration
 - [Docker Deployment](./DOCKER_DEPLOYMENT.md) - Docker containerization and deployment
 - [Deployment Fix](./DEPLOYMENT_FIX.md) - Deployment troubleshooting and fixes

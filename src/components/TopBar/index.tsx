@@ -2,6 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FacilitySelectorPortal } from '../FacilitySelector';
 import { BuildVersion } from './BuildVersion';
 import { useAuth } from '../../lib/AuthProvider';
+import { 
+  getActiveEnvironment, 
+  setActiveEnvironment,
+  getEnvironmentLabel,
+  isProductionConfigured 
+} from '../../lib/environment-switcher';
+import { clearAutoSavedScript } from '../../hooks/useAutoSaveScript';
 
 interface Facility {
   id: string;
@@ -11,20 +18,24 @@ interface Facility {
   apiDeveloperAccess?: string | null;
 }
 
-interface TopBarProps {
+export interface TopBarProps {
   selectedFacility: Facility | null;
   selectedFacilityId: string | null;
   onFacilitySelect: (facility: Facility | null) => void;
+  onClearSelections?: () => Promise<void>;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ 
   selectedFacility, 
   selectedFacilityId,
-  onFacilitySelect 
+  onFacilitySelect,
+  onClearSelections
 }) => {
   const { isAuthenticated, isLoading, logout, profile } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
+  const [currentEnv, setCurrentEnv] = useState(getActiveEnvironment());
+  const prodConfigured = isProductionConfigured();
 
   // Close menu on outside click for avatar menu
   useEffect(() => {
@@ -42,6 +53,49 @@ export const TopBar: React.FC<TopBarProps> = ({
     console.log('Logging out user');
     logout();
     setMenuOpen(false);
+  };
+
+  const handleEnvironmentSwitch = async () => {
+    const targetEnv: 'dev' | 'prod' = currentEnv === 'dev' ? 'prod' : 'dev';
+    console.log(`🔄 Starting environment switch: ${currentEnv} → ${targetEnv}`);
+    setMenuOpen(false);
+    
+    try {
+      // Step 1: Clear facility/location/bay selections from backend
+      console.log('📝 Clearing facility/location/bay selections...');
+      if (onClearSelections) {
+        await onClearSelections();
+        console.log('✅ Selections cleared');
+      }
+      
+      // Step 2: Clear auto-saved script from browser cache
+      console.log('🗑️ Clearing auto-saved script...');
+      clearAutoSavedScript();
+      console.log('✅ Auto-saved script cleared');
+      
+      // Step 3: Logout from current environment
+      console.log('🔐 Logging out from current environment...');
+      await logout();
+      console.log('✅ Logged out');
+      
+      // Step 4: Set target environment in localStorage EXPLICITLY
+      // Don't use switchEnvironment() because logout may have cleared localStorage
+      console.log(`🔀 Setting environment to: ${targetEnv}`);
+      setActiveEnvironment(targetEnv);
+      
+      // Set a flag to indicate we're switching environments (used to skip restore prompt)
+      localStorage.setItem('environment-switching', 'true');
+      console.log(`✅ Environment set to: ${targetEnv}`);
+      
+      // Step 5: Force full page reload to re-initialize with new environment
+      // This ensures we don't try to read from localStorage - the reload will handle everything
+      console.log('🔄 Reloading page...');
+      window.location.href = '/';
+    } catch (error) {
+      console.error('❌ Error during environment switch:', error);
+      // Even on error, try to reload to get to a clean state
+      window.location.href = '/';
+    }
   };
   
   const handleFacilitySelect = (facility: Facility | null) => {
@@ -95,6 +149,28 @@ export const TopBar: React.FC<TopBarProps> = ({
                 <div className="top-bar-user-menu topbar-user-menu-absolute">
                   <div className="top-bar-user-menu-title">{profile.fullName || ''}</div>
                   <hr className="top-bar-user-menu-divider" />
+                  
+                  {/* Environment Switcher - Only show if production is configured */}
+                  {prodConfigured && (
+                    <>
+                      <button
+                        className="top-bar-user-menu-item top-bar-user-menu-link"
+                        onMouseDown={handleEnvironmentSwitch}
+                      >
+                        <span className="top-bar-user-menu-row">
+                          {/* Environment Switch SVG */}
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fillRule="evenodd" clipRule="evenodd" d="M8 1a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0v-5.5A.75.75 0 0 1 8 1z" fill="#414141"/>
+                            <path fillRule="evenodd" clipRule="evenodd" d="M3 8a5 5 0 1 1 10 0A5 5 0 0 1 3 8zm5-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13z" fill="#414141"/>
+                            <path d="M11 8.5a.5.5 0 0 0-1 0v1.793l-.646-.647a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l1.5-1.5a.5.5 0 0 0-.708-.708L11 10.293V8.5z" fill="#414141"/>
+                          </svg>
+                          Switch to {currentEnv === 'dev' ? 'Production' : 'Development'}
+                        </span>
+                      </button>
+                      <hr className="top-bar-user-menu-divider" />
+                    </>
+                  )}
+                  
                   <button
                     className="top-bar-user-menu-item top-bar-user-menu-link"
                     onMouseDown={handleLogoutClick}

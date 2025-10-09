@@ -1,46 +1,44 @@
 // Centralized environment variable handling for backend & login services.
-// New preferred variables:
-//   VITE_BACKEND_BASE_URL (e.g. https://dr-cloud-api-dev.trackmangolfdev.com)
-//   VITE_LOGIN_BASE_URL   (e.g. https://tm-login-dev.trackmangolfdev.com)
-// Legacy fallbacks:
-//   VITE_GRAPHQL_URL (full path) and VITE_OAUTH_TOKEN_URL (full token endpoint)
+// Supports switching between development and production environments.
+// The active environment is stored in localStorage and managed by environment-switcher.ts
 //
 // This module normalizes trailing slashes and constructs service endpoints:
 //   GraphQL:  <backend>/graphql
 //   REST:     <backend>/api
 //   OAuth:    <login>/connect/token
-//
-// Migration:
-// 1. Add new base URLs to your .env.
-// 2. Remove old full URLs once confident.
-// 3. This helper will warn if only legacy vars are present.
+
+import { getCurrentEnvironmentConfig } from './environment-switcher';
 
 function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, '');
 }
 
 const backendBase = (() => {
+  console.log('🔍 [env.ts] Initializing backendBase...');
+  
   // Try runtime configuration first (for Azure App Service)
   const runtimeBase = (window as any)?.runtimeConfig?.VITE_BACKEND_BASE_URL;
   if (runtimeBase && runtimeBase.startsWith('http')) {
+    console.log('✅ [env.ts] Using runtime config for backendBase:', runtimeBase);
     return stripTrailingSlash(runtimeBase);
   }
   
-  // Fall back to build-time environment
+  // Get environment-aware configuration from localStorage
+  try {
+    console.log('🔍 [env.ts] Calling getCurrentEnvironmentConfig()...');
+    const envConfig = getCurrentEnvironmentConfig();
+    if (envConfig.backendBaseUrl) {
+      console.log('✅ [env.ts] Using environment config for backendBase:', envConfig.backendBaseUrl);
+      return stripTrailingSlash(envConfig.backendBaseUrl);
+    }
+  } catch (error) {
+    console.warn('[env] Failed to get environment config:', error);
+  }
+  
+  // Fallback to build-time default environment
   const base = import.meta.env.VITE_BACKEND_BASE_URL?.trim();
+  console.log('⚠️ [env.ts] Using build-time fallback for backendBase:', base);
   if (base) return stripTrailingSlash(base);
-  
-  // Legacy fallback
-  const legacyGraphql = import.meta.env.VITE_GRAPHQL_URL?.trim();
-  if (legacyGraphql) {
-    console.warn('[env] Using legacy VITE_GRAPHQL_URL as backend base fallback');
-    return stripTrailingSlash(legacyGraphql.replace(/\/graphql$/, ''));
-  }
-  
-  // Production fallback for Azure App Service
-  if (typeof window !== 'undefined' && window.location.hostname.includes('trackmangolfdev.com')) {
-    return 'https://dr-cloud-api-dev.trackmangolfdev.com';
-  }
   
   return '';
 })();
@@ -52,21 +50,19 @@ const loginBase = (() => {
     return stripTrailingSlash(runtimeBase);
   }
   
-  // Fall back to build-time environment
+  // Get environment-aware configuration from localStorage
+  try {
+    const envConfig = getCurrentEnvironmentConfig();
+    if (envConfig.loginBaseUrl) {
+      return stripTrailingSlash(envConfig.loginBaseUrl);
+    }
+  } catch (error) {
+    console.warn('[env] Failed to get environment config:', error);
+  }
+  
+  // Fallback to build-time default environment
   const base = import.meta.env.VITE_LOGIN_BASE_URL?.trim();
   if (base) return stripTrailingSlash(base);
-  
-  // Legacy fallback
-  const legacyToken = import.meta.env.VITE_OAUTH_TOKEN_URL?.trim();
-  if (legacyToken) {
-    console.warn('[env] Using legacy VITE_OAUTH_TOKEN_URL as login base fallback');
-    return stripTrailingSlash(legacyToken.replace(/\/connect\/token$/, ''));
-  }
-  
-  // Production fallback for Azure App Service
-  if (typeof window !== 'undefined' && window.location.hostname.includes('trackmangolfdev.com')) {
-    return 'https://tm-login-dev.trackmangolfdev.com';
-  }
   
   return '';
 })();
@@ -95,12 +91,22 @@ if (!isProduction) {
 }
 
 // OAuth Web Client Configuration (for authorization code flow)
-// Function to get OAuth client ID - with runtime support
+// Function to get OAuth client ID - with runtime and environment-aware support
 function getOAuthClientId(): string {
   // Try runtime configuration first (for Azure App Service)
   const runtimeClientId = (window as any)?.runtimeConfig?.VITE_OAUTH_WEB_CLIENT_ID;
   if (runtimeClientId && runtimeClientId.length > 10) {
     return runtimeClientId;
+  }
+  
+  // Get environment-aware configuration from localStorage
+  try {
+    const envConfig = getCurrentEnvironmentConfig();
+    if (envConfig.oauthClientId) {
+      return envConfig.oauthClientId;
+    }
+  } catch (error) {
+    console.warn('[env] Failed to get environment config for OAuth client ID:', error);
   }
   
   // Fall back to build-time environment variable
@@ -109,15 +115,10 @@ function getOAuthClientId(): string {
     return buildTimeClientId;
   }
   
-  // Production fallback for Azure App Service
-  if (typeof window !== 'undefined' && window.location.hostname.includes('trackmangolfdev.com')) {
-    return 'dr-web.4633fada-3b16-490f-8de7-2aa67158a1d6';
-  }
-  
   return '';
 }
 
-// Function to get OAuth client secret - with runtime support
+// Function to get OAuth client secret - with runtime and environment-aware support
 function getOAuthClientSecret(): string {
   // Try runtime configuration first (for Azure App Service)
   const runtimeClientSecret = (window as any)?.runtimeConfig?.VITE_OAUTH_WEB_CLIENT_SECRET;
@@ -125,15 +126,20 @@ function getOAuthClientSecret(): string {
     return runtimeClientSecret;
   }
   
+  // Get environment-aware configuration from localStorage
+  try {
+    const envConfig = getCurrentEnvironmentConfig();
+    if (envConfig.oauthClientSecret) {
+      return envConfig.oauthClientSecret;
+    }
+  } catch (error) {
+    console.warn('[env] Failed to get environment config for OAuth client secret:', error);
+  }
+  
   // Fall back to build-time environment variable
   const buildTimeClientSecret = import.meta.env.VITE_OAUTH_WEB_CLIENT_SECRET;
   if (buildTimeClientSecret) {
     return buildTimeClientSecret;
-  }
-  
-  // Production fallback for Azure App Service
-  if (typeof window !== 'undefined' && window.location.hostname.includes('trackmangolfdev.com')) {
-    return '7c870264-3703-4ec2-add8-5f8e57251d0e';
   }
   
   return '';

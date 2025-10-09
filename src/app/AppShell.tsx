@@ -18,6 +18,7 @@ export interface AppShellProps {
   selectedFacility: any;
   selectedFacilityId: string | null;
   onFacilitySelect: (f: any) => void;
+  onClearSelections?: () => Promise<void>;
   activeTab: TabType;
   setActiveTab: (t: TabType) => void;
   // editor state and handlers (kept generic to avoid tight coupling in this step)
@@ -51,6 +52,7 @@ export const AppShell: React.FC<AppShellProps> = (props) => {
     selectedFacility,
     selectedFacilityId,
     onFacilitySelect,
+    onClearSelections,
     activeTab,
     setActiveTab,
     state,
@@ -88,6 +90,7 @@ export const AppShell: React.FC<AppShellProps> = (props) => {
         selectedFacility={selectedFacility}
         selectedFacilityId={selectedFacilityId}
         onFacilitySelect={onFacilitySelect}
+        onClearSelections={onClearSelections}
       />
       <TabBar 
         activeTab={activeTab} 
