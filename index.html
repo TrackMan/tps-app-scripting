@@ -6,16 +6,11 @@
     <title>TrackMan Script Editor</title>
   <link rel="icon" type="image/x-icon" href="https://golf-portal-dev.trackmangolfdev.com/favicon.ico" />
     <link rel="stylesheet" href="/src/index.css" />
-    <!-- Runtime configuration for Azure App Service -->  
+    <!-- Runtime configuration for Azure App Service (loaded synchronously) -->  
     <script>
-      // Load runtime config with cache-busting timestamp (only in production)
+      // For Azure deployments: synchronously load runtime config before app starts
       if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        const script = document.createElement('script');
-        script.src = '/runtime-config.js?v=' + Date.now();
-        script.onerror = function() {
-          console.warn('Runtime config not available - using build-time environment variables');
-        };
-        document.head.appendChild(script);
+        document.write('<script src="/runtime-config.js?v=' + Date.now() + '"><\/script>');
       }
     </script>
   </head>
