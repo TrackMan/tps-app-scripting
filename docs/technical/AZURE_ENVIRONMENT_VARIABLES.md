@@ -14,8 +14,8 @@ These are used as fallbacks and for backward compatibility:
 ```bash
 VITE_BACKEND_BASE_URL=https://dr-cloud-api-dev.trackmangolfdev.com
 VITE_LOGIN_BASE_URL=https://tm-login-dev.trackmangolfdev.com
-VITE_OAUTH_WEB_CLIENT_ID=dr-web.4633fada-3b16-490f-8de7-2aa67158a1d6
-VITE_OAUTH_WEB_CLIENT_SECRET=7c870264-3703-4ec2-add8-5f8e57251d0e
+VITE_DEV_OAUTH_WEB_CLIENT_ID=<YOUR_DEV_CLIENT_ID>
+VITE_DEV_OAUTH_WEB_CLIENT_SECRET=<YOUR_DEV_CLIENT_SECRET>
 ```
 
 ### Development Environment

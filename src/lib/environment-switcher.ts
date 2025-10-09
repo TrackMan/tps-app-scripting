@@ -94,7 +94,15 @@ export function getEnvironmentLabel(env: Environment): string {
  */
 export function isProductionConfigured(): boolean {
   const config = getEnvironmentConfig('prod');
-  return !!(
+  console.log('🔍 [environment-switcher] isProductionConfigured() check:', {
+    backendBaseUrl: config.backendBaseUrl,
+    loginBaseUrl: config.loginBaseUrl,
+    oauthClientId: config.oauthClientId ? 'SET' : 'NOT SET',
+    oauthClientSecret: config.oauthClientSecret ? 'SET' : 'NOT SET',
+    hasPlaceholder: config.oauthClientId?.includes('PROD-CLIENT-ID-HERE') || config.oauthClientSecret?.includes('PROD-CLIENT-SECRET-HERE')
+  });
+  
+  const isConfigured = !!(
     config.backendBaseUrl &&
     config.loginBaseUrl &&
     config.oauthClientId &&
@@ -102,4 +110,7 @@ export function isProductionConfigured(): boolean {
     !config.oauthClientId.includes('PROD-CLIENT-ID-HERE') &&
     !config.oauthClientSecret.includes('PROD-CLIENT-SECRET-HERE')
   );
+  
+  console.log('✅ [environment-switcher] isProductionConfigured():', isConfigured);
+  return isConfigured;
 }

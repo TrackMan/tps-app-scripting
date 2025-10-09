@@ -111,11 +111,25 @@ if (fs.existsSync(staticPath)) {
 
     // Build runtime config from VITE_ env vars (fall back to empty strings)
     const runtime = {
+      // Legacy environment variables (default/current environment)
       VITE_BACKEND_BASE_URL: process.env.VITE_BACKEND_BASE_URL || '',
       VITE_LOGIN_BASE_URL: process.env.VITE_LOGIN_BASE_URL || '',
       VITE_NODE_ENV: process.env.VITE_NODE_ENV || 'production',
       VITE_OAUTH_WEB_CLIENT_ID: process.env.VITE_OAUTH_WEB_CLIENT_ID || '',
       VITE_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_OAUTH_WEB_CLIENT_SECRET ? 'SET' : '',
+      
+      // Development environment variables
+      VITE_DEV_BACKEND_BASE_URL: process.env.VITE_DEV_BACKEND_BASE_URL || '',
+      VITE_DEV_LOGIN_BASE_URL: process.env.VITE_DEV_LOGIN_BASE_URL || '',
+      VITE_DEV_OAUTH_WEB_CLIENT_ID: process.env.VITE_DEV_OAUTH_WEB_CLIENT_ID || '',
+      VITE_DEV_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_DEV_OAUTH_WEB_CLIENT_SECRET ? 'SET' : '',
+      
+      // Production environment variables
+      VITE_PROD_BACKEND_BASE_URL: process.env.VITE_PROD_BACKEND_BASE_URL || '',
+      VITE_PROD_LOGIN_BASE_URL: process.env.VITE_PROD_LOGIN_BASE_URL || '',
+      VITE_PROD_OAUTH_WEB_CLIENT_ID: process.env.VITE_PROD_OAUTH_WEB_CLIENT_ID || '',
+      VITE_PROD_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_PROD_OAUTH_WEB_CLIENT_SECRET ? 'SET' : '',
+      
       _generated: new Date().toISOString(),
     } as Record<string, any>;
 
@@ -184,11 +198,25 @@ if (fs.existsSync(staticPath)) {
   app.get('/runtime-config.js', (_req: Request, res: Response) => {
     res.type('application/javascript');
     const runtime = {
+      // Legacy environment variables (default/current environment)
       VITE_BACKEND_BASE_URL: process.env.VITE_BACKEND_BASE_URL || '',
       VITE_LOGIN_BASE_URL: process.env.VITE_LOGIN_BASE_URL || '',
       VITE_NODE_ENV: process.env.VITE_NODE_ENV || 'production',
       VITE_OAUTH_WEB_CLIENT_ID: process.env.VITE_OAUTH_WEB_CLIENT_ID || '',
       VITE_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_OAUTH_WEB_CLIENT_SECRET ? 'SET' : '',
+      
+      // Development environment variables
+      VITE_DEV_BACKEND_BASE_URL: process.env.VITE_DEV_BACKEND_BASE_URL || '',
+      VITE_DEV_LOGIN_BASE_URL: process.env.VITE_DEV_LOGIN_BASE_URL || '',
+      VITE_DEV_OAUTH_WEB_CLIENT_ID: process.env.VITE_DEV_OAUTH_WEB_CLIENT_ID || '',
+      VITE_DEV_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_DEV_OAUTH_WEB_CLIENT_SECRET ? 'SET' : '',
+      
+      // Production environment variables
+      VITE_PROD_BACKEND_BASE_URL: process.env.VITE_PROD_BACKEND_BASE_URL || '',
+      VITE_PROD_LOGIN_BASE_URL: process.env.VITE_PROD_LOGIN_BASE_URL || '',
+      VITE_PROD_OAUTH_WEB_CLIENT_ID: process.env.VITE_PROD_OAUTH_WEB_CLIENT_ID || '',
+      VITE_PROD_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_PROD_OAUTH_WEB_CLIENT_SECRET ? 'SET' : '',
+      
       _generated: new Date().toISOString(),
     } as Record<string, any>;
     const content = `// Runtime configuration (generated)\nwindow.runtimeConfig = ${JSON.stringify(
