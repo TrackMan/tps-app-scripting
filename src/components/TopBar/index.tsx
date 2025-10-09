@@ -87,7 +87,18 @@ export const TopBar: React.FC<TopBarProps> = ({
       localStorage.setItem('environment-switching', 'true');
       console.log(`✅ Environment set to: ${targetEnv}`);
       
-      // Step 5: Force full page reload to re-initialize with new environment
+      // Step 5: Clean URL to remove any OAuth callback parameters before reload
+      // This prevents the app from trying to process an OAuth code from the old environment
+      console.log('🧹 Cleaning URL parameters...');
+      const cleanUrl = window.location.origin + '/';
+      
+      // Replace the current history entry to remove OAuth params
+      if (window.location.href !== cleanUrl) {
+        window.history.replaceState({}, '', cleanUrl);
+        console.log('✅ URL cleaned:', cleanUrl);
+      }
+      
+      // Step 6: Force full page reload to re-initialize with new environment
       // This ensures we don't try to read from localStorage - the reload will handle everything
       console.log('🔄 Reloading page...');
       window.location.href = '/';
