@@ -104,12 +104,14 @@ export function parseAuthorizationCallback(url: string): {
 }
 
 /**
- * Exchange authorization code for access token
+ * Exchange authorization code for access token via backend proxy
+ * This keeps client secrets on the server and never exposes them to the browser
  */
 export async function exchangeCodeForToken(
   config: OAuth2Config,
   code: string,
-  codeVerifier: string
+  codeVerifier: string,
+  environment: 'dev' | 'prod'
 ): Promise<{
   access_token: string;
   token_type: string;
@@ -117,40 +119,30 @@ export async function exchangeCodeForToken(
   refresh_token?: string;
   scope?: string;
 }> {
-  const tokenUrl = `${config.loginBaseUrl}/connect/token`;
+  // Call our backend endpoint instead of OAuth server directly
+  // This keeps client secrets secure on the server
+  const backendUrl = `${window.location.origin}/api/auth/exchange-token`;
   
-  const body = new URLSearchParams({
-    grant_type: 'authorization_code',
-    code: code,
-    redirect_uri: config.redirectUri,
-    code_verifier: codeVerifier,
-  });
-
-  // Always include client_id in body
-  body.append('client_id', config.clientId);
-  
-  // For confidential clients, include client_secret in body (like portal does)
-  if (config.clientSecret) {
-    body.append('client_secret', config.clientSecret);
-  }
-
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/x-www-form-urlencoded',
-  };
+  console.log(`🔑 [oauth2-utils] Calling backend token exchange for environment: ${environment}`);
   
   let response: Response;
   
   try {
-    response = await fetch(tokenUrl, {
+    response = await fetch(backendUrl, {
       method: 'POST',
-      headers,
-      body: body.toString(),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        code,
+        codeVerifier,
+        environment
+      })
     });
   } catch (error) {
     console.error('❌ Network error during token exchange:');
     console.error('  Error:', error);
-    console.error('  Token URL:', tokenUrl);
-    console.error('  This is likely a CORS issue or network connectivity problem');
+    console.error('  Backend URL:', backendUrl);
     throw new Error(`Failed to fetch token: ${error instanceof Error ? error.message : 'Network error'}`);
   }
 
@@ -163,6 +155,8 @@ export async function exchangeCodeForToken(
   }
 
   const tokenData = await response.json();
+  
+  console.log(`✅ [oauth2-utils] Token exchange successful for environment: ${environment}`);
   
   return tokenData;
 }

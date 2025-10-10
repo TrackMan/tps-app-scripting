@@ -1,4 +1,4 @@
-import { getCurrentEnvironmentConfig } from './environment-switcher';
+import { getCurrentEnvironmentConfig, getActiveEnvironment } from './environment-switcher';
 
 interface TokenResponse {
   access_token: string;
@@ -306,12 +306,14 @@ class AuthService {
     try {
       // Get current environment configuration for token exchange
       const envConfig = getCurrentEnvironmentConfig();
+      const activeEnvironment = getActiveEnvironment();
       console.log('🔑 [auth-service] Using environment config for token exchange:', {
+        environment: activeEnvironment,
         loginBaseUrl: envConfig.loginBaseUrl,
         clientId: envConfig.oauthClientId
       });
 
-      // Exchange code for tokens
+      // Exchange code for tokens via backend (keeps secrets secure)
       const tokenResponse = await exchangeCodeForToken(
         {
           clientId: envConfig.oauthClientId,
@@ -321,7 +323,8 @@ class AuthService {
           scopes: OAUTH_CONFIG.scopes
         },
         code,
-        codeVerifier
+        codeVerifier,
+        activeEnvironment  // Pass environment to backend
       );
 
       // Convert to internal format

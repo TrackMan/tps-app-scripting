@@ -58,6 +58,99 @@ app.get("/api/health", (_req: Request, res: Response) => {
   res.json({ status: "ok", uptime: process.uptime() });
 });
 
+// OAuth token exchange endpoint - proxies token requests to hide client secrets from browser
+app.post("/api/auth/exchange-token", express.json(), async (req: Request, res: Response) => {
+  try {
+    const { code, codeVerifier, environment } = req.body;
+
+    // Validate required parameters
+    if (!code || !codeVerifier || !environment) {
+      return res.status(400).json({ 
+        error: 'missing_parameters',
+        message: 'code, codeVerifier, and environment are required' 
+      });
+    }
+
+    // Validate environment
+    if (environment !== 'dev' && environment !== 'prod') {
+      return res.status(400).json({ 
+        error: 'invalid_environment',
+        message: 'environment must be "dev" or "prod"' 
+      });
+    }
+
+    // Get environment-specific configuration from server environment variables
+    let loginBaseUrl: string;
+    let clientId: string;
+    let clientSecret: string;
+    let redirectUri: string;
+
+    if (environment === 'dev') {
+      loginBaseUrl = process.env.VITE_DEV_LOGIN_BASE_URL || '';
+      clientId = process.env.VITE_DEV_OAUTH_WEB_CLIENT_ID || '';
+      clientSecret = process.env.VITE_DEV_OAUTH_WEB_CLIENT_SECRET || '';
+    } else {
+      loginBaseUrl = process.env.VITE_PROD_LOGIN_BASE_URL || '';
+      clientId = process.env.VITE_PROD_OAUTH_WEB_CLIENT_ID || '';
+      clientSecret = process.env.VITE_PROD_OAUTH_WEB_CLIENT_SECRET || '';
+    }
+
+    redirectUri = process.env.VITE_OAUTH_REDIRECT_URI || 
+                  `${req.protocol}://${req.get('host')}/account/callback`;
+
+    // Validate configuration
+    if (!loginBaseUrl || !clientId || !clientSecret) {
+      console.error(`❌ Missing OAuth configuration for environment: ${environment}`);
+      return res.status(500).json({ 
+        error: 'server_configuration_error',
+        message: 'OAuth credentials not configured on server' 
+      });
+    }
+
+    console.log(`🔑 [token-exchange] Exchanging token for environment: ${environment}`);
+    console.log(`🔑 [token-exchange] OAuth server: ${loginBaseUrl}`);
+
+    // Build token exchange request
+    const tokenUrl = `${loginBaseUrl}/connect/token`;
+    const body = new URLSearchParams({
+      grant_type: 'authorization_code',
+      code: code,
+      redirect_uri: redirectUri,
+      code_verifier: codeVerifier,
+      client_id: clientId,
+      client_secret: clientSecret
+    });
+
+    // Exchange code for token with OAuth server
+    const response = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: body.toString()
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error(`❌ [token-exchange] OAuth server error:`, data);
+      return res.status(response.status).json(data);
+    }
+
+    console.log(`✅ [token-exchange] Token exchange successful for environment: ${environment}`);
+    
+    // Return tokens to frontend
+    res.json(data);
+
+  } catch (error) {
+    console.error('❌ [token-exchange] Unexpected error:', error);
+    res.status(500).json({ 
+      error: 'server_error',
+      message: 'An unexpected error occurred during token exchange' 
+    });
+  }
+});
+
 
 // Register webhook-related routes (event store, SSE, diagnostics)
 registerWebhookRoutes(app);
@@ -110,26 +203,27 @@ if (fs.existsSync(staticPath)) {
     }
 
     // Build runtime config from VITE_ env vars (fall back to empty strings)
+    // Note: Client secrets are intentionally hidden - token exchange happens on backend
     const runtime = {
       // Legacy environment variables (default/current environment)
       VITE_BACKEND_BASE_URL: process.env.VITE_BACKEND_BASE_URL || '',
       VITE_LOGIN_BASE_URL: process.env.VITE_LOGIN_BASE_URL || '',
       VITE_NODE_ENV: process.env.VITE_NODE_ENV || 'production',
       VITE_OAUTH_WEB_CLIENT_ID: process.env.VITE_OAUTH_WEB_CLIENT_ID || '',
-      VITE_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_OAUTH_WEB_CLIENT_SECRET || '',
+      VITE_OAUTH_WEB_CLIENT_SECRET: '', // Hidden - not needed in browser
       VITE_OAUTH_REDIRECT_URI: process.env.VITE_OAUTH_REDIRECT_URI || '',
       
       // Development environment variables
       VITE_DEV_BACKEND_BASE_URL: process.env.VITE_DEV_BACKEND_BASE_URL || '',
       VITE_DEV_LOGIN_BASE_URL: process.env.VITE_DEV_LOGIN_BASE_URL || '',
       VITE_DEV_OAUTH_WEB_CLIENT_ID: process.env.VITE_DEV_OAUTH_WEB_CLIENT_ID || '',
-      VITE_DEV_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_DEV_OAUTH_WEB_CLIENT_SECRET || '',
+      VITE_DEV_OAUTH_WEB_CLIENT_SECRET: '', // Hidden - not needed in browser
       
       // Production environment variables
       VITE_PROD_BACKEND_BASE_URL: process.env.VITE_PROD_BACKEND_BASE_URL || '',
       VITE_PROD_LOGIN_BASE_URL: process.env.VITE_PROD_LOGIN_BASE_URL || '',
       VITE_PROD_OAUTH_WEB_CLIENT_ID: process.env.VITE_PROD_OAUTH_WEB_CLIENT_ID || '',
-      VITE_PROD_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_PROD_OAUTH_WEB_CLIENT_SECRET || '',
+      VITE_PROD_OAUTH_WEB_CLIENT_SECRET: '', // Hidden - not needed in browser
       
       _generated: new Date().toISOString(),
     } as Record<string, any>;
@@ -198,26 +292,27 @@ if (fs.existsSync(staticPath)) {
   // Provide the same runtime-config.js fallback as we do when static files exist
   app.get('/runtime-config.js', (_req: Request, res: Response) => {
     res.type('application/javascript');
+    // Note: Client secrets are intentionally hidden - token exchange happens on backend
     const runtime = {
       // Legacy environment variables (default/current environment)
       VITE_BACKEND_BASE_URL: process.env.VITE_BACKEND_BASE_URL || '',
       VITE_LOGIN_BASE_URL: process.env.VITE_LOGIN_BASE_URL || '',
       VITE_NODE_ENV: process.env.VITE_NODE_ENV || 'production',
       VITE_OAUTH_WEB_CLIENT_ID: process.env.VITE_OAUTH_WEB_CLIENT_ID || '',
-      VITE_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_OAUTH_WEB_CLIENT_SECRET || '',
+      VITE_OAUTH_WEB_CLIENT_SECRET: '', // Hidden - not needed in browser
       VITE_OAUTH_REDIRECT_URI: process.env.VITE_OAUTH_REDIRECT_URI || '',
       
       // Development environment variables
       VITE_DEV_BACKEND_BASE_URL: process.env.VITE_DEV_BACKEND_BASE_URL || '',
       VITE_DEV_LOGIN_BASE_URL: process.env.VITE_DEV_LOGIN_BASE_URL || '',
       VITE_DEV_OAUTH_WEB_CLIENT_ID: process.env.VITE_DEV_OAUTH_WEB_CLIENT_ID || '',
-      VITE_DEV_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_DEV_OAUTH_WEB_CLIENT_SECRET || '',
+      VITE_DEV_OAUTH_WEB_CLIENT_SECRET: '', // Hidden - not needed in browser
       
       // Production environment variables
       VITE_PROD_BACKEND_BASE_URL: process.env.VITE_PROD_BACKEND_BASE_URL || '',
       VITE_PROD_LOGIN_BASE_URL: process.env.VITE_PROD_LOGIN_BASE_URL || '',
       VITE_PROD_OAUTH_WEB_CLIENT_ID: process.env.VITE_PROD_OAUTH_WEB_CLIENT_ID || '',
-      VITE_PROD_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_PROD_OAUTH_WEB_CLIENT_SECRET || '',
+      VITE_PROD_OAUTH_WEB_CLIENT_SECRET: '', // Hidden - not needed in browser
       
       _generated: new Date().toISOString(),
     } as Record<string, any>;
