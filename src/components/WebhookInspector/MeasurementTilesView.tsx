@@ -135,9 +135,9 @@ const MEASUREMENT_TILES: MeasurementTile[] = [
   // On Course Distances (Actual values from ShotFinish)
   { title: 'Carry Actual', key: 'CarryActual', unitType: 'distance', precision: 1, category: 'On Course Distances' },
   { title: 'Total Actual', key: 'TotalActual', unitType: 'distance', precision: 1, category: 'On Course Distances' },
-  { title: 'Curve Actual', key: 'CurveActual', unitType: 'distance', precision: 1, category: 'On Course Distances' },
   { title: 'Side Actual', key: 'SideActual', unitType: 'distance', precision: 1, category: 'On Course Distances' },
   { title: 'Total Side Actual', key: 'SideTotalActual', unitType: 'distance', precision: 1, category: 'On Course Distances' },
+  { title: 'Curve Actual', key: 'CurveActual', unitType: 'distance', precision: 1, category: 'On Course Distances' },
   
   // Trajectory
   { title: 'Max Height', key: 'MaxHeight', unitType: 'distance', precision: 1, category: 'Trajectory' },

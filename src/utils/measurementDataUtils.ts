@@ -74,15 +74,15 @@ export function getMeasurementData(event: EventItem, eventsList: EventItem[]) {
             console.log(`[getMeasurementData] Found matching OnStrokeCompletedEvent at index ${i}`);
             const prevPayload = getEventModelPayload(prevEvent);
             const measurement = prevPayload?.Measurement;
-            
             if (measurement) {
               // Merge the Actual values from ShotFinish
               const merged = {
                 ...measurement,
-                CarryActual: payload.Actual?.Carry ?? measurement.CarryActual,
-                TotalActual: payload.Actual?.Total ?? measurement.TotalActual,
-                OfflineActual: payload.Actual?.Offline ?? measurement.OfflineActual,
-                LaunchDirectionActual: payload.Actual?.LaunchDirection ?? measurement.LaunchDirectionActual,
+                CarryActual: payload?.Carry ?? measurement.CarryActual,
+                TotalActual: payload?.Total ?? measurement.TotalActual,
+                SideActual: payload?.Side ?? measurement.SideActual,
+                SideTotalActual: payload?.SideTotal ?? measurement.SideTotalActual,
+                CurveActual: payload?.Curve ?? measurement.CurveActual,
                 StartingPosition: payload.StartingPosition,
                 FinishingPosition: payload.FinishingPosition
               };
