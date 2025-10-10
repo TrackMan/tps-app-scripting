@@ -1,3 +1,5 @@
+import { getCurrentEnvironmentConfig } from './environment-switcher';
+
 interface TokenResponse {
   access_token: string;
   token_type: string;
@@ -7,7 +9,7 @@ interface TokenResponse {
 }
 
 interface TokenData {
- sToken: string;
+  accessToken: string;
   tokenType: string;
   expiresAt: Date;
   refreshToken?: string;
@@ -243,11 +245,18 @@ class AuthService {
     sessionStorage.setItem('oauth_code_verifier', codeVerifier);
     sessionStorage.setItem('oauth_state', state);
 
+    // Get current environment configuration
+    const envConfig = getCurrentEnvironmentConfig();
+    console.log('🔐 [auth-service] Using environment config for login:', {
+      loginBaseUrl: envConfig.loginBaseUrl,
+      clientId: envConfig.oauthClientId
+    });
+
     // Build authorization URL
     const authUrl = await buildAuthorizationUrl(
       {
-        clientId: OAUTH_CONFIG.webClientId,
-        loginBaseUrl: ENV_URLS.loginBase,
+        clientId: envConfig.oauthClientId,
+        loginBaseUrl: envConfig.loginBaseUrl,
         redirectUri: OAUTH_CONFIG.redirectUri,
         scopes: OAUTH_CONFIG.scopes
       },
@@ -295,12 +304,19 @@ class AuthService {
     }
 
     try {
+      // Get current environment configuration for token exchange
+      const envConfig = getCurrentEnvironmentConfig();
+      console.log('🔑 [auth-service] Using environment config for token exchange:', {
+        loginBaseUrl: envConfig.loginBaseUrl,
+        clientId: envConfig.oauthClientId
+      });
+
       // Exchange code for tokens
       const tokenResponse = await exchangeCodeForToken(
         {
-          clientId: OAUTH_CONFIG.webClientId,
-          clientSecret: OAUTH_CONFIG.webClientSecret,
-          loginBaseUrl: ENV_URLS.loginBase,
+          clientId: envConfig.oauthClientId,
+          clientSecret: envConfig.oauthClientSecret,
+          loginBaseUrl: envConfig.loginBaseUrl,
           redirectUri: OAUTH_CONFIG.redirectUri,
           scopes: OAUTH_CONFIG.scopes
         },

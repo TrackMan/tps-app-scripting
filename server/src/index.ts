@@ -117,6 +117,7 @@ if (fs.existsSync(staticPath)) {
       VITE_NODE_ENV: process.env.VITE_NODE_ENV || 'production',
       VITE_OAUTH_WEB_CLIENT_ID: process.env.VITE_OAUTH_WEB_CLIENT_ID || '',
       VITE_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_OAUTH_WEB_CLIENT_SECRET ? 'SET' : '',
+      VITE_OAUTH_REDIRECT_URI: process.env.VITE_OAUTH_REDIRECT_URI || '',
       
       // Development environment variables
       VITE_DEV_BACKEND_BASE_URL: process.env.VITE_DEV_BACKEND_BASE_URL || '',
@@ -204,6 +205,7 @@ if (fs.existsSync(staticPath)) {
       VITE_NODE_ENV: process.env.VITE_NODE_ENV || 'production',
       VITE_OAUTH_WEB_CLIENT_ID: process.env.VITE_OAUTH_WEB_CLIENT_ID || '',
       VITE_OAUTH_WEB_CLIENT_SECRET: process.env.VITE_OAUTH_WEB_CLIENT_SECRET ? 'SET' : '',
+      VITE_OAUTH_REDIRECT_URI: process.env.VITE_OAUTH_REDIRECT_URI || '',
       
       // Development environment variables
       VITE_DEV_BACKEND_BASE_URL: process.env.VITE_DEV_BACKEND_BASE_URL || '',

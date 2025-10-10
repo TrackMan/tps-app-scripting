@@ -152,12 +152,26 @@ export const OAUTH_CONFIG = {
   get webClientSecret() {
     return getOAuthClientSecret();
   },
-  redirectUri: (() => {
-    // Build redirect URI dynamically from current window location
-    // This automatically works for localhost, dev, staging, and production environments
+  get redirectUri() {
+    // Priority:
+    // 1. Runtime config (Azure environment variable)
+    // 2. Build-time env (for local development)
+    // 3. Dynamic from window.location.origin (fallback)
+    
+    const runtimeRedirect = (window as any)?.runtimeConfig?.VITE_OAUTH_REDIRECT_URI;
+    if (runtimeRedirect) {
+      return runtimeRedirect;
+    }
+    
+    const buildTimeRedirect = import.meta.env.VITE_OAUTH_REDIRECT_URI;
+    if (buildTimeRedirect) {
+      return buildTimeRedirect;
+    }
+    
+    // Fallback: build dynamically from current window location
     const origin = window.location.origin;
     return `${origin}/account/callback`;
-  })(),
+  },
   scopes: [
     'openid',
     'profile', 
