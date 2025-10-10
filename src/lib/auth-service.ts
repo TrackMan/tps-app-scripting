@@ -249,7 +249,8 @@ class AuthService {
     const envConfig = getCurrentEnvironmentConfig();
     console.log('🔐 [auth-service] Using environment config for login:', {
       loginBaseUrl: envConfig.loginBaseUrl,
-      clientId: envConfig.oauthClientId
+      clientId: envConfig.oauthClientId,
+      redirectUri: OAUTH_CONFIG.redirectUri
     });
 
     // Build authorization URL

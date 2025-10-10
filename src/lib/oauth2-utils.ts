@@ -124,6 +124,7 @@ export async function exchangeCodeForToken(
   const backendUrl = `${window.location.origin}/api/auth/exchange-token`;
   
   console.log(`🔑 [oauth2-utils] Calling backend token exchange for environment: ${environment}`);
+  console.log(`🔑 [oauth2-utils] Redirect URI: ${config.redirectUri}`);
   
   let response: Response;
   
@@ -136,7 +137,8 @@ export async function exchangeCodeForToken(
       body: JSON.stringify({
         code,
         codeVerifier,
-        environment
+        environment,
+        redirectUri: config.redirectUri  // Send the redirect_uri that was used in authorization request
       })
     });
   } catch (error) {

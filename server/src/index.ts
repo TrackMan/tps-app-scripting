@@ -61,13 +61,13 @@ app.get("/api/health", (_req: Request, res: Response) => {
 // OAuth token exchange endpoint - proxies token requests to hide client secrets from browser
 app.post("/api/auth/exchange-token", express.json(), async (req: Request, res: Response) => {
   try {
-    const { code, codeVerifier, environment } = req.body;
+    const { code, codeVerifier, environment, redirectUri } = req.body;
 
     // Validate required parameters
     if (!code || !codeVerifier || !environment) {
       return res.status(400).json({ 
         error: 'missing_parameters',
-        message: 'code, codeVerifier, and environment are required' 
+        message: 'code, codeVerifier, environment, and redirectUri are required' 
       });
     }
 
@@ -83,7 +83,6 @@ app.post("/api/auth/exchange-token", express.json(), async (req: Request, res: R
     let loginBaseUrl: string;
     let clientId: string;
     let clientSecret: string;
-    let redirectUri: string;
 
     if (environment === 'dev') {
       loginBaseUrl = process.env.VITE_DEV_LOGIN_BASE_URL || '';
@@ -95,8 +94,8 @@ app.post("/api/auth/exchange-token", express.json(), async (req: Request, res: R
       clientSecret = process.env.VITE_PROD_OAUTH_WEB_CLIENT_SECRET || '';
     }
 
-    redirectUri = process.env.VITE_OAUTH_REDIRECT_URI || 
-                  `${req.protocol}://${req.get('host')}/account/callback`;
+    // Use redirectUri from request body (sent by frontend)
+    // This ensures the redirect_uri matches what was used in the authorization request
 
     // Validate configuration
     if (!loginBaseUrl || !clientId || !clientSecret) {
@@ -109,6 +108,9 @@ app.post("/api/auth/exchange-token", express.json(), async (req: Request, res: R
 
     console.log(`🔑 [token-exchange] Exchanging token for environment: ${environment}`);
     console.log(`🔑 [token-exchange] OAuth server: ${loginBaseUrl}`);
+    console.log(`🔑 [token-exchange] Redirect URI: ${redirectUri}`);
+    console.log(`🔑 [token-exchange] Client ID: ${clientId}`);
+    console.log(`🔑 [token-exchange] Code (first 10 chars): ${code.substring(0, 10)}...`);
 
     // Build token exchange request
     const tokenUrl = `${loginBaseUrl}/connect/token`;
