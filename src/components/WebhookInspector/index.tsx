@@ -416,16 +416,20 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
             {/* Display course information if available for this activity session */}
             {(() => {
               const { activitySessionId } = getSessionIds(selectedEvent);
+              console.log('[WebhookInspector] Render check - activitySessionId:', activitySessionId);
               if (activitySessionId) {
                 const sessionData = getSessionData(activitySessionId);
+                console.log('[WebhookInspector] sessionData:', sessionData ? 'found' : 'not found', sessionData);
                 if (sessionData && (sessionData.courseInfo || sessionData.isLoadingCourse)) {
                   // Find the most recent ChangePlayer data for this event
                   const changePlayerData = findRecentChangePlayerData(selectedEvent, allEvents);
+                  console.log('[WebhookInspector] changePlayerData:', changePlayerData);
                   
                   // Find all shots for the current hole
                   const shots: ShotData[] = changePlayerData?.hole 
                     ? findAllShotsForHole(selectedEvent, allEvents, changePlayerData.hole)
                     : [];
+                  console.log('[WebhookInspector] shots found:', shots.length);
                   
                   return (
                     <CourseInfoBanner 
@@ -444,10 +448,14 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
             
             {/* Check if this is a measurement event - show tiles view instead of JSON */}
             {(() => {
+              console.log('[WebhookInspector] Checking measurement event for:', selectedEvent.eventType);
               if (isMeasurementEvent(selectedEvent)) {
+                console.log('[WebhookInspector] Is measurement event, getting data...');
                 const measurement = getMeasurementData(selectedEvent, allEvents);
+                console.log('[WebhookInspector] Measurement data:', measurement ? 'found' : 'not found', measurement);
                 if (measurement) {
                   const payload = getEventModelPayload(selectedEvent);
+                  console.log('[WebhookInspector] Rendering MeasurementTilesView');
                   return (
                     <MeasurementTilesView 
                       measurement={measurement}
@@ -457,6 +465,7 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
                 }
               }
               // Fallback: render JSON for all other events
+              console.log('[WebhookInspector] Fallback - rendering JSON');
               return (
                 <pre className="preview-json">{JSON.stringify(getEventModelPayload(selectedEvent), null, 2)}</pre>
               );

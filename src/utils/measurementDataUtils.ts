@@ -6,7 +6,7 @@ import { getSessionIds, getEventModelPayload } from './webhookEventUtils';
  */
 export function isMeasurementEvent(e: EventItem): boolean {
   return (
-    e.eventType === 'TPS.Simulator.OnStrokeCompletedEvent' ||
+    e.eventType === 'TPS.Live.OnStrokeCompletedEvent' ||
     e.eventType === 'TPS.Simulator.ShotStarting' ||
     e.eventType === 'TPS.Simulator.ShotFinish'
   );
@@ -26,15 +26,20 @@ export function getMeasurementData(event: EventItem, eventsList: EventItem[]) {
     const payload = getEventModelPayload(event);
     if (!payload) return null;
 
-    // For OnStrokeCompletedEvent: use Measurement directly
-    if (event.eventType === 'TPS.Simulator.OnStrokeCompletedEvent') {
-      console.log('[getMeasurementData] OnStrokeCompletedEvent measurement:', payload.Measurement);
-      return payload.Measurement;
+    // For ShotStarting: construct measurement from individual fields
+    if (event.eventType === 'TPS.Simulator.ShotStarting') {
+      console.log('[getMeasurementData] ShotStarting payload:', payload);
+      // ShotStarting has BallSpeed, LaunchAngle, LaunchDirection as individual fields
+      return {
+        BallSpeed: payload.BallSpeed,
+        LaunchAngle: payload.LaunchAngle,
+        LaunchDirection: payload.LaunchDirection,
+      };
     }
 
-    // For ShotStarting: use Measurement directly
-    if (event.eventType === 'TPS.Simulator.ShotStarting') {
-      console.log('[getMeasurementData] ShotStarting measurement:', payload.Measurement);
+    // For OnStrokeCompletedEvent: use Measurement directly
+    if (event.eventType === 'TPS.Live.OnStrokeCompletedEvent') {
+      console.log('[getMeasurementData] OnStrokeCompletedEvent measurement:', payload.Measurement);
       return payload.Measurement;
     }
 
@@ -62,7 +67,7 @@ export function getMeasurementData(event: EventItem, eventsList: EventItem[]) {
       for (let i = currentIdx + 1; i < eventsList.length; i++) {
         const prevEvent = eventsList[i];
         
-        if (prevEvent.eventType === 'TPS.Simulator.OnStrokeCompletedEvent') {
+        if (prevEvent.eventType === 'TPS.Live.OnStrokeCompletedEvent') {
           const { deviceId: prevDeviceId } = getSessionIds(prevEvent);
           
           if (prevDeviceId === thisDeviceId) {
