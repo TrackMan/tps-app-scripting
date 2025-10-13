@@ -26,6 +26,22 @@ const lastWebhookDiagnostics = new Map<string, { headers: any; body: any }>();
 // SSE clients per webhook path
 const sseClients = new Map<string, Set<Response>>();
 
+// Helper function to extract Device.Id from an event
+function getDeviceIdFromEventRecord(event: EventRecord): string | undefined {
+  try {
+    const raw = event.raw as any;
+    const data = event.data as any;
+    
+    if (raw?.data?.Device?.Id) return raw.data.Device.Id;
+    if (raw?.Device?.Id) return raw.Device.Id;
+    if (data?.Device?.Id) return data.Device.Id;
+    
+    return undefined;
+  } catch (err) {
+    return undefined;
+  }
+}
+
 function sendSseToPath(userPath: string, payload: any) {
   const clients = sseClients.get(userPath);
   if (!clients) return;
@@ -204,7 +220,16 @@ export function registerWebhookRoutes(app: express.Application) {
       eventStore.set(userPath, trimmed);
 
       // Update cache with new events (deduplicate automatically)
-      webhookEventCache.merge(userPath, minimalRecords);
+      // Update both 'all' cache and device-specific caches
+      webhookEventCache.merge(`${userPath}:all`, minimalRecords);
+      
+      // Also update device-specific caches for each event
+      for (const record of minimalRecords) {
+        const deviceId = getDeviceIdFromEventRecord(record);
+        if (deviceId) {
+          webhookEventCache.merge(`${userPath}:${deviceId}`, [record]);
+        }
+      }
 
       // Persist to Azure Table Storage (async, don't block webhook response)
       for (const record of minimalRecords) {
@@ -302,15 +327,26 @@ export function registerWebhookRoutes(app: express.Application) {
   // Combines in-memory cache with Table Storage for complete history.
   app.get('/api/webhook/:userPath/events', async (req: Request, res: Response) => {
     const userPath = req.params.userPath;
-    const limit = parseInt(req.query.limit as string) || 2000;
+    const rawLimit = parseInt(req.query.limit as string);
     const includeStorage = req.query.storage !== 'false'; // Allow disabling via ?storage=false
     const includeCache = req.query.cache !== 'false'; // Allow disabling via ?cache=false
+    
+    // Device/Bay filtering support
+    const deviceId = req.query.deviceId as string | undefined;
+    const bayId = req.query.bayId as string | undefined;
+    const filterDeviceId = deviceId || bayId; // bayId and deviceId are the same thing
+    
+    // Adjust default limit based on filtering
+    const limit = rawLimit || (filterDeviceId ? 500 : 2000);
+    
+    // Create cache key based on filter
+    const cacheKey = filterDeviceId ? `${userPath}:${filterDeviceId}` : `${userPath}:all`;
 
     // 1. Check cache first (instant response)
     if (includeCache) {
-      const cached = webhookEventCache.get(userPath);
+      const cached = webhookEventCache.get(cacheKey);
       if (cached) {
-        const isStale = webhookEventCache.isStale(userPath);
+        const isStale = webhookEventCache.isStale(cacheKey);
         
         // If cache is fresh, return immediately
         if (!isStale) {
@@ -318,6 +354,7 @@ export function registerWebhookRoutes(app: express.Application) {
             count: cached.length,
             events: cached.slice(0, limit),
             source: 'cache',
+            filterDeviceId,
             storageEnabled: webhookEventStorage.isEnabled(),
           });
         }
@@ -327,8 +364,11 @@ export function registerWebhookRoutes(app: express.Application) {
           // Non-blocking background refresh
           (async () => {
             try {
-              const { events: storageEvents } = await webhookEventStorage.getEvents(userPath, { limit });
-              webhookEventCache.merge(userPath, storageEvents);
+              const { events: storageEvents } = await webhookEventStorage.getEvents(userPath, { 
+                limit, 
+                deviceId: filterDeviceId 
+              });
+              webhookEventCache.merge(cacheKey, storageEvents);
               
               // Notify SSE clients of cache update
               const clients = sseClients.get(userPath);
@@ -357,6 +397,7 @@ export function registerWebhookRoutes(app: express.Application) {
           count: cached.length,
           events: cached.slice(0, limit),
           source: 'cache-stale',
+          filterDeviceId,
           storageEnabled: webhookEventStorage.isEnabled(),
         });
       }
@@ -364,26 +405,38 @@ export function registerWebhookRoutes(app: express.Application) {
 
     // 2. Cache miss - fall back to original behavior
     // Start with in-memory events (fast)
-    const inMemoryEvents = eventStore.get(userPath) || [];
+    let inMemoryEvents = eventStore.get(userPath) || [];
+    
+    // Filter in-memory events by deviceId if specified
+    if (filterDeviceId) {
+      inMemoryEvents = inMemoryEvents.filter(event => {
+        const eventDeviceId = getDeviceIdFromEventRecord(event);
+        return eventDeviceId === filterDeviceId;
+      });
+    }
     
     // If we have enough in memory or storage is disabled, return immediately
     if (inMemoryEvents.length >= limit || !includeStorage) {
       // Update cache for next time
       if (includeCache && inMemoryEvents.length > 0) {
-        webhookEventCache.set(userPath, inMemoryEvents);
+        webhookEventCache.set(cacheKey, inMemoryEvents);
       }
       
       return res.json({ 
         count: inMemoryEvents.length, 
         events: inMemoryEvents.slice(0, limit),
         source: 'memory',
+        filterDeviceId,
         storageEnabled: webhookEventStorage.isEnabled(),
       });
     }
 
     // 3. Query Table Storage for more history
     try {
-      const { events: storageEvents } = await webhookEventStorage.getEvents(userPath, { limit });
+      const { events: storageEvents } = await webhookEventStorage.getEvents(userPath, { 
+        limit, 
+        deviceId: filterDeviceId 
+      });
       
       // Merge and deduplicate by event ID
       const eventMap = new Map<string, EventRecord>();
@@ -406,26 +459,28 @@ export function registerWebhookRoutes(app: express.Application) {
 
       // Update cache with merged results
       if (includeCache && mergedEvents.length > 0) {
-        webhookEventCache.set(userPath, mergedEvents);
+        webhookEventCache.set(cacheKey, mergedEvents);
       }
 
       return res.json({ 
         count: mergedEvents.length, 
         events: mergedEvents,
         source: 'memory+storage',
+        filterDeviceId,
         storageEnabled: webhookEventStorage.isEnabled(),
       });
     } catch (err) {
       console.error('Error querying storage:', err);
       // Fallback to in-memory only
       if (includeCache && inMemoryEvents.length > 0) {
-        webhookEventCache.set(userPath, inMemoryEvents);
+        webhookEventCache.set(cacheKey, inMemoryEvents);
       }
       
-      return res.json({ 
+      return res.json({
         count: inMemoryEvents.length, 
         events: inMemoryEvents.slice(0, limit),
         source: 'memory (storage error)',
+        filterDeviceId,
         storageEnabled: webhookEventStorage.isEnabled(),
       });
     }

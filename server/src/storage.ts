@@ -8,6 +8,7 @@ interface WebhookEventEntity extends TableEntity {
   eventType: string;
   timestamp: string;
   eventId?: string;
+  deviceId?: string; // Device.Id for filtering by bay/device
   data: string; // JSON stringified
   raw: string; // JSON stringified
   typed?: string; // JSON stringified (optional)
@@ -69,12 +70,16 @@ class WebhookEventStorage {
       const eventId = event.id || `${timestampMs}-${Math.random().toString(36).substr(2, 9)}`;
       const rowKey = `${reverseTimestamp}_${eventId}`;
 
+      // Extract deviceId from event for filtering
+      const deviceId = this.extractDeviceId(event);
+
       const entity: WebhookEventEntity = {
         partitionKey: userPath,
         rowKey,
         eventType: event.eventType,
         timestamp: event.timestamp,
         eventId: event.id,
+        deviceId, // Add deviceId for server-side filtering
         data: JSON.stringify(event.data),
         raw: JSON.stringify(event.raw),
         typed: event.typed ? JSON.stringify(event.typed) : undefined,
@@ -93,19 +98,26 @@ class WebhookEventStorage {
    */
   async getEvents(
     userPath: string,
-    options: { limit?: number; continuationToken?: string } = {}
+    options: { limit?: number; deviceId?: string; continuationToken?: string } = {}
   ): Promise<{ events: EventRecord[]; continuationToken?: string }> {
     if (!this.enabled || !this.tableClient) {
       return { events: [] };
     }
 
     const limit = options.limit || 100;
+    const deviceId = options.deviceId;
 
     try {
+      // Build filter query
+      let filter = `PartitionKey eq '${userPath}'`;
+      if (deviceId) {
+        filter += ` and deviceId eq '${deviceId}'`;
+      }
+
+      console.log(`Querying events with filter: ${filter}, limit: ${limit}`);
+
       const entities = this.tableClient.listEntities<WebhookEventEntity>({
-        queryOptions: {
-          filter: `PartitionKey eq '${userPath}'`,
-        },
+        queryOptions: { filter },
       });
 
       const events: EventRecord[] = [];
@@ -213,6 +225,25 @@ class WebhookEventStorage {
    */
   isEnabled(): boolean {
     return this.enabled;
+  }
+
+  /**
+   * Extract Device.Id from an event for filtering purposes
+   */
+  private extractDeviceId(event: EventRecord): string | undefined {
+    try {
+      // Check common locations for Device.Id
+      const raw = event.raw as any;
+      const data = event.data as any;
+      
+      if (raw?.data?.Device?.Id) return raw.data.Device.Id;
+      if (raw?.Device?.Id) return raw.Device.Id;
+      if (data?.Device?.Id) return data.Device.Id;
+      
+      return undefined;
+    } catch (err) {
+      return undefined;
+    }
   }
 }
 

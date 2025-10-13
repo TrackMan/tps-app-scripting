@@ -49,9 +49,24 @@ const WebhookInspector: React.FC<Props> = ({ userPath, selectedDeviceId = null, 
     setIsLoadingEvents(true);
     (async () => {
       try {
-        const r = await fetch(`/api/webhook/${encodeURIComponent(userPath)}/events`);
+        // Note: We don't filter by bay/device on initial fetch because:
+        // - selectedBayId is a UI-level identifier (base64 encoded bay name)
+        // - Device.Id in events is the actual TrackMan device ID
+        // - They don't match, so we fetch all events and filter client-side
+        // TODO: Map selectedBayId to actual Device.Id list for server-side filtering
+        
+        const url = `/api/webhook/${encodeURIComponent(userPath)}/events`;
+        console.log('[WebhookInspector] Fetching events:', url);
+        
+        const r = await fetch(url);
         if (!r.ok) throw new Error(await r.text());
         const j = await r.json();
+        
+        console.log('[WebhookInspector] Fetch response:', {
+          count: j.count,
+          source: j.source,
+        });
+        
         if (!cancelled && Array.isArray(j.events)) {
           const events = j.events.map((e: any) => ({ id: e.id, eventType: e.eventType, timestamp: e.timestamp, data: e.data, raw: e.raw, expanded: false }));
           setAllEvents(events);
