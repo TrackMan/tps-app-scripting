@@ -162,7 +162,6 @@ export const TopBar: React.FC<TopBarProps> = ({
                   <hr className="top-bar-user-menu-divider" />
                   
                   {/* Environment Switcher - Only show if production is configured */}
-                  {prodConfigured && (
                     <>
                       <button
                         className="top-bar-user-menu-item top-bar-user-menu-link"
@@ -180,7 +179,6 @@ export const TopBar: React.FC<TopBarProps> = ({
                       </button>
                       <hr className="top-bar-user-menu-divider" />
                     </>
-                  )}
                   
                   <button
                     className="top-bar-user-menu-item top-bar-user-menu-link"
